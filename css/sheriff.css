@@ -1,0 +1,38 @@
+body {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  background-image: url("../images/SheriffBgd.png");
+  background-size: 100%;
+  color: #111111;
+}
+
+table {
+  width: 100%;
+}
+
+td {
+  text-align: center;
+}
+
+td.legal {
+  background-color: #008800;
+  color: #FFFFFF;
+}
+
+td.lcol {
+  width: 15%;
+  text-align: left;
+}
+
+td.ledge {
+  width: 5%;
+}
+
+td.contraband {
+  background-color: #880000;
+  color: #FFFFFF;
+}
+
+td.royal {
+  background-color: #FFD700;
+  color: #880000;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="description" content="Steve Hansen Smythe - Music">
+    <meta name="keywords" content="Steve Hansen Smythe, compositions, original music">
+    <title>Steve Hansen Smythe - Music</title>
+    <link href="css/music.css" rel="stylesheet" type="text/css">
+    <link href="css/shs.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/menu.js"></script>
+    <script type="text/javascript" src="js/music.js"></script>
+    <script type="text/javascript" src="js/musicList.js"></script>
+    <script type="text/javascript" src="js/musicSort.js"></script>
+    <div id="header">
+      <div id="hdr_right"></div>
+      <div id="hdr_left"></div>
+      <div id="hdr_mug"></div>
+      <!-- Provide minimal menu for non-javascript browsers -->
+      <ul id="nav">
+        <li>
+          <a href="index.html">Home</a>
+        </li>
+        <li>
+          <a href="music.html">Music</a>
+        </li>
+        <li>
+          <a href="essays/essays.html">Essays</a>
+        </li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      topInit();
+    </script>
+  </head>
+  <body>
+    <div id="contents">
+      <form action="musicList.html">
+        <input type="text" name="q" size="12">
+        <input type="submit" value="Search">
+      </form>
+      <!-- This table gets replaced with dynamic content, so long as nothing goes wrong -->
+      <table id="mainTable">
+        <caption>
+          This page has been optimized for Javascript-enabled and standards-compliant browsers.
+        </caption>
+        <tr valign="top">
+          <TH>Media</TH>
+          <TH><a href="javascript:durSort()" id="dur">Duration</A></TH>
+          <TH><a href="javascript:titleSort()" id="title">Title</A></TH>
+          <TH><a href="javascript:dateSort()" id="date">Year</A></TH>
+        </tr>
+      </table>
+      <a href="http://stevehansensmythe.musicaneo.com/"><img src="http://data.musicaneo.com/promotools/images/buy_my_sheet_music_en.gif" alt="Buy my sheet music at MusicaNeo" title="Buy my sheet music at MusicaNeo" /></a>
+    </div>
+    <script type="text/javascript">
+      // don't show pieces that are not relevant to the parameters'
+      filterPieces();
+    </script>
+  </body>
+</HTML>

@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="Description" content="This is a composition that runs as a macro in WordPerfect 6.1.  It creates monophonic compositions of 1-100 notes, with interval and note lengths calculated based on the previous note's values. Printout is in plain text, such as &quot;C4 quarter&quot; for middle C quarter note." />
+    <meta name="Keywords" content="experimental music, composition, WordPerfect" />
+    <title>Stephen Hansen Smythe - "IF, by chance, ENDIF"</title>
+    <link type="text/css" rel="stylesheet" href="../css/shs.css" />
+    <style>
+      #macro {
+        width: 900px;
+        height: 600px;
+        overflow: scroll;
+      }
+
+      h1, h2 {
+        text-align: center;
+      }
+    </style>
+    <script type="text/javascript" src="../js/menu.js"></script>
+    <div id="header">
+      <div id="hdr_right"> </div>
+      <div id="hdr_left"> </div>
+      <div id="hdr_mug"> </div>
+      <!-- Provide minimal menu for non-javascript browsers -->
+      <ul id="nav">
+        <li>
+          <a href="../index.html">Home</a>
+        </li>
+        <li>
+          <a href="../music.html">Music</a>
+        </li>
+        <li>
+          <a href="../essays.html">Essays</a>
+        </li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      innerInit();
+    </script>
+  </head>
+  <body>
+    <div id="contents">
+      <H1>IF, by chance, ENDIF</H1>
+      <H2>a programmed composition for WordPerfect macro</H2>
+      <P>This is a composition that runs as a macro in WordPerfect 6.1 or 7.  It creates monophonic compositions of 1-100 notes, with interval and note lengths calculated based on the previous note's values, and weighted by the composer to favour some outcomes over others. Printout is in plain text, such as "C4 quarter" for middle C quarter note, although it could be modified to print out notes if you felt like fiddling with it, and had something like the Petrucci font (packaged with <a href ="http://www.finalemusic.com/default.aspx">Finale</a>). It does not play the music for you; it only prints things out using text.</P>
+      <P>PerfectScript, the language of WordPerfect macros, is an awful language. The main thing you'll probably notice about it is the absence of "else if" functionality, with the result that every "else if" condition ends up nested inside a parent condition. This makes for unwieldy code, and a whole bunch of "ENDIF" statements bunched up at the end. I'm sure there are better ways to make this macro go, but it's been years since I did anything serious in WordPerfect. I still curse current word processing packages for not revealing codes (MS Word constantly does things I don't want or expect, merely because I've unwittingly deleted a code while merely trying to delete text. I hate it.)</P>
+      <P>If you are unfamiliar with macros, here's what you need to do:</P>
+      <UL>
+        <LI>
+          Copy the code from the box into a new WP document
+        </li>
+        <LI>
+          Select from the menu bar: Tools -> Macro -> Macro Bar
+        </li>
+        <LI>
+          Click Save and Compile on the macro bar, give it a name, and close the document.
+        </li>
+        <LI>
+          Select from the menu bar, Tools, Macro, Play, and select the filename you gave it.
+        </li>
+      </UL>
+      <div id="macro">
+        <pre>
+Application (A1; "WordPerfect"; Default; "US")
+//"IF, by chance, ENDIF"
+//A piece for WordPerfect 6.1 by Stephen Hansen Smythe.
+//Initialize variables.
+vnote:=60  //starting place is middle C
+vvalue:=4  //starting note value is a quarter note
+vcur:=0  //current position within bar is 0
+vhowmany:=INTEGER(?Random/300)+10  //decide on number of notes in piece
+vtime:=(?Random DIV 2731)+3  //decide on a time signature between 3/8 and 15/8
+
+//Print the title.
+Center () AttributeRelativeSizeToggle (Size: Large!)
+Type ("IF, by chance, ENDIF") HardReturn ()
+Center () Type ("A monophonic piece of " + vhowmany + " notes in " + vtime + "/8 time.")
+HardReturn ()
+Type ("Composed on ") DateText ()
+FlushRight () Type ("by Stephen Hansen Smythe")
+AttributeRelativeSizeToggle (Size: Large!)
+HardReturn () HardReturn ()
+
+//Show prompt message while program running
+PROMPT ("Stephen Hansen Smythe, composer"; "A piece of " + vhowmany + " notes is being generated, in " + vtime + "/8 time.  Please wait."; 0)
+
+//Calculate all notes and their lengths
+FOR (vloop; 0; vloop&lt;vhowmany; vloop+1)
+  //Generate the interval from the previous note (vnote).
+  vrand:=?Random  //number from 0 to 32767
+  IF (vrand&lt;3277) vint:=7 ELSE  //Up P5 (10%)
+    IF (vrand&lt;6554) vint:=-5 ELSE  //Down P4 (10%)
+      IF (vrand&lt;9175) vint:=5 ELSE  //Up P4 (8%)
+        IF (vrand&lt;11796) vint:=-7 ELSE  //Down P5 (8%)
+          IF (vrand&lt;13762) vint:=4 ELSE  //Up +3 (6%)
+            IF (vrand&lt;15728) vint:=-8 ELSE  //Down -6 (6%)
+              IF (vrand&lt;17694) vint:=9 ELSE  //Up +6 (6%)
+                IF (vrand&lt;19660) vint:=-3 ELSE  //Down -3 (6%)
+                  IF (vrand&lt;21135) vint:=3 ELSE  //Up -3 (4.5%)
+                    IF (vrand&lt;22610) vint:=-9 ELSE  //Down +6 (4.5%)
+                      IF (vrand&lt;24085) vint:=8 ELSE  //Up -6 (4.5%)
+                        IF (vrand&lt;25560) vint:=-4 ELSE  //Down +3 (4.5%)
+                          IF (vrand&lt;26543) vint:=2 ELSE  //Up +2 (3%)
+                            IF (vrand&lt;27526) vint:=-10 ELSE  //Down -7 (3%)
+                              IF (vrand&lt;28509) vint:=11 ELSE  //Up +7 (3%)
+                                IF (vrand&lt;29492) vint:=-1 ELSE  //Down -2 (3%)
+                                  IF (vrand&lt;30147) vint:=1 ELSE  //Up -2 (2%)
+                                    IF (vrand&lt;30802) vint:=-11 ELSE  //Down +7 (2%)
+                                      IF (vrand&lt;31457) vint:=10 ELSE  //Up -7 (2%)
+                                        IF (vrand&lt;32112) vint:=-2 ELSE  //Down +2 (2%)
+                                          IF (vrand&lt;32440) vint:=6 ELSE  //Up x4 (1%)
+                                            vint:=-6  //Down x4 (1%)
+                                          ENDIF
+                                        ENDIF
+                                      ENDIF
+                                    ENDIF
+                                  ENDIF
+                                ENDIF
+                              ENDIF
+                            ENDIF
+                          ENDIF
+                        ENDIF
+                      ENDIF
+                    ENDIF
+                  ENDIF
+                ENDIF
+              ENDIF
+            ENDIF
+          ENDIF
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+  vnote:=vnote+vint
+  IF (vnote&lt;21) vnote:=vnote+12 ENDIF  //if it's too low, add an octave
+  IF (vnote>108) vnote:=vnote-12 ENDIF  //if it's too high, subtract an octave
+
+  //Generate the note length based on the previous note's length (vvalue)
+  vrand:=?Random  //number from 0 to 32767
+  IF (vrand&lt;16384) vmult:=1 ELSE  //keep the same (50%)
+    IF (vrand&lt;21299) vmult:=2 ELSE  //increase by factor of 2 (15%)
+      IF (vrand&lt;26214) vmult:=.5 ELSE  //decrease by factor of 2 (15%)
+        IF (vrand&lt;29491) vmult:=4 ELSE  //increase by factor of 4 (10%)
+          vmult:=.25  //decrease by factor of 4 (10%)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+
+  IF (?Random&lt;24576) vdot:=1 ELSE  //don't add or subtract a dot 3/4 of the time
+    IF (?Random&lt;24576) vdot:=1.5 ELSE  //add a dot 3/16 of the time
+      vdot:=0.6667  //subtract a dot 1/16 of the time
+    ENDIF
+  ENDIF
+  vvalue:=INTEGER(vvalue*vmult*vdot)  //calculate the new provisional note value
+
+  //Adjust note length based on time signature and position in bar
+  IF (vvalue&lt;1) vvalue:=1 ENDIF  //note must be >= 16th
+  vcur:=vcur + vvalue  //calculate current position within bar
+  IF (vcur>=vtime*2)  //if this note ends the bar
+    vvalue:=vvalue-(vcur-(vtime*2))  //adjust the current note value to end at the barline
+    vcur:=0  //and reset current position to 0
+  ENDIF
+
+  //Define how the note is to be printed out, by note name and octave (middle C is C4)
+  IF ((vnote MOD 12)=0) vname:="C" ENDIF
+  IF ((vnote MOD 12)=1) vname:="C#" ENDIF
+  IF ((vnote MOD 12)=2) vname:="D" ENDIF
+  IF ((vnote MOD 12)=3) vname:="Eb" ENDIF
+  IF ((vnote MOD 12)=4) vname:="E" ENDIF
+  IF ((vnote MOD 12)=5) vname:="F" ENDIF
+  IF ((vnote MOD 12)=6) vname:="F#" ENDIF
+  IF ((vnote MOD 12)=7) vname:="G" ENDIF
+  IF ((vnote MOD 12)=8) vname:="Ab" ENDIF
+  IF ((vnote MOD 12)=9) vname:="A" ENDIF
+  IF ((vnote MOD 12)=10) vname:="Bb" ENDIF
+  IF ((vnote MOD 12)=11) vname:="B" ENDIF
+  voctave:=(vnote DIV 12)-1
+
+  //Define how the note value is to be printed out.
+  IF (vvalue=1) vlength:="sixteenth" ELSE
+    IF (vvalue=2) vlength:="eighth" ELSE
+      IF (vvalue=3) vlength:="dotted eighth" ELSE
+        IF (vvalue=4) vlength:="quarter" ELSE
+          IF (vvalue=5) vlength:="quarter + sixteenth" ELSE
+            IF (vvalue=6) vlength:="dotted quarter" ELSE
+              IF (vvalue=7) vlength:="double dotted quarter" ELSE
+                IF (vvalue=8) vlength:="half" ELSE
+                  IF (vvalue=9) vlength:="half plus sixteenth" ELSE
+                    IF (vvalue=10) vlength:="half plus eighth" ELSE
+                      IF (vvalue=11) vlength:="half plus dotted eighth" ELSE
+                        IF (vvalue=12) vlength:="dotted half" ELSE
+                          IF (vvalue=13) vlength:="dotted half plus sixteenth" ELSE
+                            IF (vvalue=14) vlength:="double dotted half" ELSE
+                              IF (vvalue=15) vlength:="triple dotted half" ELSE
+                                vlength:="whole"
+                              ENDIF
+                            ENDIF
+                          ENDIF
+                        ENDIF
+                      ENDIF
+                    ENDIF
+                  ENDIF
+                ENDIF
+              ENDIF
+            ENDIF
+          ENDIF
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+
+  Type (vname + voctave + " " + vlength + ", ") //type note name, octave, and length
+  IF (vcur=0) HardReturn () ENDIF  //Add hard return at end of bar
+ENDFOR
+
+HardReturn () GraphicsLineCreate () GraphicsLineStyle (DoubleLine!) GraphicsLineEnd (Save!)
+//Add double bar line at end of piece
+        </pre>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="description" content="New notation practice for beats of unusual length: the musical rhythmic placeholder">
+    <meta name="keywords" content="music notation, place notation, rhythmic notation, rhythm, time signature">
+    <title>Steve Hansen Smythe - Dot Place Notation</title>
+    <link type="text/css" rel="stylesheet" href="../css/shs.css" />
+    <style type="text/css">
+      .noteImage
+      {
+        background-color: white;
+      }
+    </style>
+    <script type="text/javascript" src="../js/menu.js"></script>
+    <div id="header">
+      <div id="hdr_right"> </div>
+      <div id="hdr_left"> </div>
+      <div id="hdr_mug"> </div>
+      <!-- Provide minimal menu for non-javascript browsers -->
+      <ul id="nav">
+        <li>
+          <a href="../index.html">Home</a>
+        </li>
+        <li>
+          <a href="../music.html">Music</a>
+        </li>
+        <li>
+          <a href="../essays.html">Essays</a>
+        </li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      innerInit();
+    </script>
+  </head>
+  <body>
+    <div id="contents">
+      <p>
+        It has long irked me that some beats are easily notated, but not others. How we notate music in part informs how we compose music<a href="#Whorf"><sup>1</sup></a>, so deficiencies in our notation system get translated into limitations in the composed and performed music itself.
+      </p>
+      <p>
+        A quarter note is easy. A note equal to a quarter plus an eighth is easy too: just add a dot. Add two dots for a quarter plus an eighth plus a sixteenth.
+      </p>
+      <p>
+        To illustrate, let me use binary notation to represent common note values. A whole note is of course notated with the number 1, a half note by 0.1 (a 1 in the halfs place), a quarter by 0.01 (a 1 in the quarters place), etc.:
+      </p>
+
+      <table border>
+        <tr>
+          <th>Note</th>
+          <th>Binary equivalent</th>
+          <th>Dotted</th>
+          <th>Double-dotted</th>
+          <th>Triple-dotted</th>
+        </tr>
+        <tr>
+          <td>Whole</td>
+          <td>1</td>
+          <td>1.1</td>
+          <td>1.11</td>
+          <td>1.111</td>
+        </tr>
+        <tr>
+          <td>Half</td>
+          <td>0.1</td>
+          <td>0.11</td>
+          <td>0.111</td>
+          <td>0.1111</td>
+        </tr>
+        <tr>
+          <td>Quarter</td>
+          <td>0.01</td>
+          <td>0.011</td>
+          <td>0.0111</td>
+          <td>0.01111</td>
+        </tr>
+        <tr>
+          <td>Eighth</td>
+          <td>0.001</td>
+          <td>0.0011</td>
+          <td>0.00111</td>
+          <td>0.001111</td>
+        </tr>
+        <tr>
+          <td>Sixteenth</td>
+          <td>0.0001</td>
+          <td>0.00011</td>
+          <td>0.000111</td>
+          <td>0.0001111</td>
+        </tr>
+        <tr>
+          <td>Thirty-second</td>
+          <td>0.00001</td>
+          <td>0.000011</td>
+          <td>0.0000111</td>
+          <td>0.00001111</td>
+        </tr>
+      </table>
+      <p>
+        Looks like a pretty complete list, doesn't it?  Now let's look at the same range of notes, to 32nd note granularity (five decimal places in binary notation), in order from 0 to 1:
+      </p>
+      <table>
+        <tr>
+          <th>Note</th><th>Binary notation</th><th>Note</th><th>Binary notation</th>
+        </tr>
+        <tr>
+          <td>Thirty-second</td><td>0.00001</td><td class="un">unnotatable (=17/32)</td><td class="un">0.10001</td>
+        </tr>
+        <tr>
+          <td>Sixteenth</td><td>0.00010</td><td class="un">unnotatable (=9/16)</td><td class="un">0.10010</td>
+        </tr>
+        <tr>
+          <td>Dotted sixteenth</td><td>0.00011</td><td class="un">unnotatable (=19/32)</td><td class="un">0.10011</td>
+        </tr>
+        <tr>
+          <td>Eighth</td><td>0.00100</td><td class="un">unnotatable (=5/8)</td><td class="un">0.10100</td>
+        </tr>
+        <tr>
+          <td class="un">unnotatable (=5/32)</td><td class="un">0.00101</td><td class="un">unnotatable (=21/32)</td><td class="un">0.10101</td>
+        </tr>
+        <tr>
+          <td>Dotted eighth</td><td>0.00110</td><td class="un">unnotatable (=11/16)</td><td class="un">0.10110</td>
+        </tr>
+        <tr>
+          <td>Double-dotted eighth</td><td>0.00111</td><td class="un">unnotatable (=23/32)</td><td class="un">0.10111</td>
+        </tr>
+        <tr>
+          <td>Quarter</td><td>0.01000</td><td>Dotted half</td><td>0.11000</td>
+        </tr>
+        <tr>
+          <td class="un">unnotatable (=9/32)</td><td class="un">0.01001</td><td class="un">unnotatable (=25/32)</td><td class="un">0.11001</td>
+        </tr>
+        <tr>
+          <td class="un">unnotatable (=5/16)</td><td class="un">0.01010</td><td class="un">unnotatable (=13/16)</td><td class="un">0.11010</td>
+        </tr>
+        <tr>
+          <td class="un">unnotatable (=11/32)</td><td class="un">0.01011</td><td class="un">unnotatable (=27/32)</td><td class="un">0.11011</td>
+        </tr>
+        <tr>
+          <td>Dotted quarter</td><td>0.01100</td><td>Double-dotted half</td><td>0.11100</td>
+        </tr>
+        <tr>
+          <td class="un">unnotatable (=13/32)</td><td class="un">0.01101</td><td class="un">unnotatable (=29/32)</td><td class="un">0.11101</td>
+        </tr>
+        <tr>
+          <td>Double-dotted quarter</td><td>0.01110</td><td>Triple-dotted half</td><td>0.11110</td>
+        </tr>
+        <tr>
+          <td>Triple-dotted quarter</td><td>0.01111</td><td>Quadruple-dotted half</td><td>0.11111</td>
+        </tr>
+        <tr>
+          <td>Half</td><td>0.10000</td><td>Whole</td><td>1.00000</td>
+        </tr>
+      </table>
+      <p>
+        Fully half of the possible note lengths to the nearest 32nd note are missing from the current system. For all those you must use a tie to add two or more smaller notes together. I readily admit that tied notes often reduce ambiguity and help the reader find the beat, but this is not universally the case, especially in modern music featuring more complicated beat durations. Why, for example, is a note made of 15 sixteenths notatable with a single note in the current system, but not 9 sixteenths?
+      </p>
+      <p>
+        What's needed is place notation for dots. Unsurprisingly, I've called it <b>"Dot Place Notation"</b>. For example, I ought to be able to create a hypothetical note made of a quarter and a sixteenth by adding an empty placeholder after the quarter note (standing in for the first eighth-note dot), and putting a normal sixteenth-note dot following it, just like you saw in binary notation.
+      </p>
+      <p>
+        How would that look? If I use a dash where I need a dot placeholder, something like this:
+      </p>
+      <table border>
+        <tr>
+          <th>Old notation</th>
+          <th>Equivalent</th>
+          <th>New notation</th>
+          <th>How to read it</th>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old5.gif" valign="middle" alt="Q-Q&#149;" width="65" height="57"></td>
+          <td>5 eighth notes</td>
+          <td class="noteImage"><img src="../noteImages/new5.gif" valign="middle" alt="H&#150; &#149;" width="36" height="51"></td>
+          <td>&nbsp;&nbsp;&nbsp; 1 half note
+          <br>
+          + 0 quarter notes
+          <br>
+          + 1 eighth note</td>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old9.gif" valign="middle" alt="H-s" width="71" height="56"></td>
+          <td>9 sixteenth notes</td>
+          <td class="noteImage"><img src="../noteImages/new9.gif" valign="middle" alt="H&#150; &#150; &#149;" width="43" height="50"></td>
+
+          <td>&nbsp;&nbsp;&nbsp; 1 half note
+          <br>
+          + 0 quarter notes
+          <br>
+          + 0 eighth notes
+          <br>
+          + 1 sixteenth note</td>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old11.gif" valign="middle" alt="H-e&#149;" width="77" height="52"></td>
+          <td>11 sixteenth notes</td>
+          <td class="noteImage"><img src="../noteImages/new11.gif" valign="middle" alt="H&#150; &#149; &#149;" width="42" height="52"></td>
+
+          <td>&nbsp;&nbsp;&nbsp; 1 half note
+          <br>
+          + 0 quarter notes
+          <br>
+          + 1 eighth note
+          <br>
+          + 1 sixteenth note</td>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old13.gif" valign="middle" alt="H&#149;-s" width="78" height="53"></td>
+          <td>13 sixteenth notes</td>
+          <td class="noteImage"><img src="../noteImages/new13.gif" valign="middle" alt="H&#149; &#150; &#149;" width="43" height="50"></td>
+
+          <td>&nbsp;&nbsp;&nbsp; 1 half note
+          <br>
+          + 1 quarter note
+          <br>
+          + 0 eighth notes
+          <br>
+          + 1 sixteenth note</td>
+        </tr>
+      </table>
+      <p>
+        Musicians are already used to reading an ordered line of dots in place of note values, so I think the addition of a placeholder would be trivially easy to learn. My only difficulty was deciding what symbol to use as the placeholder.
+        Although a rhythmic dash might be confused with marcato, musicians seem to have no trouble distinguishing rhythmic dots from staccatos, and at least a dash suggests mathematical subtraction, which is close to the &quot;zero&quot; or &quot;absent&quot; meaning of the symbol in its new context. Reading the new notation becomes a little like reading <a href="#Morse">Morse code<sup>2</sup></a>.
+      </p>
+      <hr>
+      <p>
+        This innovation will still be of only limited use unless time signatures change as well, to accommodate the newly-available rhythms.
+      </p>
+      <p>
+        <a href="http://http://oddquartet.com/"><img src="http://oddquartet.com/comics/2012-01-25-timey-wimey.jpg" width="300" height="200" alt="Image courtesy of Odd Quartet"></a>
+      </p>
+      <p>
+        Having taught music theory, I know that trying to teach the difference between simple and compound time signatures is difficult. Why, for example, would a time signature with 2 beats have a 6 on the top, as in the case of 6/4?
+      </p>
+      <p>
+        The problem with traditional time signatures is that they are NOT simple mathematical fractions, although they look similar. The top number isn't just the number of beats, but <I>the product of the number of beats and the number of pulses per beat</I>. It only looks like the simple number of beats when the number of pulses per beat is 1, as happens in any time signature with beats of half notes, quarters, eighths, and so on. The time signature 4/4 isn't a simple fraction; it's really 4 * &frac14;, but you can ignore the 1.
+      </p>
+      <p>
+        This fact is better illustrated in compound time. To take my first example, 6/4 is really 2 * (3/4), that is, 2 beats, each being 3 quarter notes long. 9/8 is really 3 * (3/8). 12/16 is really 4 * (3/16).
+      </p>
+      <p>
+        We can get away from confusing bunches of numbers like those, though, by either using the new place notation with the beat designator, or replacing the beat designator with a picture of the note. For example:
+      </p>
+      <table id="ts">
+        <tr>
+          <th>Old</th>
+          <th colspan="2">New (numeral or note)</th>
+          <th>Comments</th>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old68.gif" alt="6/8"></td>
+          <td class="noteImage"><img src="../noteImages/newI68.gif" alt="2/Q&#149;"></td>
+          <td class="noteImage"><img src="../noteImages/newN68.gif" alt="2/Q&#149;"></td>
+          <td>Two dotted quarter notes.</td>
+        </tr>
+
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old78.gif" alt="7/8"></td>
+          <td class="noteImage"><img src="../noteImages/newI78.gif" alt="2+1/q+q&#149;"></td>
+          <td class="noteImage"><img src="../noteImages/newN78.gif" alt="2+1/q+q&#149;"></td>
+          <td>In this case, probably context is good enough to supply my intended grouping using traditional notation, but the new notation makes it explicit.</td>
+        </tr>
+
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old138.gif" alt="13/8"></td>
+          <td class="noteImage"><img src="../noteImages/newI138.gif" alt="2+1+3/q+q&#149;+q"></td>
+          <td class="noteImage"><img src="../noteImages/newN138.gif" alt="2+1+3/q+q&#149;+q"></td>
+          <td>Another possibility is if I used multiple, but traditional, time signatures, like this: <div class="noteImage"><img src="../noteImages/old78.gif" alt="7/8" width="22" height="48"><img src="../noteImages/old68.gif" alt="6/8" width="21" height="47"></div> An example of this might be the second variation in my <a href="http://www.musicaneo.com/sheetmusic/sm-85472_theme_and_variations.html">Theme and Variations</a>.</td>
+        </tr>
+
+        <tr>
+          <th class="noteImage" rowspan="2"><img src="../noteImages/old158.gif" alt="15/8"></th><td class="noteImage"><img src="../noteImages/newI158c.gif" alt="5/q&#149;"></td><td class="noteImage"><img src="../noteImages/newN158c.gif" alt="5/q&#149;"></td><td>Traditional interpretation of 15/8, as a compound time signature with 5 beats, each beat containing 3 pulses</td>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/newI158s.gif" alt="3/q-&#149;"></td>
+          <td class="noteImage"><img src="../noteImages/newN158s.gif" alt="3/q-&#149;"></td>
+          <td>But this is the grouping used by Alexander Scriabin in his <a href="http://www.youtube.com/watch?v=WS4tD5MHG50">Prelude Op. 11, No. 14</a>: three beats per bar, each beat with five eighth notes. I also use it in my <a href="https://soundcloud.com/steve-hansen-smythe/drunk-detective-show-theme">Drunk Detective Show Theme</a>. Traditional time signatures can't make this sort of distinction.</td>
+        </tr>
+
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old2016.gif" alt="20/16"></td>
+          <td class="noteImage"><img src="../noteImages/newI2016.gif" alt="4/q-&#149;"></td>
+          <td class="noteImage"><img src="../noteImages/newN2016.gif" alt="4/q-&#149;"></td>
+          <td>Four dash-dotted quarter notes, as used in my piece FiveBeat, or for example in one section of <a href="http://www.cuneiformrecords.com/bandshtml/thinking.html" target="_top">Thinking Plague</a>'s <I><a href="../scores/BlownApartExample.mp3">Blown Apart</a></I>.</td>
+        </tr>
+
+        <tr>
+          <td class="noteImage"><img src="../noteImages/old2816.gif" alt="28/16"></td>
+          <td class="noteImage"><img src="../noteImages/newI2816.gif" alt="5/q-&#149; + e"></td>
+          <td class="noteImage"><img src="../noteImages/newN2816.gif" alt="5/q-&#149; + e"></td>
+          <td>Five dash-dotted quarter notes followed by one (or two or three) dotted eighths, as used in my piece <I>Engagement</I> (hear a <a href="../scores/EngagementExample.mp3">sample</a>). This sort of rhythm is almost completely unreadable using traditional notation.</td>
+        </tr>
+      </table>
+      <p>
+        Have a look at this <a href="../scores/Train5solo.pdf">piano piece</a> - part of the fifth variation in my Train Variations (cowritten with Gordon Rumson) - to see dash-dotted notes in context.
+      </p>
+      <p>
+        Let's look at an even more complicated example. Numbers in time signatures are only useful if you have two or more contiguous beats of a given type. How does one meaningfully notate regular patterns of changing beat lengths?
+      </p>
+      <p>
+        I think the simplest way would be to dispense with numbers entirely, and just write the note types: for example, instead of using "27/16" to indicate a complex rhythm with a repeated 13 + 14 inner structure, use <div class="noteImage"><img src="../noteImages/DS67.gif" alt="(13 + 14)/16"></div> to display the repeating units.
+        The difference between the two bars is instantly visible using the new notation: the second bar is merely one sixteenth note longer than the first. These two bar-sized beats might further be subdivided for greater accuracy in a similar fashion if desired.
+      </p>
+      <p>
+        Once one begins to become familiar with the patterns of dot place notation, it becomes easy to understand the beat structure of fascinating music such as this. I don't find associating <Q>dash dotted note</Q> with <Q>5</Q>, for example, any more difficult or arbitrary than associating <Q>double dotted note</Q> with <Q>7</Q>.
+      </p>
+      <hr>
+      <p>
+        Not surprisingly, you can even do note arithmetic, once all the dots line up. Here are the rules for adding one note to another to get a combined value (essentially the rules for binary addition):
+      </p>
+      <ul>
+        <li>
+          dots and notes are equivalent
+        <li>
+          dot + dash = dot, and dash + dot = dot
+        <li>
+          dash + dash = dash
+        <li>
+          dot + dot = dash, but carry a dot over to the left
+        <li>
+          You may remove any trailing right hand dash, and only the leftmost dot is notated as a musical note
+      </ul>
+      <p>
+        Here's an example: try adding a triple-dotted half note to a dash-dotted quarter note. Line the quarter note up with the first dot on the half note, and apply the rules above.
+        <div  class="noteImage">
+          <img src="../noteImages/notemath.gif" alt="Note math graphic example" width="77" height="113">
+        </div>
+      </p>
+      <p>
+        If you can add, you can multiply. Multiplication of any kind of note by powers of two (2, 4, 8, 16, etc.) is easy: just change the note value and the dots and placeholders take care of themselves. For example, four dash-dotted quarters equals one dash-dotted whole note.
+      </p>
+      <p>
+        But how can one figure out, for example, what note will fill a bar made up of eleven notes, each of which is a dash-dotted eighth? Write the dash-dotted eighth note at the top, and write the multiplicator 11 as its binary equivalent
+        <code>
+          &#149; &#150; &#149; &#149;
+        </code>
+        (or, if you prefer, a dash-double-dotted note), making sure that the rightmost character (dot in this case) lines up with the rightmost dot on the top line.
+        (If one was multiplying by an even number, the rightmost character would be a dash, lined up in similar fashion, e.g. multiply by 6 by putting
+        <code>
+          &#149; &#149; &#150;
+        </code>
+        on the second line.)
+        Fortunately, this is easier than standard decimal multiplication. For each dot on the second line, write the top line, lining up the rightmost dot on the top line with the dot on the second line, like this:
+        <div class="noteImage">
+          <img src="../noteImages/notemult.gif" alt="Note multiplication graphic example" width="70" height="124">
+        </div>
+        <br>
+        Then it becomes an addition problem, using the rules laid out above. Add up the three lines, and the result is a whole note followed by
+        <code>
+          &#149; &#150; &#149; &#149; &#149;
+        </code>
+      </p>
+      <p>
+        How does one figure out what value to give the leftmost note? By keeping the dots aligned. The third column from the right is the eighth-note column, so by counting left one gets a dash in the quarter's place, a dot in the half's place, and a dot in the whole note's place. Only the leftmost dot gets written as a note; the rest remain as dots or placeholders.
+      </p>
+      <hr>
+      <p>
+        I am <i>not</i> arguing against the use of ties and time signatures in traditional ways. However, the traditional notation is also a straitjacket, forcing composers to think of beats in terms of &quot;simple&quot; or &quot;compound&quot; to the exclusion of other possibilities.
+        Furthermore, expanding the possible ways in which time signatures are written, and adding place notation for dotted notes and rests, would make performing and notating some modern pieces much easier.
+        It would free the performer from having to read exhaustively tied collections of notes, making possible the notating of durations to any arbitrary precision.
+        Scores would be easier to read, and students would understand time signatures much faster, and be able to use difficult ones with almost as much facility as the traditional ones.
+      </p>
+      <p>
+        I intend to compose pieces making full use of my new system of notation, thus ensuring that I remain obscure and unsung.
+      </p>
+      <hr>
+      <a name="Whorf"><sup>1</sup></a> Although many attempts to prove one or the other form of the <a href="http://www.angelfire.com/journal/worldtour99/sapirwhorf.html" target="_top">Sapir-Whorf hypothesis</a> have been made, there does not exist any stringent proof that thoughts are determined or significantly influenced by language, in this case, musical language. I can offer you only this bit of anecdotal evidence: before working out this system of alternate notation, it had never occurred to me to compose pieces with beats of unnotatable length. In my case, at least, it freed me from compositional blinders I didn't even know I was wearing.
+      <hr>
+      <a name="Morse"><sup>2</sup></a> If you know Morse code, perhaps you'll find it easier to associate Morse letters with note values. Including the note itself as a dot, you get
+      <table border="2">
+        <tr>
+          <th>Note</th><th>Morse letter</th><th>Mnemonic</th>
+        </tr>
+
+        <tr>
+          <td class="noteImage"><img src="../noteImages/new5.gif" valign="middle" alt="H &#150; &#149;" width="36" height="51"></td><th>R ( &#149; &#150; &#149; )</th><td>Five <b>R</b>ivers</td>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/new9.gif" valign="middle" alt="H &#150; &#149;" width="43" height="50"></td><th>P( &#149; &#150; &#150; &#149; )</th><td>Nine <b>P</b>ines</td>
+        </tr>
+
+        <tr>
+          <td class="noteImage"><img src="../noteImages/new11.gif" valign="middle" alt="H &#150; &#149; &#149;" width="42" height="52"></td><th>L ( &#149; &#150; &#149; &#149; )</th><td>E<b>L</b>even</td>
+        </tr>
+        <tr>
+          <td class="noteImage"><img src="../noteImages/new13.gif" valign="middle" alt="H &#149; &#150; &#149;" width="43" height="50"></td><th>F ( &#149; &#149; &#150; &#149; )</th><td><b>F</b>irteen</td>
+        </tr>
+
+      </table>
+      <p>
+        This page updated 20 March 2013.
+      </p>
+    </div>
+  </body>
+</html>

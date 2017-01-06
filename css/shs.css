@@ -1,0 +1,200 @@
+/*------------------------------------*\
+ RESET
+ \*------------------------------------*/
+body, div
+{
+  margin: 0;
+  padding: 0;
+}
+
+/*------------------------------------*\
+ MAIN
+ \*------------------------------------*/
+html
+{
+  height: 100%;
+}
+
+head
+{
+  width: 100%;
+  text-align: center;
+}
+
+body
+{
+  width: 100%;
+  text-align: center;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 95%;
+  background: #212128 url(../images/bgd.png);
+  color: #FFFFFF;
+}
+#header
+{
+  /* set position relative: anything inside with position absolute will use this as its reference */
+  position: relative;
+  width: 844px;
+  left: -28px;
+  padding: 0 20px;
+  color: #DDDDDD;
+  margin: 0 auto;
+}
+
+#hdr_left
+{
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 20px;
+  height: 60px;
+  background: -webkit-linear-gradient(black, DarkRed); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(black, DarkRed); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(black, DarkRed); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(black, DarkRed); /* Standard syntax */
+}
+
+#hdr_mug
+{
+  position: absolute;
+  left: 20px;
+  top: 0px;
+  width: 51px;
+  height: 60px;
+  background: black url(../images/hdr.png);
+}
+
+#hdr_right
+{
+  position: absolute;
+  left: 70px;
+  top: 0px;
+  width: 100%;
+  height: 60px;
+  background: -webkit-linear-gradient(black, DarkRed); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(black, DarkRed); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(black, DarkRed); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(black, DarkRed); /* Standard syntax */
+  font-variant: small-caps;
+}
+
+#hdr_title
+{
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: xx-large;
+  text-align: left;
+}
+
+#nav
+{
+  margin: 0;
+  position: absolute;
+  top: 36px;
+  left: 20px;
+  height: 20px;
+  text-align: left;
+  list-style: none;
+  z-index: 5;
+}
+#nav li
+{
+  float: left;
+  position: relative;
+  /*background: #212128;*/
+}
+#nav li > p
+{
+  margin: 0;
+  padding: 0 0 0 5px;
+  /* shows selected, unselectable menu item*/
+  color: DarkGray;
+}
+#nav a
+{
+  display: block;
+  padding: 0px 5px;
+  color: #FFFFFF;
+  /*background: #212128;*/
+  text-decoration: none;
+}
+#nav a:hover
+{
+  color: red;
+  text-decoration: underline;
+}
+
+/*--- DROPDOWN ---*/
+#nav ul
+{
+  margin: 0;
+  padding: 0;
+  /*Colour of lines between LI items, and background colour of unselectable item*/
+  background: #444444;
+  /* Adding a background makes the dropdown work properly in IE7+. Make this as close to your page's background as possible (i.e. white page == white background). */
+  /* background: rgba(255,255,255,0); But! Let's make the background fully transparent where we can, we don't actually want to see it if we can help it... */
+  list-style: none;
+  position: absolute;
+  left: -9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
+}
+#nav ul li
+{
+  padding-top: 1px; /* Introducing a padding between the li and the a gives the illusion of spaced items */
+  float: none;
+}
+#nav ul a
+{
+  white-space: nowrap; /* Stop text wrapping and creating multi-line dropdown items */
+}
+#nav li:hover ul
+{
+  /* Display the dropdown on hover */
+  left: 0; /* Bring back on-screen when needed */
+}
+#nav li:hover a
+{
+  /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
+  /*background: #FF4444;*/
+  text-decoration: underline;
+}
+#nav li:hover ul a
+{
+  /* The persistent hover state does however create a global style for links even before they're hovered. Here we undo these effects. */
+  text-decoration: none;
+}
+#nav li:hover ul li a:hover
+{
+  /* Here we define the most explicit hover states--what happens when you hover each individual link. */
+  background: #212128;
+}
+
+#contents
+{
+  position: relative;
+  height: 100%;
+  width: 900px;
+  top: 60px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 5px 20px;
+}
+
+a:link
+{
+  color: #8888FF;
+}
+a:visited
+{
+  color: #88BBFF;
+}/* visited link */
+a:hover
+{
+  color: #88FFFF;
+}/* mouse over link */
+a:active
+{
+  color: #FF0000;
+}/* selected link */
+

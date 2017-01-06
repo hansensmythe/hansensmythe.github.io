@@ -1,0 +1,54 @@
+dt
+{
+  font-weight: bold;
+}
+
+caption
+{
+  font-size: x-large;
+}
+
+th
+{
+  white-space: nowrap;
+}
+
+tr
+{
+  vertical-align: top;
+}
+
+td
+{
+  border-top-style: solid;
+  border-top-color: #AAAA66;
+}
+
+td.media
+{
+  text-align: center;
+  vertical-align: top;
+  padding: 16px 0px 0px 0px;
+  border-top-width: 2px;
+}
+
+td.duration
+{
+  text-align: right;
+  vertical-align: top;
+  padding: 16px 10px 0px 0px;
+  border-top-width: 2px;
+}
+
+td.description
+{
+  vertical-align: top;
+  border-top-width: 2px;
+}
+
+td.date
+{
+  vertical-align: top;
+  padding: 16px 0px 0px 10px;
+  border-top-width: 2px;
+}

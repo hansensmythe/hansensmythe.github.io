@@ -1,7 +1,72 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<body>
-<h1>Hello World</h1>
-<p>SHS hosted with GitHub Pages.</p>
-</body>
-</html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="description" content="Steve Hansen Smythe - Home">
+    <meta name="keywords" content="Steve Hansen Smythe">
+    <script type="text/javascript" src="js/menu.js"></script>
+    <link href="css/index.css" rel="stylesheet" type="text/css" />
+    <link href="css/shs.css" rel="stylesheet" type="text/css" />
+    <title>Steve Hansen Smythe - Home</title>
+    <div id="header">
+      <div id="hdr_right"></div>
+      <div id="hdr_left"></div>
+      <div id="hdr_mug"></div>
+      <!-- Provide minimal menu for non-javascript browsers -->
+      <ul id="nav">
+        <li>
+          Home
+        </li>
+        <li>
+          <a href="music.html">Music</a>
+        </li>
+        <li>
+          <a href="oped/op-ed.html">Op-Ed</a>
+        </li>
+        <li>
+          <a href="SteveHansenSmytheResume.html">Resume</a>
+        </li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      topInit();
+      // add the resume and links to the home page menu. Not worth doing for every page
+      var navUL = document.getElementById("nav");
+      navUL.appendChild(getMenuItem("", "SteveHansenSmytheResume.html", "Resume"));
+    </script>
+  </head>
+  <body>
+    <div id="contents">
+      <div id="photos">
+        <img class="splash" id="ul" src="images/225600.png" title="Playing Abanazer in Morpheus Theatre's production of Aladdin, December 2012. Photo credit: Alecia Pagnotta">
+        <img class="splash" id="cc" src="images/450600.png" title="At the piano in 2011. Photo credit: I. H. Smythe">
+        <img class="splash" id="ur" src="images/225245.png" title="Playing a gangster dressed as a pastry chef in 'The Drowsy Chaperone', 2013">
+        <img class="splash" id="cr" src="images/225125.png" title="Diving at Lantzville, BC. in 2004.">
+        <img class="splash" id="lr" src="images/225230.png" title="Playing Basil Fawlty in 'An Evening at Fawlty Towers', 2013">
+        <img class="splash" id="bc" src="images/DarkVelo.png" title="The Blue Bullet, January 2015">
+        <!-- To put a message in the bottom middle of the centre photo, use id="featured" -->
+        <p id="featured">I'm a software developer, working primarily with Node.js but with a decade of Java experience as well. I'm also an active composer, pianist, vocalist, and actor. I live in Calgary, Alberta (Canada), through which I prefer to travel in my velomobile, dubbed the "Blue Bullet" by local media.</p>
+      </div>
+      <P>Contact</P>
+      <P>
+        <a href="https://www.facebook.com/Steve.Hansen.Smythe"><img src="images/facebook.png" alt="Facebook"></a>
+        <a href="http://www.google.com/profiles/102668733326552317083"><img src="images/googlePlus.png" alt="Google Plus"></a>
+        <a href="https://www.instagram.com/stevehansensmythe/"><img src="images/instagram.png" alt="Instagram"></a>
+        <a href="https://ca.linkedin.com/in/stevehansensmythe"><img src="images/linkedin.png" alt="Linked In"></a>
+        <a href="https://twitter.com/hansensmythe?lang=en"><img src="images/twitter.png" alt="Twitter"></a>
+        <a href="https://www.youtube.com/user/HansenSmythe"><img src="images/youtube.png" alt="Youtube"></a>
+      </P>
+      
+      <P>Interesting links</P>
+      <ul>
+        <li><a href="http://www.abolitionistapproach.com/">Animal Rights: The Abolitionist Approach</a></li>
+        <li><a href="https://youtu.be/KPNvvon6PIo" target="_blank">Commuting on Crowchild</a> at speeds of over 70 km/h in my velomobile</li>
+        <li><a href="http://www.mwbrooks.com/dvorak/" target="_top">Dvorak</a> keyboard layout (I find it more comfortable and faster than QWERTY, and worth the temporary inconvenience of converting)</li>
+        <li><a href="qwirkle/setup.html" target="_blank">Qwirkle Setup</a></li>
+        <li><a href="sheriffScore.html" target="_blank">Sheriff of Nottingham game scorer</a></li>
+        <li><a href="http://members.shaw.ca/ihsmythe/index.html">I. H. Smythe</a> (favourite author)</li>
+      </ul>
+    </div>
+  </body>
+</HTML>

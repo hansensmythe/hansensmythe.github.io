@@ -1,0 +1,76 @@
+#photos
+{
+  position: relative;
+  width: 900px;
+  height: 1044px;
+}
+#ul
+{
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 225px;
+  height: 600px;
+}
+#cc
+{
+  position: absolute;
+  left: 225px;
+  top: 0px;
+  width: 450px;
+  height: 600px;
+}
+#ur
+{
+  position: absolute;
+  left: 675px;
+  top: 0px;
+  width: 225px;
+  height: 245px;
+}
+#cr
+{
+  position: absolute;
+  left: 675px;
+  top: 245px;
+  width: 225px;
+  height: 125px;
+}
+#lr
+{
+  position: absolute;
+  left: 675px;
+  top: 370px;
+  width: 225px;
+  height: 230px;
+}
+#bc
+{
+  position: absolute;
+  left: 0px;
+  top: 600px;
+  width: 900px;
+}
+#featured
+{
+  position: absolute;
+  left: 125px;
+  top: 750px;
+  width: 650px;
+  color: white;
+  font-size: large;
+  text-align: center;
+}
+
+#featured img
+{
+  padding: 2px;
+  border: 5px solid gray;
+  background-color: blue;
+}
+
+.splash
+{
+  padding: 0;
+  margin: 0;
+}
