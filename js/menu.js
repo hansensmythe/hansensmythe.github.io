@@ -93,12 +93,11 @@ function init(prefix)
   var opedUL = document.createElement("ul");
   opedLI.appendChild(opedUL);
   opedUL.appendChild(getMenuItem(prefix, "oped/placenotation.html", "Intro to Dot Place Notation"));
-  opedUL.appendChild(getMenuItem(prefix, "oped/MAD.html", "MADD, or just MAD?"));
   opedUL.appendChild(getMenuItem(prefix, "oped/VotingForChange.html", "Voting for Change"));
-  opedUL.appendChild(getMenuItem(prefix, "oped/Scotty.html", "Scotty's On the Bridge!"));
   opedUL.appendChild(getMenuItem(prefix, "oped/DearFinancial.html", "Dear Financial Advisor:"));
   opedUL.appendChild(getMenuItem(prefix, "oped/NOMA.html", "Do the Magisteria of Science and Religion Overlap?"));
   opedUL.appendChild(getMenuItem(prefix, "oped/framework.html", "In Search of a Deeper Framework"));
+  opedUL.appendChild(getMenuItem(prefix, "oped/MAD.html", "MADD, or just MAD?"));
 
   // Blog - this never gets a prefix because it's a 3rd party link
   // navUL.appendChild(getMenuItem("", "http://hansensmythe.shawwebspace.ca/blog/", "Blog"));
