@@ -3,14 +3,37 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="js/menu.js"></script>
     <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+    <link href="css/shs.css" rel="stylesheet" type="text/css" />
     <title>Sheriff of Nottingham Scorer</title>
     <meta name="author" content="Steve Hansen Smythe" />
-    <!-- Date: 2017-01-02 -->
-    <script type="text/javascript" src="js/sheriff.js"></script>
     <link href="css/sheriff.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="js/sheriff.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
+    <div id="header">
+      <div id="hdr_right"></div>
+      <div id="hdr_left"></div>
+      <div id="hdr_mug"></div>
+      <!-- Provide minimal menu for non-javascript browsers -->
+      <ul id="nav">
+        <li>
+          <a href="index.html">Home</a>
+        </li>
+        <li>
+          <a href="music.html">Music</a>
+        </li>
+        <li>
+          <a href="oped/op-ed.html">Op-Ed</a>
+        </li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      topInit();
+    </script>
   </head>
   <body>
+    <div id="contents">
     <table border>
       <tr id="header">
         <th colspan="2">Goods</th>
@@ -83,6 +106,7 @@
       </tr>
     </table>
     <script type="text/javascript">loadPage();</script>
+    </div>
   </body>
 </html>
 
