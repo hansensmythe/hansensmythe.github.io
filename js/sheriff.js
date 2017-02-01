@@ -80,15 +80,15 @@ function setRoyalty(goodName, kingBonus, queenBonus) {
     return playerValues[key][goodName];
   });
   // sort numerically and in descending order
-  scores = scores.sort(function (a, b) {
+  scores = scores.sort(function(a, b) {
     return b - a;
   });
   // accept only the first of each value - guarantees uniqueness
-  scores = scores.filter(function (value, index, self) { 
+  scores = scores.filter(function(value, index, self) {
     return self.indexOf(value) === index;
   });
 
-  // Iterate through a second time to extract the kings and queens 
+  // Iterate through a second time to extract the kings and queens
   var kings = [],
       queens = [];
   for (var key in playerValues) {
@@ -101,21 +101,22 @@ function setRoyalty(goodName, kingBonus, queenBonus) {
       queens.push(onePlayer);
     }
   }
-  
+
   if (kings.length > 1) {
     // Share the combined king/queen bonus and remove queens
-    var bonus = Math.floor((kingBonus + queenBonus)/kings.length);
+    var bonus = Math.floor((kingBonus + queenBonus) / kings.length);
     kings.forEach(function(king) {
       king[royaltyKey] = bonus;
     });
   } else if (kings.length === 1) {
     // just one king
     kings[0][royaltyKey] = kingBonus;
-    bonus = queens.length > 1 ? Math.floor(queenBonus/queens.length) : queenBonus;
+    bonus = queens.length > 1 ? Math.floor(queenBonus / queens.length) : queenBonus;
     queens.forEach(function(queen) {
       queen[royaltyKey] = bonus;
     });
-  } // else all scores are 0 - no bonus
+  }
+  // else all scores are 0 - no bonus
 }
 
 // Executed whenever any field changes
@@ -151,98 +152,103 @@ function recalc() {
 
   for (var key in playerValues) {
     var onePlayer = playerValues[key];
-    
+
     document.getElementById('applesBonus' + key).innerHTML = onePlayer.applesRoyalty;
     if (onePlayer.applesRoyalty) {
       onePlayer.total += onePlayer.applesRoyalty;
     }
-    
+
     document.getElementById('cheeseBonus' + key).innerHTML = onePlayer.cheeseRoyalty;
     if (onePlayer.cheeseRoyalty) {
       onePlayer.total += onePlayer.cheeseRoyalty;
     }
-    
+
     document.getElementById('breadBonus' + key).innerHTML = onePlayer.breadRoyalty;
     if (onePlayer.breadRoyalty) {
       onePlayer.total += onePlayer.breadRoyalty;
     }
-    
+
     document.getElementById('chickenBonus' + key).innerHTML = onePlayer.chickenRoyalty;
     if (onePlayer.chickenRoyalty) {
       onePlayer.total += onePlayer.chickenRoyalty;
     }
-    
+
     var coins = parseInt(document.getElementById('coins' + key).value);
     if (!Number.isNaN(coins)) {
       onePlayer.total += coins;
     }
-    
+
     document.getElementById('total' + key).innerHTML = onePlayer.total;
   }
 }
 
-
 // We've defined our functions. Set up the page.
 function loadPage() {
-  var playerName,
-      playerNumber;
-  
-  do {
-    playerNumber = Object.keys(playerValues).length + 1;
-    playerName = prompt('Name of Player ' + playerNumber + ':');
-    if (playerName) {
-      playerValues[playerNumber] = {
-        "name": playerName,
-        "values": []
-      };
+
+  if (confirm('This page is to help "Sheriff of Nottingham" players score the game. Press "OK" to start entering player names. Press "reload" in your browser to reset the page.')) {
+    var playerName,
+        playerNumber;
+
+    do {
+      playerNumber = Object.keys(playerValues).length + 1;
+      playerName = prompt('Name of Player ' + playerNumber + ':');
+      if (playerName) {
+        playerValues[playerNumber] = {
+          "name" : playerName,
+          "values" : []
+        };
+      }
     }
-  } while (!!playerName && playerNumber < 5);
-    
-  
-  // Populate the table with scoring sections for each player
-  if (playerNumber < 3) {
-    alert("You need at least three players to play Sheriff of Nottingham!");
-  } else {
-     for (var key in playerValues) {
-      var onePlayer = playerValues[key];
-      // find each relevant row and add a cell for each player
-      var cell = document.createElement("th");
-      cell.innerHTML = onePlayer.name;
-      document.getElementById('header').appendChild(cell);
-  
-      goods.forEach(function(good) {
+    while (!!playerName && playerNumber < 5);
+
+    // Populate the table with scoring sections for each player
+    if (playerNumber < 3) {
+      alert("You need at least three players to play Sheriff of Nottingham!");
+    } else {
+      for (var key in playerValues) {
+        var onePlayer = playerValues[key];
+        // find each relevant row and add a cell for each player
+        var cell = document.createElement("th");
+        cell.innerHTML = onePlayer.name;
+        document.getElementById('goods').appendChild(cell);
+
+        goods.forEach(function(good) {
+          cell = document.createElement("td");
+          var input = createInput(good.name + key, playerNumber > 3 ? good.max : good.max3);
+          cell.appendChild(input);
+          // put the new input into the playerValues for use in recalc
+          playerValues[key].values.push({
+            "good" : good,
+            "input" : input
+          });
+          document.getElementById(good.name).appendChild(cell);
+        });
+
         cell = document.createElement("td");
-        var input = createInput(good.name + key, playerNumber > 3 ? good.max : good.max3);
+        cell.id = "applesBonus" + key;
+        document.getElementById('applesBonus').appendChild(cell);
+
+        cell = document.createElement("td");
+        cell.id = "cheeseBonus" + key;
+        document.getElementById('cheeseBonus').appendChild(cell);
+
+        cell = document.createElement("td");
+        cell.id = "breadBonus" + key;
+        document.getElementById('breadBonus').appendChild(cell);
+
+        cell = document.createElement("td");
+        cell.id = "chickenBonus" + key;
+        document.getElementById('chickenBonus').appendChild(cell);
+
+        cell = document.createElement("td");
+        var input = createInput("coins" + key, 250);
         cell.appendChild(input);
-        // put the new input into the playerValues for use in recalc
-        playerValues[key].values.push({"good": good, "input": input});
-        document.getElementById(good.name).appendChild(cell);
-      });
-  
-      cell = document.createElement("td");
-      cell.id = "applesBonus" + key;
-      document.getElementById('applesBonus').appendChild(cell);
-  
-      cell = document.createElement("td");
-      cell.id = "cheeseBonus" + key;
-      document.getElementById('cheeseBonus').appendChild(cell);
-  
-      cell = document.createElement("td");
-      cell.id = "breadBonus" + key;
-      document.getElementById('breadBonus').appendChild(cell);
-  
-      cell = document.createElement("td");
-      cell.id = "chickenBonus" + key;
-      document.getElementById('chickenBonus').appendChild(cell);
-  
-      cell = document.createElement("td");
-      var input = createInput("coins" + key, 250);
-      cell.appendChild(input);
-      document.getElementById('coins').appendChild(cell);
-  
-      cell = document.createElement("td");
-      cell.id = "total" + key;
-      document.getElementById('total').appendChild(cell);
+        document.getElementById('coins').appendChild(cell);
+
+        cell = document.createElement("td");
+        cell.id = "total" + key;
+        document.getElementById('total').appendChild(cell);
+      }
     }
   }
 }

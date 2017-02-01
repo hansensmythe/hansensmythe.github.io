@@ -1,14 +1,3 @@
-body {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-  background-image: url("../images/SheriffBgd.png");
-  background-size: 100%;
-  color: #111111;
-}
-
-table {
-  width: 100%;
-}
-
 td {
   text-align: center;
 }

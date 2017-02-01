@@ -28,14 +28,12 @@ body
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 95%;
   background: #212128 url(../images/bgd.png);
-  color: #FFFFFF;
+  color: #EEEEEE;
 }
 #header
 {
   /* set position relative: anything inside with position absolute will use this as its reference */
   position: relative;
-  width: 844px;
-  left: -28px;
   padding: 0 20px;
   color: #DDDDDD;
   margin: 0 auto;
@@ -174,7 +172,6 @@ body
 {
   position: relative;
   height: 100%;
-  width: 900px;
   top: 60px;
   margin: 0 auto;
   text-align: left;
