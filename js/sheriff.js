@@ -185,13 +185,13 @@ function recalc() {
 // We've defined our functions. Set up the page.
 function loadPage() {
 
-  if (confirm('This page is to help "Sheriff of Nottingham" players score the game. Press "OK" to start entering player names. Press "reload" in your browser to reset the page.')) {
+  if (confirm('"Sheriff of Nottingham" is a game published by Cool Mini or Not. It is fun to play, but a pain to score. This page helps players score the game.\n\nPress "OK" to start entering player names. Press "reload" in your browser to reset the page.')) {
     var playerName,
         playerNumber;
 
     do {
       playerNumber = Object.keys(playerValues).length + 1;
-      playerName = prompt('Name of Player ' + playerNumber + ':');
+      playerName = prompt('Press Cancel (or OK with empty player name) to stop entering player names.\n\nPlayer ' + playerNumber + ':');
       if (playerName) {
         playerValues[playerNumber] = {
           "name" : playerName,
