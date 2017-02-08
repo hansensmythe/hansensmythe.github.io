@@ -535,6 +535,7 @@ var pieceArray = [
       "instrumentation":ARR + VOC + PIA + INS,
       "year":2014,
       "duration":229,
+      "mp3":"https://soundcloud.com/steve-hansen-smythe/level-up-cover",
       "mus":"LevelUp.pdf",
       "description":"Arrangement of Vienna Teng's piece, <a href=\"http://viennateng.bandcamp.com/track/level-up\">Level Up</a>, from her 2013 album <a href=\"http://viennateng.bandcamp.com/album/aims\">Aims</a>. Scored for two altos, grand piano, violin, trombone, and tin whistle."
    },
