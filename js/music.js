@@ -386,7 +386,7 @@ var pieceArray = [
       "year":2015,
       "duration":100,
       "mus":"InnerGardenI.pdf",
-      "description":"Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>.>"
+      "description":"Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>"
    },
    {  
       "title":"Inner Garden II (Arrangement)",
@@ -394,7 +394,7 @@ var pieceArray = [
       "year":2015,
       "duration":70,
       "mus":"InnerGardenII.pdf",
-      "description":"Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>.>"
+      "description":"Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>"
    },
    {  
       "title":"Invention in B Minor",
