@@ -1,5 +1,5 @@
 var isDebug = false;
-var updateDate = "30 December 2016";
+var updateDate = "9 May 2017";
 // Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
@@ -999,7 +999,7 @@ var pieceArray = [
       "year":2011,
       "duration":103,
       "mus":"ZigZag.pdf",
-      "description":"Intermediate difficulty piano piece featuring back and forth movement."
+      "description":"This piece requires a lot of movement of the left hand, and consecutive fifths in the right. The modal sound is achieved mainly by using the subtonic (the note a whole tone below the tonic) rather than the leading note."
    }
 ];
 
