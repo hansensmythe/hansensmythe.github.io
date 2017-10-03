@@ -1,5 +1,5 @@
 var isDebug = false;
-var updateDate = "9 May 2017";
+var updateDate = "3 October 2017";
 // Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
@@ -528,7 +528,7 @@ var pieceArray = [
       "year":1984,
       "duration":138,
       "mp3":"javascript:openWidgetWindow(12343449)",
-      "description":"Scored for synthesizer or guitar, strings, koto, and vibes (based on a theme by Kristal Calvert)"
+      "description":"Scored for synthesizer or guitar, strings, koto, and vibes. The first 27 seconds is by Kristal Calvert, and the rest is my additions, modifications, and expansions."
    },
    {  
       "title":"Level Up (Arrangement)",
