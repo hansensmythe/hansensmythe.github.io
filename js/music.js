@@ -528,7 +528,7 @@ var pieceArray = [
       "year":1984,
       "duration":138,
       "mp3":"javascript:openWidgetWindow(12343449)",
-      "description":"Scored for synthesizer or guitar, strings, koto, and vibes. The first 27 seconds is by Kristal Calvert, and the rest is my additions, modifications, and expansions."
+      "description":"Scored for synthesizer or guitar, strings, koto, and vibes. The first 27 seconds was composed by Kristal Calvert for a children's opera; I composed the remaining material."
    },
    {  
       "title":"Level Up (Arrangement)",
