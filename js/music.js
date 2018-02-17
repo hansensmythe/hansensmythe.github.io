@@ -1165,15 +1165,5 @@ function getFormattedTime(timePiece)
 
 function openWidgetWindow(sid)
 {
-  // Internet Explorer does not correctly load the Soundclick player. Provide an alternative.
-  var browserName = navigator.appName;
-  if (browserName == "Microsoft Internet Explorer")
-  {
-    window.open('http://www.soundclick.com/bands/page_songInfo.cfm?bandID=246361&songID=' + sid, 'soundclick');
-  }
-  else
-  {
-    window.open('mp3/widget.html?sid=' + sid, 'widget', 'width=503,height=130,resizable=0,scrollbars=0,toolbar=0,location=0,directories=0,menubar=0,copyhistory=0');
-  }
+    window.open('https://www.soundclick.com/html5/v3/player.cfm?type=single&songid=' + sid + '&q=hi&newref=1');
 }
-
