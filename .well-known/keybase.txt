@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/shansensmythe
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://hansensmythe.github.io
+  * I am shansensmythe (https://keybase.io/shansensmythe) on keybase.
+  * I have a public key ASAfL78uMXHnQSFlQ8azDLNxV8hO_wVYD5KC9ax95jmWfwo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01201f2fbf2e3171e741216543c6b30cb37157c84eff05580f9282f5ac7de639967f0a",
+      "host": "keybase.io",
+      "kid": "01201f2fbf2e3171e741216543c6b30cb37157c84eff05580f9282f5ac7de639967f0a",
+      "uid": "0d4c8b804012ad282aa2f92c58aee519",
+      "username": "shansensmythe"
+    },
+    "merkle_root": {
+      "ctime": 1525474511,
+      "hash": "c6c236601ae96bacfea51fc901ab68354db49d690defc4f2721a66a86ea4db703f940ddaeaf823151a2b10925114c1d4db0df83a8e32a8b51835cab481902918",
+      "hash_meta": "b9f112af383ea13359675234c06ea0cc35583563eb1cbed0a0dbc720213ce662",
+      "seqno": 2485777
+    },
+    "service": {
+      "entropy": "Z2ELDXQ1v/qx4+JgIJOLro+e",
+      "hostname": "hansensmythe.github.io",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "1.0.47"
+  },
+  "ctime": 1525474530,
+  "expire_in": 504576000,
+  "prev": "c1f6fc21a0681faac4069b7261678046706cca6bd9394c22aad1cf33d166a7fa",
+  "seqno": 18,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgHy+/LjFx50EhZUPGswyzcVfITv8FWA+SgvWsfeY5ln8Kp3BheWxvYWTESpcCEsQgwfb8IaBoH6rEBptyYWeARnBsymvZOUwiqtHPM9Fmp/rEIAliiM0TGTFKriiNp3N7bQCNeqKV9lm6eyM5MJNIFZCkAgHCo3NpZ8RAWbdMWcf3tKcmTkV7Uc6sXNI9+YIRbuhrzCa0aCxqtf/A/zw9nqbOZpHr7TgzHa29QAl7IUqlHEEII0LmxllfAahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIPOeTaheysH5s8MnVOdYayZtajUV1mkeyDZO4BSOxkdYo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/shansensmythe
+
+==================================================================
