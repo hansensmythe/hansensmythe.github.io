@@ -1,6 +1,6 @@
 var isDebug = false;
-var updateDate = "3 October 2017";
-// Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP
+var updateDate = "26 November 2018";
+// Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP, ARR
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
 var pieceArray = [  
@@ -848,6 +848,14 @@ var pieceArray = [
       "duration":111,
       "mus":"StinkyPetesSong.pdf",
       "description":"Music for Kathy Macovichuk's play 'The Littlest Pirate', winner of the 2009 Robert C. Hayes award."
+   },
+   {  
+      "title":"Suit Fugue (Dance of the A&R Men)",
+      "instrumentation":ARR + VOC,
+      "year":2000,
+      "duration":144,
+      "mus":"Suit Fugue.pdf",
+      "description":"Transcription of Kevin Gilbert's canon for four voices from his album 'The Shaming of the True'"
    },
    {  
       "title":"Sundayalysis",
