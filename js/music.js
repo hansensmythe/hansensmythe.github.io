@@ -854,7 +854,7 @@ var pieceArray = [
       "instrumentation":ARR + VOC,
       "year":2000,
       "duration":144,
-      "mus":"Suit Fugue.pdf",
+      "mus":"SuitFugue.pdf",
       "description":"Transcription of Kevin Gilbert's canon for four voices from his album 'The Shaming of the True'"
    },
    {  
