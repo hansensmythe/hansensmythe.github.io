@@ -1,19 +1,15 @@
-// Google Analytics
-(function(i, s, o, g, r, a, m) {
-  i['GoogleAnalyticsObject'] = r;
-  i[r] = i[r] ||
-  function() {
-    (i[r].q = i[r].q || []).push(arguments);
-  }, i[r].l = 1 * new Date();
-  a = s.createElement(o),
-  m = s.getElementsByTagName(o)[0];
-  a.async = 1;
-  a.src = g;
-  m.parentNode.insertBefore(a, m);
-})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga'); 
-
-ga('create', 'UA-1619574-4', 'auto');
-ga('send', 'pageview');
+// Global site tag (gtag.js) - Google Analytics
+var gaId = 'UA-1619574-4';
+var script = document.createElement('script');
+script.onload = function() {
+    // This occurs asynchronously once the gtag script is loaded
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', gaId);
+};
+script.src = 'https://www.googletagmanager.com/gtag/js?' + gaId;
+document.head.appendChild(script);
 
 var PIA = 1;
 var VOC = 2;
@@ -24,6 +20,14 @@ var ORC = 32;
 var EXP = 64;
 var ARR = 128;
 
+// Create a Type object for every line
+function Type(id, filter, title, menulabel)
+{
+  this.id = id;
+  this.filter = filter;
+  this.title = title;
+  this.menulabel = menulabel;
+}
 var typeArray = new Array();
 typeArray.push(new Type("piano", PIA, "Piano pieces", "Solo piano"));
 typeArray.push(new Type("voice", VOC, "Vocal pieces", "Vocal"));
@@ -33,15 +37,6 @@ typeArray.push(new Type("orch", ORC, "Orchestral works", "Orchestral"));
 typeArray.push(new Type("instr", INS, "Other Instrumental pieces", "Instrumental"));
 typeArray.push(new Type("exp", EXP, "Experimental pieces", "Experimental"));
 typeArray.push(new Type("arr", ARR, "Covers of other pieces", "Arrangements"));
-
-// Create a Type object for every line
-function Type(id, filter, title, menulabel)
-{
-  this.id = id;
-  this.filter = filter;
-  this.title = title;
-  this.menulabel = menulabel;
-}
 
 // called from almost every page to create header bar
 function topInit()
@@ -57,8 +52,6 @@ function innerInit()
 
 function init(prefix)
 {
-  // This'll work only if each page has a unique name across subdirs
-  //var filename = window.location.href.replace(/^.*[\\\/]/, '')
   var headerDiv = document.getElementById("header");
 
   // add the shared title and dropdown menu elements
