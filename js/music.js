@@ -1,5 +1,5 @@
 var isDebug = false;
-var updateDate = "13 January 2019";
+var updateDate = "11 October 2020";
 // Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP, ARR
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
@@ -113,6 +113,7 @@ var pieceArray = [
       "title":"Communications",
       "instrumentation":INS + FLM,
       "year":1988,
+      "duration":95,
       "mp3":"javascript:openWidgetWindow(12343437)",
       "description":"Composed for a <A HREF=http://sait.ab.ca/ target=_top>SAIT</A> Open House video produced by CTSR students."
    },
@@ -455,6 +456,7 @@ var pieceArray = [
       "title":"Journalism",
       "instrumentation":FLM,
       "year":1988,
+      "duration":101,
       "mp3":"javascript:openWidgetWindow(12343447)",
       "description":"Composed for a <A HREF=http://sait.ab.ca/ target=_top>SAIT</A> Open House video produced by CTSR students."
    },
@@ -511,6 +513,7 @@ var pieceArray = [
       "title":"Library Technology",
       "instrumentation":FLM,
       "year":1988,
+      "duration":77,
       "mp3":"javascript:openWidgetWindow(12343448)",
       "description":"Composed for a <A HREF=http://sait.ab.ca/ target=_top>SAIT</A> Open House video produced by CTSR students."
    },
@@ -703,6 +706,7 @@ var pieceArray = [
       "title":"Print Technology",
       "instrumentation":FLM,
       "year":1988,
+      "duration":85,
       "mp3":"javascript:openWidgetWindow(12343450)",
       "description":"Composed for a <A HREF=http://sait.ab.ca/ target=_top>SAIT</A> Open House video produced by CTSR students."
    },
@@ -983,6 +987,14 @@ var pieceArray = [
       "duration":270,
       "mus":"Waiting.pdf",
       "description":"Arrangement of Kevin Gilbert's piece from his 1995 album <a href=\"http://en.wikipedia.org/wiki/Live_at_the_Troubadour_(Kevin_Gilbert_%26_Thud)\">Welcome to Joytown - Thud: Live at the Troubadour</a>"
+   },
+   {
+      "title":"We Will All Go Together When We Go (Covid-19 version)",
+      "instrumentation":PIA + VOC,
+      "year":2020,
+      "duration":115,
+      "mp3":"https://www.youtube.com/watch?v=e9ePpPNpY_8",
+      "description":"Tom Lehrer's immortal song about everyone dying in a nuclear war, reimagined for Covid-19"
    },
    {
       "title":"Wendy",
