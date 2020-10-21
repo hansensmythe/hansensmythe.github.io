@@ -1,5 +1,5 @@
 var isDebug = false;
-var updateDate = "11 October 2020";
+var updateDate = "20 October 2020";
 // Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP, ARR
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
@@ -364,6 +364,14 @@ var pieceArray = [
       "duration":111,
       "mp3":"javascript:openWidgetWindow(12343443)",
       "description":"An early experiment using analog synths and a Roland MC4 Microcomposer (an analog sequencer), plus a Yamaha DX7."
+   }, // https://youtu.be/70jSlTZLx8Y
+   {
+      "title":"Hellas Planitia National Anthem",
+      "instrumentation":ORC,
+      "year":2020,
+      "duration":35,
+      "mp3":"https://youtu.be/70jSlTZLx8Y",
+      "description":"A credible-sounding national anthem, ready to go when Hellas Planitia, Mars, declares itself a sovereign nation."
    },
    {
       "title":"IF, by chance, ENDIF",
