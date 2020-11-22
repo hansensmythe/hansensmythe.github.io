@@ -1,5 +1,5 @@
 var isDebug = false;
-var updateDate = "20 October 2020";
+var updateDate = "22 November 2020";
 // Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP, ARR
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
@@ -9,7 +9,7 @@ var pieceArray = [
       "instrumentation":EXP,
       "year":1994,
       "duration":162,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/43222",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"A piece in which the metre is deliberately confusing.  The title gives one interpretation of how to count the 8th notes."
    },
    {
@@ -92,7 +92,7 @@ var pieceArray = [
       "instrumentation":VOC + INS,
       "year":1990,
       "duration":274,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/CaroloftheBells",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Traditional, recorded using sampled voice and synthesized instruments."
    },
    {
@@ -129,7 +129,7 @@ var pieceArray = [
       "instrumentation":INS + FLM,
       "year":1988,
       "duration":171,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/CtsrMarch",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Composed for a <A HREF=http://sait.ab.ca/ target=_top>SAIT</A> Open House video produced by CTSR students."
    },
    {
@@ -138,7 +138,7 @@ var pieceArray = [
       "year":1989,
       "duration":55,
       "mus":"CyclingSaneSolution.pdf",
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/CyclingTheSaneSolution",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Written for a 1-minute public service announcement about cycling, and performed on piano and synthesizer. Listen for the scene shifts between the carefree cyclist and the aggravated motorist."
    },
    {
@@ -146,7 +146,7 @@ var pieceArray = [
       "instrumentation":INS,
       "year":1985,
       "duration":180,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/DanceforMixolydianAlgorithms",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Scored for RX15 percussion synthesizer, DX7 algorithm synthesizer, and piano."
    },
    {
@@ -208,7 +208,7 @@ var pieceArray = [
       "instrumentation":INS + FLM,
       "year":1991,
       "duration":201,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/EasternDesertStereotype",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"What the title says. Scored for percussion, bass, flute, and saxophone; recorded with synthesizers."
    },
    {
@@ -247,7 +247,7 @@ var pieceArray = [
       "instrumentation":FLM,
       "year":1989,
       "duration":195,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/Evening",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Based on a Mozart sonatina; originally composed for the <B>Canadian Cancer Society</B> video <em>BSE For Every Woman</em>."
    },
    {
@@ -276,7 +276,7 @@ var pieceArray = [
       "instrumentation":EXP,
       "year":2001,
       "duration":185,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/Fivebeat",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"An experimental work in which each quarter note beat is divided into five equal parts.  Notating such time signatures and beats is a bear, unless one uses my <A HREF=placenotation.html>new modifications to music notation</A>."
    },
    {
@@ -338,7 +338,7 @@ var pieceArray = [
       "year":1990,
       "duration":253,
       "mus":"GlowRearViewMirror.pdf",
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/GlowintheRearViewMirror",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Scored for two pianos, recorded on synthesizer. Based on <em>Vignettes</em> by Lee Sebel (a demo piece composed for owners of the Roland W30 Synthesizer).  The glow in the title is receding city lights.  At one point in the piece you hear the rush of a truck in the opposing lane."
    },
    {
@@ -490,7 +490,7 @@ var pieceArray = [
       "instrumentation":INS,
       "year":1990,
       "duration":253,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/TheKitchenStirsAtDawn",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"A piece written for an imaginary animated film featuring a kitchen preparing breakfast, and an increasingly insistent alarm clock trying to get its owner out of bed."
    },
    {
@@ -613,7 +613,7 @@ var pieceArray = [
       "instrumentation":FLM,
       "year":1989,
       "duration":176,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/Morning",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Based on a Mozart sonatina; originally composed for the <B>Canadian Cancer Society</B> video <em>BSE For Every Woman</em>."
    },
    {
@@ -638,7 +638,7 @@ var pieceArray = [
       "instrumentation":ORC,
       "year":1990,
       "duration":76,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/OCanadaRagtime",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"A playful rendition of Canada's national anthem.  Scored for orchestra and ragtime pick-up band; recorded with synthesizers. The only one of my compositions to make it onto the Low Budget Radio  <A HREF=http://www.lowbudgetradio.com/ratearecord.html>Listener's Choice ballot</A> for 2005, where it came in 366th, being narrowly beat out by Stompin' Tom Connors The Man In The Moon Is A Newfie in 364th place, but beating out such classics as Pepe The Purple Platypus by Squish and the Pregnant Elephants. Go figure."
    },
    {
@@ -669,7 +669,7 @@ var pieceArray = [
       "instrumentation":INS,
       "year":1990,
       "duration":238,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/ParanoidAndroids",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"I used the weird over-compressed end of a normal electric piano sample as a percussion instrument, and added wailing dischords. We danced around listening to it over and over the day I first recorded it."
    },
    {
@@ -796,7 +796,7 @@ var pieceArray = [
       "instrumentation":FLM,
       "year":1998,
       "duration":49,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/SivPolka",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Scored for solo accordion. Composed and recorded for Don Filipchuk's animated film, <B>Vacuum Siv</B>, produced at <A HREF=http://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</A."
    },
    {
@@ -804,7 +804,7 @@ var pieceArray = [
       "instrumentation":FLM,
       "year":1998,
       "duration":71,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/SivTango",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Scored for accordion, bass, and shaker. Composed and recorded for Don Filipchuk's animated film, <B>Vacuum Siv</B>, produced at <A HREF=http://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</A."
    },
    {
@@ -812,7 +812,7 @@ var pieceArray = [
       "instrumentation":PIA + INS,
       "year":1998,
       "duration":171,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/SixFive",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"Piano duet in varying metre (take a guess from the title), originally scored for synthesizer."
    },
    {
@@ -874,7 +874,7 @@ var pieceArray = [
       "instrumentation":EXP,
       "year":1993,
       "duration":316,
-      "mp3":"http://www.cdbaby.com/cd/stevehansensmythe/Sundayalysis",
+      "mp3":"https://music.apple.com/us/album/mostly-harmless/655899004",
       "description":"A decomposition of sound samples all taken one Sunday morning, featuring the Gregorian Chant Choir of Calgary (in which I sang), and sounds from the tower bells of Christ Church, Elbow Park, where I have rung bells off and on for 25 years."
    },
    {
