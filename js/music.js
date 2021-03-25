@@ -1,5 +1,5 @@
 var isDebug = false;
-var updateDate = "22 November 2020";
+var updateDate = "25 March 2021";
 // Use the piece type identifiers defined in menu.js: PIA, VOC, INS, THE, FLM , ORC, EXP, ARR
 // Pieces that are defined with ONLY PIA or INS turn up in their own lists; all others are inclusive
 // of other types
@@ -549,6 +549,14 @@ var pieceArray = [
       "mp3":"https://soundcloud.com/steve-hansen-smythe/level-up-cover",
       "mus":"LevelUp.pdf",
       "description":"Arrangement of Vienna Teng's piece, <a href=\"http://viennateng.bandcamp.com/track/level-up\">Level Up</a>, from her 2013 album <a href=\"http://viennateng.bandcamp.com/album/aims\">Aims</a>. Scored for two altos, grand piano, violin, trombone, and tin whistle."
+   },
+   {
+      "title":"Level Up (Arrangement in A major)",
+      "instrumentation":ARR + VOC + PIA + INS,
+      "year":2021,
+      "duration":225,
+      "mus":"LevelUpA.pdf",
+      "description":"Arrangement and transposition of Vienna Teng's piece, <a href=\"http://viennateng.bandcamp.com/track/level-up\">Level Up</a>, from her 2013 album <a href=\"http://viennateng.bandcamp.com/album/aims\">Aims</a>. Scored for tenor, baritone, grand piano, synthesizer, two trombones, and tin whistle."
    },
    {
       "title":"Madeline's Lullaby",
