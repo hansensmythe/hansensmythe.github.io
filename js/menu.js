@@ -8,7 +8,7 @@ script.onload = function() {
     gtag('js', new Date());
     gtag('config', gaId);
 };
-script.src = 'https://www.googletagmanager.com/gtag/js?' + gaId;
+script.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
 document.head.appendChild(script);
 
 const PIA = 1;
