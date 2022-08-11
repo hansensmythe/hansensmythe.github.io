@@ -105,7 +105,6 @@ function calculateTotals() {
         document.getElementById(`${goodType.name}Bonus${player.key}`).innerHTML = royalty;
       }
     });
-    document.getElementById(`total${player.key}`).innerHTML = player.getTotal();
   });
 
   // Determine the winner
@@ -126,8 +125,10 @@ function calculateTotals() {
     const playerBContraTotal = playerB.getContrabandTotal();
     return playerBContraTotal - playerAContraTotal;
   });
-  console.log(`${winners[0].name} wins!`);
+  // console.log(`${winners[0].name} wins!`);
   for (let i = 0; i < winners.length; i++) {
+    const totalCell = document.getElementById(`total${winners[i].key}`);
+    totalCell.innerHTML = winners[i].getTotal();
     totalCell.style.backgroundColor = (i === 0 ? "gold" : i === 1 ? "silver" : "black");
     totalCell.style.color = (i === 0 ? "black" : i === 1 ? "black" : "white");
   }
