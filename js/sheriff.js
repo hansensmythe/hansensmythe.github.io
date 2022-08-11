@@ -27,7 +27,7 @@ function createInput(key, maximum) {
     // Use select dropdowns
     input = document.createElement('select');
     input.id = key;
-    for (const i = 0; i <= maximum; i++) {
+    for (let i = 0; i <= maximum; i++) {
       const option = document.createElement('option');
       option.value = i;
       option.innerHTML = i;
