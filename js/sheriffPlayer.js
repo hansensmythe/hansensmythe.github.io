@@ -103,16 +103,42 @@ class Player {
     goods.forEach((good) => {
       const value = this.getCount(good.name) * good.value;
       if (value > 0) {
-        console.log(`${this.name} ${good.name} value=${value}`);
+        // console.log(`${this.name} ${good.name} value=${value}`);
         total += value;
       }
     });
     Object.keys(this.royalties).forEach((royaltyName) => {
       const royalty = this.getRoyalty(royaltyName);
       if (royalty > 0) {
-        console.log(`${this.name} ${royaltyName} bonus=${royalty}`);
+        // console.log(`${this.name} ${royaltyName} bonus=${royalty}`);
         total += this.royalties[royaltyName];
       }
+    });
+    return total;
+  }
+
+  /**
+   * Used only to break a tie when totals are equal. Rules say "player with the most Legal Goods wins"
+   * but that's ambiguous - "most" meaning simple count, or total value? Here I'm assuming value.
+   * @returns total value of legal goods only
+   */
+  getLegalGoodsTotal() {
+    let total = 0;
+    legalGoods.forEach((good) => {
+      total += this.getCount(good.name) * good.value;
+    });
+    return total;
+  }
+
+  /**
+   * Used only to break a tie when totals and legal goods are equal. Rules say "player with the most Contraband Goods wins"
+   * but that's ambiguous - "most" meaning simple count, or total value? Here I'm assuming value.
+   * @returns total value of contraband goods only
+   */
+   getContrabandTotal() {
+    let total = 0;
+    contraband.forEach((good) => {
+      total += this.getCount(good.name) * good.value;
     });
     return total;
   }

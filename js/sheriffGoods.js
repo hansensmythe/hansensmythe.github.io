@@ -57,3 +57,7 @@ const goodTypes = [
   new GoodType('breads', 15, 10, [bread, ryeBread, pumpernickel]),
   new GoodType('chickens', 10, 5, [chicken, royalRooster])
 ];
+
+// Groups used only to determine winner in case of a tie
+const legalGoods = [apple, cheese, bread, chicken];
+const contraband = [pepper, mead, silk, crossbow];

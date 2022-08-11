@@ -105,8 +105,32 @@ function calculateTotals() {
         document.getElementById(`${goodType.name}Bonus${player.key}`).innerHTML = royalty;
       }
     });
-    document.getElementById('total' + player.key).innerHTML = player.getTotal();
+    document.getElementById(`total${player.key}`).innerHTML = player.getTotal();
   });
+
+  // Determine the winner
+  const winners = players.sort((playerA, playerB) => {
+    const playerATotal = playerA.getTotal();
+    const playerBTotal = playerB.getTotal();
+    if (playerATotal !== playerBTotal) {
+      return playerBTotal - playerATotal;
+    }
+    // Totals are equal - what about legal goods only?
+    const playerALegalTotal = playerA.getLegalGoodsTotal();
+    const playerBLegalTotal = playerB.getLegalGoodsTotal();
+    if (playerALegalTotal !== playerBLegalTotal) {
+      return playerBLegalTotal - playerALegalTotal;
+    }
+    // Legal goods are equal - what about contraband goods only?
+    const playerAContraTotal = playerA.getContrabandTotal();
+    const playerBContraTotal = playerB.getContrabandTotal();
+    return playerBContraTotal - playerAContraTotal;
+  });
+  console.log(`${winners[0].name} wins!`);
+  for (let i = 0; i < winners.length; i++) {
+    totalCell.style.backgroundColor = (i === 0 ? "gold" : i === 1 ? "silver" : "black");
+    totalCell.style.color = (i === 0 ? "black" : i === 1 ? "black" : "white");
+  }
 }
 
 // Set up the page. Called from sheriffScore.html once structure has been defined
