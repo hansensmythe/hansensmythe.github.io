@@ -9,6 +9,8 @@
     <title>Sheriff of Nottingham Scorer</title>
     <meta name="author" content="Steve Hansen Smythe" />
     <link href="css/sheriff.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="js/sheriffGoods.js"></script>
+    <script type="text/javascript" src="js/sheriffPlayer.js"></script>
     <script type="text/javascript" src="js/sheriff.js"></script>
     <script type="text/javascript" src="js/menu.js"></script>
     <div id="header">
@@ -38,7 +40,7 @@
       <tr id="goods">
         <th colspan="2" width="160px">Goods</th>
       </tr>
-      <tr id="apples">
+      <tr id="apple">
         <td rowspan="4" class="legal ledge">L<br>E<br>G<br>A<br>L</td>
         <td class="legal lcol">(2) Apples</td>
       </tr>
@@ -64,45 +66,45 @@
       <tr id="crossbow">
         <td class="contraband lcol">(9) Crossbow</td>
       </tr>
-      <tr id="green">
+      <tr id="greenApple">
         <td rowspan="7" class="royal ledge">R<br>O<br>Y<br>A<br>L<br><br>G<br>O<br>O<br>D<br>S</td>
-        <td class="royal lcol">(4) Green Apples</td>
+        <td class="royal lcol">(4) Green Apple</td>
       </tr>
-      <tr id="golden">
-        <td class="royal lcol">(6) Golden Apples</td>
+      <tr id="goldenApple">
+        <td class="royal lcol">(6) Golden Apple</td>
       </tr>
-      <tr id="gouda">
+      <tr id="goudaCheese">
         <td class="royal lcol">(6) Gouda Cheese</td>
       </tr>
-      <tr id="bleu">
+      <tr id="bleuCheese">
         <td class="royal lcol">(9) Bleu Cheese</td>
       </tr>
-      <tr id="rye">
+      <tr id="ryeBread">
         <td class="royal lcol">(6) Rye Bread</td>
       </tr>
       <tr id="pumpernickel">
         <td class="royal lcol">(9) Pumpernickel Bread</td>
       </tr>
-      <tr id="royal">
+      <tr id="royalRooster">
         <td class="royal lcol">(8) Royal Rooster</td>
       </tr>
-      <tr id="coins">
+      <tr id="coin">
         <th colspan="2">Coins</th>
       </tr>
       <tr id="applesBonus">
         <th colspan="2">Apple bonus</th>
       </tr>
-      <tr id="cheeseBonus">
+      <tr id="cheesesBonus">
         <th colspan="2">Cheese bonus</th>
       </tr>
-      <tr id="breadBonus">
+      <tr id="breadsBonus">
         <th colspan="2">Bread bonus</th>
       </tr>
-      <tr id="chickenBonus">
+      <tr id="chickensBonus">
         <th colspan="2">Chicken bonus</th>
       </tr>
       <tr id="total">
-        <th colspan="2">Total</th>
+        <th colspan="2"><button onclick="calculateTotals()">Calculate totals</button></th>
       </tr>
     </table>
     <script type="text/javascript">loadPage();</script>

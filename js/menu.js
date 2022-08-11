@@ -1,6 +1,6 @@
 // Global site tag (gtag.js) - Google Analytics
-const gaId = 'G-RQ9ZHH8RCE';
-const script = document.createElement('script');
+let gaId = 'G-RQ9ZHH8RCE';
+let script = document.createElement('script');
 script.onload = function() {
     // This occurs asynchronously once the gtag script is loaded
     window.dataLayer = window.dataLayer || [];
