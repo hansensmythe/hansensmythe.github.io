@@ -82,15 +82,8 @@ function calculateTotals() {
     scores = scores.filter((value, index, self) => value > 0 && self.indexOf(value) === index);
 
     // Extract the king(s) and queen(s)
-    const kings = [];
-    const queens = [];
-    players.forEach((player) => {
-      if (scores[0] && player.getGoodTypeCount(goodType.name) === scores[0]) {
-        kings.push(player);
-      } else if (scores[1] && player.getGoodTypeCount(goodType.name) === scores[1]) {
-        queens.push(player);
-      }
-    });
+    const kings = players.filter((player) => player.isKing(goodType.name, scores));
+    const queens = players.filter((player) => player.isQueen(goodType.name, scores));
 
     if (kings.length === 1) {
       // Just one king - the usual

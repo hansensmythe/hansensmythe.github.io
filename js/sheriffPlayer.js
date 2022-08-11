@@ -35,6 +35,24 @@ class Player {
   }
 
   /**
+   * @param {string} goodTypeName - The name of good related to this set of scores
+   * @param {array} scores - List of top scores across all players for this goodType
+   * @return true if the first score in the list matches this player's score
+   */
+  isKing(goodTypeName, scores) {
+    return scores[0] && this.getGoodTypeCount(goodTypeName) === scores[0];
+  }
+
+  /**
+   * @param {string} goodTypeName - The name of good related to this set of scores
+   * @param {array} scores - List of top scores across all players for this goodType
+   * @return true if the second score in the list matches this player's score
+   */
+   isQueen(goodTypeName, scores) {
+     return scores[1] && this.getGoodTypeCount(goodTypeName) === scores[1];
+  }
+
+  /**
    * Called from setRoyalties after calculating King and Queen values
    * @param {object} goodTypeName - good type name used to calculate royalty
    * @param {number} value - Total value of all goods in this type
