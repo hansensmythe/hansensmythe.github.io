@@ -101,9 +101,8 @@ function calculateTotals() {
   players.forEach((player) => {
     goodTypes.forEach((goodType) => {
       const royalty = player.getRoyalty(goodType.name);
-      if (royalty > 0) {
-        document.getElementById(`${goodType.name}Bonus${player.key}`).innerHTML = royalty;
-      }
+      // Set or clear royalty cells for each player and goodType
+      document.getElementById(`${goodType.name}Bonus${player.key}`).innerHTML = royalty || '';
     });
   });
 
