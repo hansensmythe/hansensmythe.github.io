@@ -13,8 +13,13 @@ class Player {
    * @returns {number} Integer value of the input, if it was parsable as an integer, otherwise 0
    */
   getCount(goodName) {
-    const intValue = parseInt(this.inputs[goodName].value, 10);
-    return Number.isNaN(intValue) ? 0 : intValue;
+    const input = this.inputs[goodName];
+    if (input) {
+      const intValue = parseInt(input.value, 10);
+      return Number.isNaN(intValue) ? 0 : intValue;
+    }
+    // If we got here, this must be an ignored good in a three-player game
+    return 0;
   }
 
   /**
@@ -75,14 +80,14 @@ class Player {
    * Need to do this in advance of calculating totals so that players' countSubtotals can be compared to decide on King and Queen.
    */
   updateGoodTypeCounts() {
-    goodTypes.forEach((goodType) => {
+    getValidGoodTypes().forEach((goodType) => {
       // Reset all calculated values from previous iteration
       this.setRoyalty(goodType.name, 0);
       this.countSubtotals[goodType.name] = 0;
       // Each player has inputs that come in a specific type. Some goods score extra when it comes to
       // determining bonuses for first and second (King and Queen). Recaclulate the total for each goodType.
       goodType.goods.forEach((targetGood) => {
-        // Multiplier is relevant for royal goods
+        // Multiplier is relevant for royal goods.
         this.countSubtotals[goodType.name] += this.getCount(targetGood.name) * targetGood.multiplier;
       });
     });
@@ -100,7 +105,7 @@ class Player {
   getTotal() {
     // Calculate the value of what we have, plus royalties that should already have been set
     let total = 0;
-    goods.forEach((good) => {
+    getValidGoods().forEach((good) => {
       const value = this.getCount(good.name) * good.value;
       if (value > 0) {
         // console.log(`${this.name} ${good.name} value=${value}`);

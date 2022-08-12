@@ -7,8 +7,19 @@ class Good {
     this.multiplier = multiplier;
   }
 
+  /**
+   * In the three-player game, some goods have reduced numbers. These cards should be removed before playing.
+   */
   setThreePlayerMax() {
     this.max = this.threePlayerMax;
+  }
+
+  /**
+   * If setThreePlayerMax is called, some goods are no longer valid.
+   * @returns {boolean} true if this good still has a maximum greater than 0, false otherwise
+   */
+  isValid() {
+    return this.max > 0;
   }
 }
 
@@ -34,9 +45,7 @@ const coin = new Good('coin', 1, 250, 250, 1);
 const goods = [apple, cheese, bread, chicken, pepper, mead, silk, crossbow, greenApple, goldenApple, goudaCheese, bleuCheese, ryeBread, pumpernickel, royalRooster, coin];
 
 function setThreePlayerMaxima() {
-  goods.forEach((good) => {
-    good.setThreePlayerMax();
-  });
+  goods.forEach((good) => good.setThreePlayerMax());
 }
 
 /**
@@ -48,6 +57,14 @@ class GoodType {
     this.kingBonus = kingBonus;
     this.queenBonus = queenBonus;
     this.goods = goods;
+  }
+
+  /**
+   * In the three-player game, some goods are removed. If all goods are removed from a type, the goodType itself is no longer valid.
+   * @returns {boolean} true if this goodType has at least one valid good, false otherwise
+   */
+  isValid() {
+    return this.goods.filter((good) => good.isValid()).length > 0;
   }
 }
 
@@ -61,3 +78,19 @@ const goodTypes = [
 // Groups used only to determine winner in case of a tie
 const legalGoods = [apple, cheese, bread, chicken];
 const contraband = [pepper, mead, silk, crossbow];
+
+/**
+ * In the three-player game, some goods are removed.
+ * @returns {array} of only the goods that had a max greater than 0
+ */
+function getValidGoods() {
+  return goods.filter((good) => good.isValid());
+}
+
+/**
+ * In the three-player game, some goods are removed. If all goods are removed from a type, the goodType itself is no longer valid.
+ * @returns {array} of only the goodTypes that had one or more valid goods
+ */
+function getValidGoodTypes() {
+  return goodTypes.filter((goodType) => goodType.isValid());
+}
