@@ -66,7 +66,7 @@ class Piece {
         } else if (media.html) {
             this.score = media.html;
         } else if (media.musicaneo) {
-            this.score = `http://www.musicaneo.com/sheetmusic/${media.musicaneo}.html`;
+            this.score = `https://www.musicaneo.com/sheetmusic/${media.musicaneo}.html`;
         }
 
         this.description = description;
