@@ -1,5 +1,4 @@
-const isDebug = false;
-const updateDate = "20 August 2022";
+// Updated 21 August 2022
 
 /**
  * Pieces may have more than one type
@@ -121,7 +120,7 @@ const pieces = [
     new Piece("Greed", [FILM], 1994, 124, { soundClick: "12343456" }, "Recorded to accompany an animated film of the same name by Megan Evans, produced at <A HREF=http://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</A>."),
     new Piece("Hansen Smythe Sampler 1991", [INSTR], 1991, 393, { soundClick: "7067916" }, "A spliced-together compilation of 14 pieces for demo purposes."),
     new Piece("Happy Quarks", [INSTR], 1984, 111, { soundClick: "12343443" }, "An early experiment using analog synths and a Roland MC4 Microcomposer (an analog sequencer), plus a Yamaha DX7."), // https://youtu.be/70jSlTZLx8Y
-    new Piece("Hellas Planitia National Anthem", [ORCH], 2020, 35, { youtube: "70jSlTZLx8Y" }, "A credible-sounding national anthem, ready to go when Hellas Planitia, Mars, declares itself a sovereign nation."),
+    new Piece("Hellas Planitia National Anthem", [ORCH], 2020, 35, {}, "A credible-sounding national anthem, ready to go when Hellas Planitia, Mars, declares itself a sovereign nation."),
     new Piece("IF, by chance, ENDIF", [EXP], 1996, 0, { html: "IfByChance.html" }, "For any instrument, this is a computer program that runs as a macro in WordPerfect 6.1 or later. The program generates a printout of a monophonic sequence of between 10 and 110 notes, in a time signature between 3/8 and 15/8, with weighted random choices defining each note's pitch and duration."),
     new Piece("In a Timepiece (i.e. Impatience)", [PIANO], 1984, 68, { soundClick: "12367715", pdf: "InaTimepiece.pdf" }, "I couldn't decide on which title I liked better. They're anagrams of each other."),
     new Piece("Inner Garden I (Arrangement)", [ARR, PIANO, VOICE], 2015, 100, { pdf: "InnerGardenI.pdf" }, "Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>"),
