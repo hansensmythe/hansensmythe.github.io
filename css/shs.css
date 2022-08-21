@@ -101,7 +101,6 @@ body
 {
   float: left;
   position: relative;
-  /*background: #212128;*/
 }
 #nav li > p
 {
@@ -131,8 +130,6 @@ body
   padding: 0;
   /*Colour of lines between LI items, and background colour of unselectable item*/
   background: #444444;
-  /* Adding a background makes the dropdown work properly in IE7+. Make this as close to your page's background as possible (i.e. white page == white background). */
-  /* background: rgba(255,255,255,0); But! Let's make the background fully transparent where we can, we don't actually want to see it if we can help it... */
   list-style: none;
   position: absolute;
   left: -9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
