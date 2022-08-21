@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="js/menu.js"></script>
+    <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+    <link type="text/css" rel="stylesheet" href="../css/shs.css" />
+    <title>Sheriff of Nottingham Scorer</title>
+    <meta name="author" content="Steve Hansen Smythe" />
+    <link href="css/sheriff.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="js/sheriffGoods.js"></script>
+    <script type="text/javascript" src="js/sheriffPlayer.js"></script>
+    <script type="text/javascript" src="js/sheriff.js"></script>
+    <script type="text/javascript" src="../js/menu.js"></script>
+    <div id="header">
+      <div id="hdr_right"></div>
+      <div id="hdr_left"></div>
+      <div id="hdr_mug"></div>
+      <!-- Provide minimal menu for non-javascript browsers - but how likely is that nowadays -->
+      <ul id="nav">
+        <li>
+          <a href="index.html">Home</a>
+        </li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      // initialize the menu system
+      innerInit();
+    </script>
+  </head>
+  <body>
+    <div id="contents">
+    <table border>
+      <tr id="goods">
+        <th>Goods</th>
+      </tr>
+      <tr id="apple">
+        <td class="legal lcol">(2) Apples</td>
+      </tr>
+      <tr id="cheese">
+        <td class="legal lcol">(3) Cheese</td>
+      </tr>
+      <tr id="bread">
+        <td class="legal lcol">(3) Bread</td>
+      </tr>
+      <tr id="chicken">
+        <td class="legal lcol">(4) Chicken</td>
+      </tr>
+      <tr id="pepper">
+        <td class="contraband lcol">(6) Pepper</td>
+      </tr>
+      <tr id="mead">
+        <td class="contraband lcol">(7) Mead</td>
+      </tr>
+      <tr id="silk">
+        <td class="contraband lcol">(8) Silk</td>
+      </tr>
+      <tr id="crossbow">
+        <td class="contraband lcol">(9) Crossbow</td>
+      </tr>
+      <tr id="greenApple">
+        <td class="royal lcol">(4) Green Apple</td>
+      </tr>
+      <tr id="goldenApple">
+        <td class="royal lcol">(6) Golden Apple</td>
+      </tr>
+      <tr id="goudaCheese">
+        <td class="royal lcol">(6) Gouda Cheese</td>
+      </tr>
+      <tr id="bleuCheese">
+        <td class="royal lcol">(9) Bleu Cheese</td>
+      </tr>
+      <tr id="ryeBread">
+        <td class="royal lcol">(6) Rye Bread</td>
+      </tr>
+      <tr id="pumpernickel">
+        <td class="royal lcol">(9) Pumpernickel</td>
+      </tr>
+      <tr id="royalRooster">
+        <td class="royal lcol">(8) Royal Rooster</td>
+      </tr>
+      <tr id="coin">
+        <th>Coins</th>
+      </tr>
+      <tr id="apples">
+        <th>Apple bonus</th>
+      </tr>
+      <tr id="cheeses">
+        <th>Cheese bonus</th>
+      </tr>
+      <tr id="breads">
+        <th>Bread bonus</th>
+      </tr>
+      <tr id="chickens">
+        <th>Chicken bonus</th>
+      </tr>
+      <tr id="total">
+        <th><button onclick="calculateTotals()">Calculate totals</button></th>
+      </tr>
+    </table>
+    <script type="text/javascript">loadPage();</script>
+    </div>
+  </body>
+</html>
+
