@@ -102,29 +102,26 @@ class Qwirkle {
  */
 function fill(tryCount) {
     const bagOfTiles = new BagOfTiles();
+    const qNE = new Qwirkle(0);
+    const qSE = new Qwirkle(1);
+    const qSW = new Qwirkle(2);
+    const qNW = new Qwirkle(3);
     // Create qwirkles starting from the top, going clockwise, with one qwirkle per quadrant, where the last two tiles of the previous
     // qwirkle complement the first two tiles of the next qwirkle. Try to get the quirkles connected up, then try to fill the middles.
     // If at any time we run out of legal tiles, an error will be thrown and we stop and try again.
     try {
-        const qNE = new Qwirkle(0);
         qNE.addRandomTile(bagOfTiles, 0);
         qNE.addRandomTile(bagOfTiles, 1);
         qNE.addRandomTile(bagOfTiles, 4);
         qNE.addRandomTile(bagOfTiles, 5);
-
-        const qSE = new Qwirkle(1);
         qSE.addTileOfColour(bagOfTiles, 0, qNE.tiles[5].colour);
         qSE.addTileOfColour(bagOfTiles, 1, qNE.tiles[4].colour);
         qSE.addRandomTile(bagOfTiles, 4);
         qSE.addRandomTile(bagOfTiles, 5);
-
-        const qSW = new Qwirkle(2);
         qSW.addTileOfShape(bagOfTiles, 0, qSE.tiles[5].shape);
         qSW.addTileOfShape(bagOfTiles, 1, qSE.tiles[4].shape);
         qSW.addRandomTile(bagOfTiles, 4);
         qSW.addRandomTile(bagOfTiles, 5);
-
-        const qNW = new Qwirkle(3);
         qNW.addTileOfColour(bagOfTiles, 0, qSW.tiles[5].colour);
         qNW.addTileOfColour(bagOfTiles, 1, qSW.tiles[4].colour);
         qNW.addTileOfShape(bagOfTiles, 4, qNE.tiles[1].shape);
@@ -139,17 +136,16 @@ function fill(tryCount) {
         qSW.addRandomTile(bagOfTiles, 3);
         qNW.addRandomTile(bagOfTiles, 2);
         qNW.addRandomTile(bagOfTiles, 3);
-
-        qNE.populateBoard();
-        qSE.populateBoard();
-        qSW.populateBoard();
-        qNW.populateBoard();
     } catch (err) {
         console.log(`Error: ${err.message} on try ${tryCount}`);
         return false;
     }
 
     // If we got here, we successfully filled the quirkles
+    qNE.populateBoard();
+    qSE.populateBoard();
+    qSW.populateBoard();
+    qNW.populateBoard();
     const unusedElement = document.getElementById("unused");
     unusedElement.appendChild(document.createTextNode("Unused tiles: "));
     const unusedTiles = bagOfTiles.getAvailableTiles();
