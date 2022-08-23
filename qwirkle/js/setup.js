@@ -3,7 +3,7 @@
 const COLOURS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
 const SHAPES = ['Circle', 'Diamond', 'Eightstar', 'Flower', 'Fourstar', 'Square'];
 const USEIMAGES = true;
-const MAXFILLS = 15;
+const MAXFILLS = 50;
 const UPDATEDATE = "22 August 2022";
 
 class Tile {
