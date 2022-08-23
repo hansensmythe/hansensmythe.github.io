@@ -87,6 +87,11 @@ body
   font-size: xx-large;
   text-align: left;
 }
+@media only screen and (max-width: 320px) {
+  #hdr_title {
+    font-size: small;
+  }
+}
 
 #nav
 {
