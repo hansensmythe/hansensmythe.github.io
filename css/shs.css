@@ -1,15 +1,17 @@
-/*------------------------------------*\
- RESET
- \*------------------------------------*/
+/* Disable mobile device shrinking to fit */
+@viewport {
+  width: device-width ;
+  zoom: 1.0 ;
+}
+
+/* RESET */
 body, div
 {
   margin: 0;
   padding: 0;
 }
 
-/*------------------------------------*\
- MAIN
- \*------------------------------------*/
+/* MAIN */
 html
 {
   height: 100%;
@@ -191,4 +193,3 @@ a:active
 {
   color: #FF0000;
 }/* selected link */
-
