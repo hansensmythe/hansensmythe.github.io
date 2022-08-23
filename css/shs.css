@@ -84,13 +84,8 @@ body
   top: 4px;
   left: 10px;
   font-family: 'Times New Roman', Times, serif;
-  font-size: xx-large;
+  font-size: small;
   text-align: left;
-}
-@media only screen and (max-width: 320px) {
-  #hdr_title {
-    font-size: small;
-  }
 }
 
 #nav
