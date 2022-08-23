@@ -42,6 +42,15 @@ function init(prefix) {
     // Home
     navUL.appendChild(getMenuItem(prefix, 'index.html', 'Home'));
 
+    // Games
+    const gamesLI = getMenuItem(prefix, '#', 'Games');
+    navUL.appendChild(gamesLI);
+    const gamesUL = document.createElement('ul');
+    gamesLI.appendChild(gamesUL);
+    gamesUL.appendChild(getMenuItem(prefix, 'crazyFactor.html', 'Crazy Factor'));
+    gamesUL.appendChild(getMenuItem(prefix, 'qwirkle/setup.html', 'Qwirkle'));
+    gamesUL.appendChild(getMenuItem(prefix, 'sheriff/scorer.html', 'Sheriff of Nottingham'));
+
     // Music
     navUL.appendChild(getMenuItem(prefix, 'music.html', 'Music'));
 
