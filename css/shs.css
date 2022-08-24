@@ -98,7 +98,7 @@ body
   margin: 0;
   position: absolute;
   top: 36px;
-  left: 20px;
+  left: 0px;
   height: 20px;
   text-align: left;
   list-style: none;
@@ -121,7 +121,6 @@ body
   display: block;
   padding: 0px 5px;
   color: #FFFFFF;
-  /*background: #212128;*/
   text-decoration: none;
 }
 #nav a:hover

@@ -29,17 +29,31 @@
       innerInit();
     </script>
     <style type="text/css">
-      td
-      {
-        min-width: 48px;
-        width: 48px;
-        height: 48px;
-        font-size: 150%;
-        color: black;
-        font-family: "Arial Black", Gadget, sans-serif;
-        vertical-align: middle;
-        text-align: center;
-        background-color: white;
+      img {
+        width: 24px;
+        height: 24px;
+      }
+      td {
+          min-width: 24px;
+          width: 24px;
+          height: 24px;
+          color: black;
+          font-family: "Arial Black", Gadget, sans-serif;
+          vertical-align: middle;
+          text-align: center;
+          background-color: white;
+      }
+      @media only screen and (min-width: 768px) {
+        img {
+          width: 48px;
+          height: 48px;
+        }
+        td {
+          min-width: 48px;
+          width: 48;
+          height: 48px;
+          font-size: 150%;
+        }
       }
     </style>
   </head>
