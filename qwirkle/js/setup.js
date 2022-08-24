@@ -147,9 +147,9 @@ function fill(tryCount) {
     qSW.populateBoard();
     qNW.populateBoard();
     const unusedElement = document.getElementById("unused");
-    unusedElement.appendChild(document.createTextNode("Unused tiles: "));
     const unusedTiles = bagOfTiles.getAvailableTiles();
     unusedTiles.forEach((unusedTile) => unusedElement.appendChild(unusedTile.getElement()));
+    unusedElement.appendChild(document.createTextNode("tiles were unused"));
     const updatedElement = document.getElementById("updated");
     updatedElement.innerHTML = UPDATEDATE;
     return true;
