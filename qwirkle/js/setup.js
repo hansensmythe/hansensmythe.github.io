@@ -78,11 +78,11 @@ class Qwirkle {
     addRandomTile(bagOfTiles, position) {
         return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), this.getAvailableShapes()));
     }
-    addTileOfColour(bagOfTiles, position, colour) {
-        return this.addTile(position, bagOfTiles.getRandomTile([colour], this.getAvailableShapes()));
+    addTileOfColour(bagOfTiles, position, tileToMatch) {
+        return this.addTile(position, bagOfTiles.getRandomTile([tileToMatch.colour], this.getAvailableShapes()));
     }
-    addTileOfShape(bagOfTiles, position, shape) {
-        return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), [shape]));
+    addTileOfShape(bagOfTiles, position, tileToMatch) {
+        return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), [tileToMatch.shape]));
     }
     populateBoard() {
         Object.keys(this.tiles).forEach((position) => {
@@ -114,18 +114,18 @@ function fill(tryCount) {
         qNE.addRandomTile(bagOfTiles, 1);
         qNE.addRandomTile(bagOfTiles, 4);
         qNE.addRandomTile(bagOfTiles, 5);
-        qSE.addTileOfColour(bagOfTiles, 0, qNE.tiles[5].colour);
-        qSE.addTileOfColour(bagOfTiles, 1, qNE.tiles[4].colour);
+        qSE.addTileOfColour(bagOfTiles, 0, qNE.tiles[5]);
+        qSE.addTileOfColour(bagOfTiles, 1, qNE.tiles[4]);
         qSE.addRandomTile(bagOfTiles, 4);
         qSE.addRandomTile(bagOfTiles, 5);
-        qSW.addTileOfShape(bagOfTiles, 0, qSE.tiles[5].shape);
-        qSW.addTileOfShape(bagOfTiles, 1, qSE.tiles[4].shape);
+        qSW.addTileOfShape(bagOfTiles, 0, qSE.tiles[5]);
+        qSW.addTileOfShape(bagOfTiles, 1, qSE.tiles[4]);
         qSW.addRandomTile(bagOfTiles, 4);
         qSW.addRandomTile(bagOfTiles, 5);
-        qNW.addTileOfColour(bagOfTiles, 0, qSW.tiles[5].colour);
-        qNW.addTileOfColour(bagOfTiles, 1, qSW.tiles[4].colour);
-        qNW.addTileOfShape(bagOfTiles, 4, qNE.tiles[1].shape);
-        qNW.addTileOfShape(bagOfTiles, 5, qNE.tiles[0].shape);
+        qNW.addTileOfColour(bagOfTiles, 0, qSW.tiles[5]);
+        qNW.addTileOfColour(bagOfTiles, 1, qSW.tiles[4]);
+        qNW.addTileOfShape(bagOfTiles, 4, qNE.tiles[1]);
+        qNW.addTileOfShape(bagOfTiles, 5, qNE.tiles[0]);
 
         // We've defined the circle of qwirkles! Fill in the middle tiles
         qNE.addRandomTile(bagOfTiles, 2);
@@ -149,7 +149,7 @@ function fill(tryCount) {
     const unusedElement = document.getElementById("unused");
     const unusedTiles = bagOfTiles.getAvailableTiles();
     unusedTiles.forEach((unusedTile) => unusedElement.appendChild(unusedTile.getElement()));
-    unusedElement.appendChild(document.createTextNode("tiles were unused"));
+    unusedElement.appendChild(document.createTextNode(" unused"));
     const updatedElement = document.getElementById("updated");
     updatedElement.innerHTML = UPDATEDATE;
     return true;
