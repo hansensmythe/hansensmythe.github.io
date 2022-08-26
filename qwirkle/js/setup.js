@@ -4,7 +4,7 @@ const COLOURS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
 const SHAPES = ['Circle', 'Diamond', 'Eightstar', 'Flower', 'Fourstar', 'Square'];
 const USEIMAGES = true;
 const MAXFILLS = 50;
-const UPDATEDATE = "22 August 2022";
+const UPDATEDATE = "26 August 2022";
 
 class Tile {
     constructor(colour, shape) {
@@ -147,8 +147,7 @@ function fill(tryCount) {
     qSW.populateBoard();
     qNW.populateBoard();
     const unusedElement = document.getElementById("unused");
-    const unusedTiles = bagOfTiles.getAvailableTiles();
-    unusedTiles.forEach((unusedTile) => unusedElement.appendChild(unusedTile.getElement()));
+    bagOfTiles.getAvailableTiles().forEach((unusedTile) => unusedElement.appendChild(unusedTile.getElement()));
     unusedElement.appendChild(document.createTextNode(" unused"));
     const updatedElement = document.getElementById("updated");
     updatedElement.innerHTML = UPDATEDATE;
