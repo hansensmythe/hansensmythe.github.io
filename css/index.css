@@ -23,18 +23,15 @@
   width: 100%;
 }
 #ul {
-  position: relative;
-  width: 225px;
+  display: none
 }
 #ur
 {
-  position: relative;
-  width: 225px;
+  display: none
 }
 #cr
 {
-  position: relative;
-  width: 225px;
+  display: none
 }
 #lr
 {
@@ -71,6 +68,7 @@
   }
   #ul {
     position: absolute;
+    display: inline-block;
     left: 0px;
     top: 0px;
     width: 225px;
@@ -79,6 +77,7 @@
   #ur
   {
     position: absolute;
+    display: inline-block;
     left: 675px;
     top: 0px;
     width: 225px;
@@ -87,6 +86,7 @@
   #cr
   {
     position: absolute;
+    display: inline-block;
     left: 675px;
     top: 245px;
     width: 225px;
