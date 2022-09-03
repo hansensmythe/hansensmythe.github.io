@@ -4,7 +4,7 @@ const COLOURS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
 const SHAPES = ['Circle', 'Diamond', 'Eightstar', 'Flower', 'Fourstar', 'Square'];
 const USEIMAGES = true;
 const MAXFILLS = 50;
-const UPDATEDATE = "26 August 2022";
+const UPDATEDATE = "3 September 2022";
 
 class Tile {
     constructor(colour, shape) {
@@ -64,13 +64,23 @@ class Qwirkle {
         this.index = index;
         this.tiles = {};
     }
+    getColours() {
+        return Object.values(this.tiles).map((tile) => tile.colour);
+    }
+    getShapes() {
+        return Object.values(this.tiles).map((tile) => tile.shape);
+    }
     getAvailableColours() {
-        const coloursInThisQwirkle = Object.values(this.tiles).map((tile) => tile.colour);
-        return COLOURS.filter((colour) => !coloursInThisQwirkle.includes(colour));
+        return COLOURS.filter((colour) => !this.getColours().includes(colour));
     }
     getAvailableShapes() {
-        const shapesInThisQwirkle = Object.values(this.tiles).map((tile) => tile.shape);
-        return SHAPES.filter((shape) => !shapesInThisQwirkle.includes(shape));
+        return SHAPES.filter((shape) => !this.getShapes().includes(shape));
+    }
+    isAvailableColour(tileToMatch) {
+        return this.getAvailableColours().includes(tileToMatch.colour);
+    }
+    isAvailableShape(tileToMatch) {
+        return this.getAvailableShapes().includes(tileToMatch.shape);
     }
     addTile(position, drawnTile) {
         this.tiles[position] = drawnTile;
@@ -79,18 +89,18 @@ class Qwirkle {
         return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), this.getAvailableShapes()));
     }
     addTileOfColour(bagOfTiles, position, tileToMatch) {
-        // If the colour of the tile to match already exists, there is no tile that we can return
-        if (!this.getAvailableColours().includes(tileToMatch.colour)) {
-            throw new Error(`Colour to match (${tileToMatch.colour}) already exists in quirkle[${this.index}]`);
+        if (this.isAvailableColour(tileToMatch)) {
+            return this.addTile(position, bagOfTiles.getRandomTile([tileToMatch.colour], this.getAvailableShapes()));
         }
-        return this.addTile(position, bagOfTiles.getRandomTile([tileToMatch.colour], this.getAvailableShapes()));
+        // If the colour of the tile to match already exists, there is no tile that we can return
+        throw new Error(`Colour to match (${tileToMatch.colour}) already exists in quirkle[${this.index}]`);
     }
     addTileOfShape(bagOfTiles, position, tileToMatch) {
-        // If the shape of the tile to match already exists, there is no tile that we can return
-        if (!this.getAvailableShapes().includes(tileToMatch.shape)) {
-            throw new Error(`Shape to match (${tileToMatch.shape}) already exists in quirkle[${this.index}]`);
+        if (this.isAvailableShape(tileToMatch)) {
+            return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), [tileToMatch.shape]));
         }
-        return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), [tileToMatch.shape]));
+        // If the shape of the tile to match already exists, there is no tile that we can return
+        throw new Error(`Shape to match (${tileToMatch.shape}) already exists in quirkle[${this.index}]`);
     }
     populateBoard() {
         Object.keys(this.tiles).forEach((position) => {
