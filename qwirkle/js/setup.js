@@ -79,9 +79,17 @@ class Qwirkle {
         return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), this.getAvailableShapes()));
     }
     addTileOfColour(bagOfTiles, position, tileToMatch) {
+        // If the colour of the tile to match already exists, there is no tile that we can return
+        if (!this.getAvailableColours().includes(tileToMatch.colour)) {
+            throw new Error(`Colour to match (${tileToMatch.colour}) already exists in quirkle[${this.index}]`);
+        }
         return this.addTile(position, bagOfTiles.getRandomTile([tileToMatch.colour], this.getAvailableShapes()));
     }
     addTileOfShape(bagOfTiles, position, tileToMatch) {
+        // If the shape of the tile to match already exists, there is no tile that we can return
+        if (!this.getAvailableShapes().includes(tileToMatch.shape)) {
+            throw new Error(`Shape to match (${tileToMatch.shape}) already exists in quirkle[${this.index}]`);
+        }
         return this.addTile(position, bagOfTiles.getRandomTile(this.getAvailableColours(), [tileToMatch.shape]));
     }
     populateBoard() {
