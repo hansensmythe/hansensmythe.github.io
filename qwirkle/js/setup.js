@@ -3,8 +3,8 @@
 const COLOURS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
 const SHAPES = ['Circle', 'Diamond', 'Eightstar', 'Flower', 'Fourstar', 'Square'];
 const USEIMAGES = true;
-const MAXFILLS = 50;
-const UPDATEDATE = "3 September 2022";
+const MAXFILLS = 500;
+const UPDATEDATE = "11 September 2022";
 
 class Tile {
     constructor(colour, shape) {

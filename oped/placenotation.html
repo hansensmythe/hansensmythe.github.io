@@ -40,23 +40,9 @@
       }
     </style>
     <script type="text/javascript" src="../js/menu.js"></script>
-    <div id="header">
-      <div id="hdr_right"> </div>
-      <div id="hdr_left"> </div>
-      <div id="hdr_mug"> </div>
-      <!-- Provide minimal menu for non-javascript browsers -->
-      <ul id="nav">
-        <li><a href="../index.html">Home</a>
-        </li>
-        <li><a href="../music.html">Music</a>
-        </li>
-      </ul>
-    </div>
-    <script type="text/javascript">
-      innerInit();
-    </script>
+    <div id="header"></div>
   </head>
-  <body>
+  <body onload="innerInit();">
     <div id="contents">
       <p>It has long irked me that some beats are easily notated, but not others. How we notate music in part informs how we compose music<a href="#Whorf">*</a>, so deficiencies in our notation system get translated into limitations in the composed and performed music itself.</p>
       <p>A quarter note is easy. A note equal to a quarter plus an eighth is easy too: just add a dot. Add two dots for a quarter plus an eighth plus a sixteenth.</p>

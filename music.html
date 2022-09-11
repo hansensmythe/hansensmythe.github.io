@@ -13,22 +13,9 @@
     <script type="text/javascript" src="js/menu.js"></script>
     <script type="text/javascript" src="js/pieces.js"></script>
     <script type="text/javascript" src="js/music.js"></script>
-    <div id="header">
-      <div id="hdr_right"></div>
-      <div id="hdr_left"></div>
-      <div id="hdr_mug"></div>
-      <!-- Provide minimal menu for non-javascript browsers - but how likely is that nowadays -->
-      <ul id="nav">
-        <li>
-          <a href="index.html">Home</a>
-        </li>
-      </ul>
-    </div>
-    <script type="text/javascript">
-      topInit();
-    </script>
+    <div id="header"></div>
   </head>
-  <body>
+  <body onload="topInit();">
     <div id="contents">
       <form action="music.html">
         Search for keyword <input onchange="this.form.submit()" type="text" id="keyword" name="keyword" size="12">

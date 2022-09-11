@@ -23,17 +23,23 @@ function innerInit() {
 
 function init(prefix) {
     const headerDiv = document.getElementById('header');
+    // Add standard stuff prior to menu
+    const hdrLeft = document.createElement('div');
+    hdrLeft.setAttribute('id', 'hdr_left');
+    headerDiv.appendChild(hdrLeft);
+    const hdrMug = document.createElement('div');
+    hdrMug.setAttribute('id', 'hdr_mug');
+    headerDiv.appendChild(hdrMug);
 
     // Add the shared title and dropdown menu elements
-    const hdrRight = document.getElementById('hdr_right');
+    const hdrRight = document.createElement('div');
+    hdrRight.setAttribute('id', 'hdr_right');
+    headerDiv.appendChild(hdrRight);
     const hdrTitle = document.createElement('div');
     hdrTitle.setAttribute('id', 'hdr_title');
     hdrTitle.appendChild(document.createTextNode(document.title));
     hdrRight.appendChild(hdrTitle);
 
-    // If pages include default menu for non-javascript browsers, remove it
-    headerDiv.removeChild(document.getElementById('nav'));
-    // And create a new one
     const navUL = document.createElement('ul');
     navUL.setAttribute('id', 'nav');
     hdrRight.appendChild(navUL);

@@ -9,25 +9,9 @@
     <title>Dear financial advisor:</title>
     <link type="text/css" rel="stylesheet" href="../css/shs.css" />
     <script type="text/javascript" src="../js/menu.js"></script>
-    <div id="header">
-      <div id="hdr_right"></div>
-      <div id="hdr_left"></div>
-      <div id="hdr_mug"></div>
-      <!-- Provide minimal menu for non-javascript browsers -->
-      <ul id="nav">
-        <li>
-          <a href="../index.html">Home</a>
-        </li>
-        <li>
-          <a href="../music.html">Music</a>
-        </li>
-      </ul>
-    </div>
-    <script type="text/javascript">
-      innerInit();
-    </script>
+    <div id="header"></div>
   </head>
-  <body>
+  <body onload="innerInit();">
     <div id="contents">
       <P>
         Thanks for talking with us recently about the current market situation, and advising us to hold tight with our mutual funds. You showed us graphs depicting bear/bull cycles since the 1940s, and demonstrated that through that entire period, the bear markets were short, and buying mutuals during these periods was the best strategy for maximum return.

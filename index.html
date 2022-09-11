@@ -11,16 +11,11 @@
     <link href="css/index.css" rel="stylesheet" type="text/css" />
     <link href="css/shs.css" rel="stylesheet" type="text/css" />
     <title>Steve Hansen Smythe - Home</title>
-    <div id="header">
-      <div id="hdr_right"></div>
-      <div id="hdr_left"></div>
-      <div id="hdr_mug"></div>
-      <ul id="nav"></ul>
-    </div>
+    <div id="header"></div>
     <script type="text/javascript">
       topInit();
       // add the resume and links to the home page menu. Not worth doing for every page
-      var navUL = document.getElementById("nav");
+      const navUL = document.getElementById("nav");
       navUL.appendChild(getMenuItem("", "resume.html", "Resume"));
     </script>
   </head>
