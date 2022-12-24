@@ -37,10 +37,10 @@ class Sorter {
 }
 
 const durSorter = new Sorter("duration", "Duration", 0);
-const titleSorter = new Sorter("title", "Title", 1);
-const dateSorter = new Sorter("year", "Year", 0);
-// Use titleSorter as a default
-let currentSorter = titleSorter;
+const titleSorter = new Sorter("title", "Title", 0);
+const dateSorter = new Sorter("year", "Year", -1);
+// Use dateSorter as a default
+let currentSorter = dateSorter;
 
 /**
  * The selectedPieces array should already have been populated by music.selectPieces. This function mutates the selectedPieces array.
