@@ -1,38 +1,9 @@
-// War dead by year from 1939 through 1945 was taken from http://www.fallen.io/ww2/#
 // War dead by year from Deaths in State-Based Conflicts by Region at "https://ourworldindata.org/war-and-peace"
 // Traffic deaths prior to 1990 were extrapolated from US traffic deaths per year by 100,000 people from https://en.wikipedia.org/wiki/Motor_vehicle_fatality_rate_in_U.S._by_year
 // scaled up to global population figures starting in 1951 from https://www.worldometers.info/world-population/world-population-by-year/
 // Traffic deaths 1990-2019 from https://ourworldindata.org/grapher/road-traffic-deaths-sdgs?tab=table&time=earliest..2019
 const dataByYear = [
     {
-    //     "year": 1939,
-    //     "estCarDead": 0,
-    //     "warDead": 500000
-    // }, {
-    //     "year": 1940,
-    //     "estCarDead": 0,
-    //     "warDead": 1100000
-    // }, {
-    //     "year": 1941,
-    //     "estCarDead": 0,
-    //     "warDead": 2400000
-    // }, {
-    //     "year": 1942,
-    //     "estCarDead": 0,
-    //     "warDead": 2600000
-    // }, {
-    //     "year": 1943,
-    //     "estCarDead": 0,
-    //     "warDead": 7500000
-    // }, {
-    //     "year": 1944,
-    //     "estCarDead": 0,
-    //     "warDead": 8500000
-    // }, {
-    //     "year": 1945,
-    //     "estCarDead": 0,
-    //     "warDead": 4000000
-    // }, {
         "year": 1946,
         "estCarDead": 0,
         "warDead": 296386
@@ -356,15 +327,18 @@ function insertChart(ctx) {
                 {
                     label: 'Global traffic deaths',
                     data: carDeaths,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    backgroundColor: '#FF0000'
                 }, {
                     label: 'Estimated global traffic deaths',
                     data: estCarDeaths,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    backgroundColor: '#AA2222'
                 }, {
                     label: 'War deaths',
                     data: warDeaths,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    backgroundColor: '#99AE6F'
                 }
             ]
         },
