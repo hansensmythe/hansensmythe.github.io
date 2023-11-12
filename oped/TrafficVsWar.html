@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="description" content="Blog post about deaths worldwide due to traffic vs. due to war">
+    <meta name="keywords" content="cars, driving, environment, war">
+    <title>Remembrance Day for Traffic Dead</title>
+    <link type="text/css" rel="stylesheet" href="../css/shs.css" />
+    <script type="text/javascript" src="../js/menu.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="./TrafficVsWar.js"></script>
+    <div id="header"></div>
+</head>
+
+<body onload="innerInit();">
+    <div id="contents">
+        <P>Every year on November 11 we make a point of remembering all those who died due to war.
+            World War II was the deadliest military conflict in history (see <a
+                href="https://en.wikipedia.org/wiki/World_War_II_casualties">Wikipedia</a>
+            and the excellent interactive film <a href="http://www.fallen.io/ww2/#">The Fallen of World War II</a>)
+            killing 70 - 85 <I>million</I> people. Remembrance Day is when we are encouraged to remember those deaths,
+            and all those that came before and after due to military conflict, in hopes that if we truly understand the
+            scope
+            of the horror, we will do everything we can to avoid causing a similar situation.
+        <P>The number of war dead has fluctuated ever since, but never reaching the appalling heights of WWII. However,
+            no such
+            complete set of data is available for traffic deaths. Even today, some countries do not track traffic
+            deaths, and others
+            underreport. How do traffic deaths compare with those due to armed conflict?
+        <ul>
+            <li>70 - 85 million: number of dead in WWII</li>
+            <li>~7.5 million: number of war dead 1950 - 2022</li>
+            <li>~77 million: number of traffic dead 1950 - 2022</li>
+        </ul>
+        <P>The number of people killed by motor vehicles since 1950 is comparable to the number of people
+            killed in World War II, and <I>ten times</I> the deaths worldwide due to armed conflict over the same period.
+            It's just that traffic deaths occur one by one, and have gradually increased over time so that we become
+            accustomed to the horror.
+        </P>
+        <P>Since 1993, we've had another Remembrance Day, on the third Sunday of November: the
+            <a href="https://www.roadpeace.org/remembering-lives-lost/world-day-of-remembrance/">World Day of Remembrance for Road Traffic Victims</a>.
+            If we take remembering WWII seriously at all, we ought to be remembering our accumulated traffic dead at least as seriously.
+            And if the intent of remembering is to make a change in the world, rather than just check a box for social conformity, we should be data-driven  
+            and be trying ten times harder to reengineer our societies and cities to reduce the impact - literal and figurative - of cars and traffic.
+        </P>
+        <P>Not many of us can do anything about stopping war. We can help the victims, but we can't stop politicians from making poor choices. However, 
+            every one of us can make a better choice in our daily lives. Someone dies as a result of motor vehicle accident somewhere in the world about every 26 seconds.
+            Every one of those deaths started with someone saying to themselves "I think I'll take the car today."            
+        </P>
+        <div>
+            <canvas id="TWchart"></canvas>
+            <script>
+                insertChart(document.getElementById('TWchart'));
+            </script>
+        </div>
+        <P style="font-size:80%;">
+            War dead by year taken from <a href="https://ourworldindata.org/war-and-peace">Deaths in State-Based Conflicts by
+                Region</a>.<br>
+            Traffic deaths 1990-2019 taken from <a
+                href="https://ourworldindata.org/grapher/road-traffic-deaths-sdgs?tab=table&time=earliest..2019">Our
+                World In Data</a>
+            Traffic deaths prior to 1990 were extrapolated from <a
+                href="https://en.wikipedia.org/wiki/Motor_vehicle_fatality_rate_in_U.S._by_year">Motor Vehicle Fatality
+                Rate in U.S. by year</a> then scaled up using <a
+                href="https://www.worldometers.info/world-population/world-population-by-year">World
+                Population By Year</a> starting in 1951, and then adjusted to estimate underreporting compared with known figures for 1990.<br>
+            I recognize that this is a poor proxy. Traffic safety
+            in the U.S. has continued to improve even as the number of vehicles has grown, which is not true for much of
+            the world, Africa especially. On the other hand, the U.S. and similar countries such as Canada have infrastructure which encourages
+            or even mandates driving. These numbers are for illustration, and are only broadly accurate, but are not precise.<br>
+        </P>
+        <cite>Steve Hansen Smythe, November 2023</cite>
+    </div>
+</BODY>
+
+</HTML>

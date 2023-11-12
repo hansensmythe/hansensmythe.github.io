@@ -65,6 +65,7 @@ function init(prefix) {
     navUL.appendChild(opedLI);
     const opedUL = document.createElement('ul');
     opedLI.appendChild(opedUL);
+    opedUL.appendChild(getMenuItem(prefix, 'oped/TrafficVsWar.html', 'Remembrance Day for Traffic Dead'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/placenotation.html', 'Intro to Dot Place Notation'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/VotingForChange.html', 'Voting for Change'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/DearFinancial.html', 'Dear Financial Advisor:'));
