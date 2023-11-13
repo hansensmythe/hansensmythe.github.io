@@ -325,20 +325,17 @@ function insertChart(ctx) {
             labels,
             datasets: [
                 {
+                    label: 'War deaths',
+                    data: warDeaths,
+                    borderWidth: 1
+                }, {
                     label: 'Global traffic deaths',
                     data: carDeaths,
-                    borderWidth: 1,
-                    backgroundColor: '#FF0000'
+                    borderWidth: 1
                 }, {
                     label: 'Estimated global traffic deaths',
                     data: estCarDeaths,
-                    borderWidth: 1,
-                    backgroundColor: '#AA2222'
-                }, {
-                    label: 'War deaths',
-                    data: warDeaths,
-                    borderWidth: 1,
-                    backgroundColor: '#99AE6F'
+                    borderWidth: 1
                 }
             ]
         },

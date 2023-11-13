@@ -10,8 +10,6 @@
     <title>Remembrance Day for Traffic Dead</title>
     <link type="text/css" rel="stylesheet" href="../css/shs.css" />
     <script type="text/javascript" src="../js/menu.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="text/javascript" src="./TrafficVsWar.js"></script>
     <div id="header"></div>
 </head>
 
@@ -52,9 +50,9 @@
         <HR>
         <div>
             <canvas id="TWchart"></canvas>
-            <script>
-                insertChart(document.getElementById('TWchart'));
-            </script>
+            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script type="text/javascript" src="./TrafficVsWar.js"></script>
+            <script>insertChart(document.getElementById('TWchart'));</script>
         </div>
         <HR>
         <P style="font-size:80%;">
