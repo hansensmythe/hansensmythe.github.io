@@ -340,7 +340,15 @@ function insertChart(ctx) {
             ]
         },
         options: {
-            scales: {
+            plugins: {
+                legend: {
+                  title: {
+                    display: true,
+                    text: 'War deaths vs traffic deaths, 1946-2022',
+                  }
+                }
+              },
+              scales: {
                 y: {
                     beginAtZero: true
                 }
