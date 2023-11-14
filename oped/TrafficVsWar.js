@@ -319,6 +319,7 @@ function insertChart(ctx) {
     const carDeaths = dataByYear.map(datum => datum.carDead || 0);
     const estCarDeaths = dataByYear.map(datum => datum.estCarDead || 0);
     const warDeaths = dataByYear.map(datum => datum.warDead);
+    Chart.defaults.color = 'red';
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -344,7 +345,7 @@ function insertChart(ctx) {
                 legend: {
                   title: {
                     display: true,
-                    text: 'War deaths vs traffic deaths, 1946-2022',
+                    text: 'War deaths vs traffic deaths, 1946-2022'
                   }
                 }
               },
