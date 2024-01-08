@@ -48,10 +48,7 @@ body
   top: 0px;
   width: 20px;
   height: 60px;
-  background: -webkit-linear-gradient(black, DarkRed); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(black, DarkRed); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(black, DarkRed); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(black, DarkRed); /* Standard syntax */
+  background: linear-gradient(0.25turn, #212128, MediumBlue);
 }
 
 #hdr_mug
@@ -61,7 +58,7 @@ body
   top: 0px;
   width: 51px;
   height: 60px;
-  background: black url(../images/hdr.png);
+  background: MediumBlue url(../images/hdr.png);
 }
 
 #hdr_right
@@ -71,10 +68,7 @@ body
   top: 0px;
   width: 100%;
   height: 60px;
-  background: -webkit-linear-gradient(black, DarkRed); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(black, DarkRed); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(black, DarkRed); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(black, DarkRed); /* Standard syntax */
+  background: linear-gradient(0.25turn, MediumBlue, #212128);
   font-variant: small-caps;
 }
 
@@ -125,7 +119,7 @@ body
 }
 #nav a:hover
 {
-  color: red;
+  color: SkyBlue;
   text-decoration: underline;
 }
 
