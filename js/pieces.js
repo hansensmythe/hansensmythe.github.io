@@ -3,7 +3,7 @@
 /**
  * Pieces may have more than one type
  */
- class PieceType {
+class PieceType {
     constructor(id, title) {
       this.id = id;
       this.title = title;
@@ -20,10 +20,10 @@ const EXP = new PieceType('exp', 'Experimental pieces');
 const ARR = new PieceType('arr', 'Covers of other pieces');
 
 const pieceTypes = [PIANO, VOICE, INSTR, THEATRE, FILM, ORCH, EXP, ARR];
-  
+
 /**
  * For pieces on SoundClick, open a new window that loads the SoundClick widget
- * @param {number} sid - Soundclick song ID 
+ * @param {number} sid - Soundclick song ID
  */
 function openWidgetWindow(sid)
 {
@@ -32,12 +32,12 @@ function openWidgetWindow(sid)
 
 class Piece {
     /**
-     * @param {string} title 
+     * @param {string} title
      * @param {object[]} types - Array of one or more pieceTypes used for filtering
      * @param {number} year - Year composed
      * @param {number} duration - Number of seconds duration
      * @param {object} media - Object containing from 0 to 2 media elements that populate the recording and scores fields
-     * @param {string} description 
+     * @param {string} description
      */
     constructor(title, types, year, duration, media, description) {
         this.title = title;
@@ -181,7 +181,7 @@ const pieces = [
     new Piece("Sleeping", [PIANO], 1970, 60, { pdf: "Sleeping.pdf" }, "Easy juvenilia."),
     new Piece("Sonata for Violin and Piano", [PIANO, INSTR], 1986, 0, {}, "First and second movements only, and never finished. An Experiment with non-standard scales."),
     new Piece("Soundtrack Improv", [EXP], 1984, 186, { soundClick: "12343540" }, "Moody improvisation on four tracks, recorded in the electronic music lab at the U of Calgary."),
-    new Piece("Space Promotion Anthem", [VOICE], 1998, 66, { pdf: "SpaceAnthem.pdf" }, "Word got around, in the space activist community, that what we really needed was a rousing anthem, and that if only we'd sing together in mutual harmony and understanding, the rockets would go up and the solar power satellites would get built. This is my attempt, using Alexander Courage's opening theme from Star Trek as the cantus firmus (and that's not easy!), and appropriately international Esperanto lyrics by my mother, Jean Smythe:<P style=\"font-style:italic\">En la kosmon baldau voja&#285;os ni!<br>Revojn esperplene plenumos ni.<br>Antaen, eksteren, kaj supren ni flugos del' Tero, por<br>fondi novmondon, ja estas la ceelo.</P><P style=\"font-style:italic\">Vidu, jen atendas nin nia &#265;ar'!<br>Sidu, a ventureema kolegar'!<br>Pezofortego ense&#285;en nin premas, travibras<br>ekscito, pro fora voja&#285;o al nova hejm'!</P><P style=\"font-style:italic\">Fore en la spacurbo lo&#285;os ni!<br>novdefiojn sa&#285;e forvenkos ni!<br>Tiam laboros ni &#265;iuj por kuna boneco, kaj<br>Forte konstruos sunpotencigiilon.</P>"),
+    new Piece("Space Promotion Anthem", [VOICE], 1998, 66, { pdf: "SpaceAnthem.pdf" }, "Word got around, in the space activist community, that what we really needed was a rousing anthem, and that if only we'd sing together in mutual harmony and understanding, the rockets would go up and the solar power satellites would get built. This is my attempt, using Alexander Courage's opening theme from Star Trek as the cantus firmus (and that's not easy!), and appropriately international Esperanto lyrics by my mother, Jean Smythe:<P style=\"font-style:italic\">En la kosmon baldau voja&#285;os ni!<br>Revojn esperplene plenumos ni.<br>Antaen, eksteren, kaj supren ni flugos del' Tero, por<br>fondi novmondon, ja estas la ceelo.</P><P style=\"font-style:italic\">Vidu, jen atendas nin nia &#265;ar'!<br>Sidu, a ventureema kolegar'!<br>Pezofortego ense&#285;en nin premas, travibras<br>ekscito, pro fora voja&#285;o al nova hejm'!</P><P style=\"font-style:italic\">Fore en la spacurbo lo&#285;os ni!<br>novdefiojn sa&#285;e forvenkos ni!<br>Tiam laboros ni &#265;iuj por kuna boneco, kaj<br>Forte konstruos sunpotencigiilon.</P><P>Loosely translated, with no attempt to capture poetry:</P><P>We will soon travel into space!<br>Hopefully we will fulfill our dreams.<br>Onward, outward, and upward we will fly from Earth<br>to found a new world: it is the sky, after all.</P><P>Look, here our vehicle waits for us!<br>Sit down, adventurous colleague!<br>A heavy weight presses down on us,<br>excitement shines through a long journey to a new home!</P><P>We will live away in the space city!<br>We will overcome new challenges!<br>Then we will all work for a common good,<br>and build a mighty solar power plant.</P>"),
     new Piece("Stardrift", [PIANO], 1976, 185, { pdf: "Stardrift.pdf" }, "Won first in Calgary and Alberta Kiwanis Festivals, and first in the Alberta Registered Music Teachers' Composition Competition."),
     new Piece("Stinky Pete's Song", [VOICE, PIANO, THEATRE], 2008, 111, { pdf: "StinkyPetesSong.pdf" }, "Music for Kathy Macovichuk's play 'The Littlest Pirate', winner of the 2009 Robert C. Hayes award."),
     new Piece("Suit Fugue (Dance of the A&R Men)", [ARR, VOICE], 2000, 144, { pdf: "SuitFugue.pdf" }, "Transcription of Kevin Gilbert's canon for four voices from his album 'The Shaming of the True'"),
