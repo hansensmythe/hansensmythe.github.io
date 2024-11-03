@@ -27,7 +27,7 @@ const pieceTypes = [PIANO, VOICE, INSTR, THEATRE, FILM, ORCH, EXP, ARR];
  */
 function openWidgetWindow(sid)
 {
-    window.open(`https://www.soundclick.com/html5/v3/player.cfm?type=single&songid=${sid}&q=hi&newref=1`);
+    window.open(`https://www.soundclick.com/artist/utils/songVideo.cfm?bandID=246361&songid=${sid}`);
 }
 
 class Piece {
@@ -121,7 +121,7 @@ const pieces = [
     new Piece("Hansen Smythe Sampler 1991", [INSTR], 1991, 393, { soundClick: "7067916" }, "A spliced-together compilation of 14 pieces for demo purposes."),
     new Piece("Happy Quarks", [INSTR], 1984, 111, { soundClick: "12343443" }, "An early experiment using analog synths and a Roland MC4 Microcomposer (an analog sequencer), plus a Yamaha DX7."), // https://youtu.be/70jSlTZLx8Y
     new Piece("Hellas Planitia National Anthem", [ORCH], 2020, 35, {}, "A credible-sounding national anthem, ready to go when Hellas Planitia, Mars, declares itself a sovereign nation."),
-    new Piece("IF, by chance, ENDIF", [EXP], 1996, 0, { html: "IfByChance.html" }, "For any instrument, this is a computer program that runs as a macro in WordPerfect 6.1 or later. The program generates a printout of a monophonic sequence of between 10 and 110 notes, in a time signature between 3/8 and 15/8, with weighted random choices defining each note's pitch and duration."),
+    new Piece("IF, by chance, ENDIF", [EXP], 1996, 0, { html: "scores/IfByChance.html" }, "For any instrument, this is a computer program that runs as a macro in WordPerfect 6.1 or later. The program generates a printout of a monophonic sequence of between 10 and 110 notes, in a time signature between 3/8 and 15/8, with weighted random choices defining each note's pitch and duration."),
     new Piece("In a Timepiece (i.e. Impatience)", [PIANO], 1984, 68, { soundClick: "12367715", pdf: "InaTimepiece.pdf" }, "I couldn't decide on which title I liked better. They're anagrams of each other."),
     new Piece("Inner Garden I (Arrangement)", [ARR, PIANO, VOICE], 2015, 100, { pdf: "InnerGardenI.pdf" }, "Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>"),
     new Piece("Inner Garden II (Arrangement)", [ARR, PIANO, VOICE], 2015, 70, { pdf: "InnerGardenII.pdf" }, "Arrangement of King Crimson's piece from their 1995 album <a href=\"http://en.wikipedia.org/wiki/Thrak\">Thrak</a>"),
