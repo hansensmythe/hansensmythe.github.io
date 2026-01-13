@@ -60,11 +60,12 @@ function init(prefix) {
     // Music
     navUL.appendChild(getMenuItem(prefix, 'music.html', 'Music'));
 
-    // Op-ed
+    // Opinion pieces
     const opedLI = getMenuItem(prefix, '#', 'Op-Ed');
     navUL.appendChild(opedLI);
     const opedUL = document.createElement('ul');
     opedLI.appendChild(opedUL);
+    opedUL.appendChild(getMenuItem(prefix, 'velomobile.html', 'My Velomobile'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/LandAcknowledgement.html', 'Land Acknowledgement'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/TrafficVsWar.html', 'Remembrance Day for Traffic Dead'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/placenotation.html', 'Intro to Dot Place Notation'));
