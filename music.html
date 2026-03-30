@@ -10,12 +10,11 @@
     <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
     <link href="css/music.css" rel="stylesheet" type="text/css">
     <link href="css/shs.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="js/menu.js"></script>
-    <script type="text/javascript" src="js/pieces.js"></script>
-    <script type="text/javascript" src="js/music.js"></script>
+    <script src="js/music.js" type="module"></script>
+    <script src="js/topInit.js" type="module"></script>
     <div id="header"></div>
   </head>
-  <body onload="topInit();">
+  <body>
     <div id="contents">
       <form action="music.html">
         Search for keyword <input onchange="this.form.submit()" type="text" id="keyword" name="keyword" size="12">
@@ -49,8 +48,5 @@
       </table>
       <a href="https://stevehansensmythe.musicaneo.com/"><img src="https://data.musicaneo.com/promotools/images/buy_my_sheet_music_en.gif" alt="Buy my sheet music at MusicaNeo" title="Buy my sheet music at MusicaNeo" /></a>
     </div>
-    <script type="text/javascript">
-      selectPieces();
-    </script>
   </body>
 </HTML>

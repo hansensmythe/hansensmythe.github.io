@@ -6,6 +6,9 @@ const USEIMAGES = true;
 const MAXFILLS = 500;
 const UPDATEDATE = "11 September 2022";
 
+// Load table once DOM in setup.html is ready
+document.addEventListener("DOMContentLoaded", loadQwirkleConnect);
+
 class Tile {
     constructor(colour, shape) {
         this.colour = colour;
@@ -172,7 +175,7 @@ function fill(tryCount) {
     return true;
 }
 
-// Called from setup.html
+// Called once setup.html DOM has loaded
 function loadQwirkleConnect() {
     // try MAXFILLS times. If it's not possible in that many, there's probably a programming error and we should stop trying
     let isInitialized = false;

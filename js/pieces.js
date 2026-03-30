@@ -1,4 +1,4 @@
-// Updated 16 November 2024
+// Updated 29 March 2026
 
 /**
  * Pieces may have more than one type
@@ -10,22 +10,22 @@ class PieceType {
     }
 }
 
-const PIANO = new PieceType('piano', 'Piano pieces');
-const VOICE = new PieceType('voice', 'Vocal pieces');
-const INSTR = new PieceType('instr', 'Other Instrumental pieces');
-const THEATRE = new PieceType('theatre', 'Pieces for live theatre');
-const FILM = new PieceType('film', 'Pieces for film or broadcast media');
-const ORCH = new PieceType('orch', 'Orchestral works');
-const EXP = new PieceType('exp', 'Experimental pieces');
-const ARR = new PieceType('arr', 'Covers of other pieces');
+export const PIANO = new PieceType('piano', 'Piano pieces');
+export const VOICE = new PieceType('voice', 'Vocal pieces');
+export const INSTR = new PieceType('instr', 'Other Instrumental pieces');
+export const THEATRE = new PieceType('theatre', 'Pieces for live theatre');
+export const FILM = new PieceType('film', 'Pieces for film or broadcast media');
+export const ORCH = new PieceType('orch', 'Orchestral works');
+export const EXP = new PieceType('exp', 'Experimental pieces');
+export const ARR = new PieceType('arr', 'Covers of other pieces');
 
-const pieceTypes = [PIANO, VOICE, INSTR, THEATRE, FILM, ORCH, EXP, ARR];
+export const PIECE_TYPES = [PIANO, VOICE, INSTR, THEATRE, FILM, ORCH, EXP, ARR];
 
 /**
  * For pieces on SoundClick, open a new window that loads the SoundClick widget
  * @param {number} sid - Soundclick song ID
  */
-function openWidgetWindow(sid)
+export function openWidgetWindow(sid)
 {
     window.open(`https://www.soundclick.com/artist/utils/songVideo.cfm?bandID=246361&songid=${sid}`);
 }
@@ -33,7 +33,7 @@ function openWidgetWindow(sid)
 class Piece {
     /**
      * @param {string} title
-     * @param {object[]} types - Array of one or more pieceTypes used for filtering
+     * @param {object[]} types - Array of one or more PIECE_TYPES used for filtering
      * @param {number} year - Year composed
      * @param {number} duration - Number of seconds duration
      * @param {object} media - Object containing from 0 to 2 media elements that populate the recording and scores fields
@@ -74,7 +74,7 @@ class Piece {
     }
 }
 
-const pieces = [
+export const PIECES = [
     new Piece("43222", [EXP], 1994, 162, { youtube: "3RO7wqO3GgI" }, "A piece in which the metre is deliberately confusing. The title gives one interpretation of how to count the 8th notes."),
     new Piece("Algol (a Binary Star)", [EXP], 1984, 260, { soundClick: "12343433" }, "Scored for analog synthesizer and tape loop. The second half of the piece is completely dissimilar to the first half."),
     new Piece("Algol Revisited", [EXP], 1984, 114, { soundClick: "12343435" }, "Scored for DX7 and analog synthesizer. Uses the same analog sequence, but no tape loop, and more DX7."),

@@ -1,3 +1,8 @@
+import { PIECE_TYPES, PIECES, PIANO, INSTR } from './pieces.js';
+
+// Load music table once DOM in music.html is ready
+document.addEventListener("DOMContentLoaded", selectPieces);
+
 // selectedPieces needs to be global so it can be set by selectPieces
 // but then used separately to sort the selected pieces
 let selectedPieces = [];
@@ -186,7 +191,7 @@ function loadTable(pageTitle) {
         newRow.appendChild(getDateCell(piece));
         theTable.tBodies[0].appendChild(newRow);
    });
-} 
+}
 
 /**
  * This is the function called at the bottom of music.html upon first loading the page. It determines what, if any,
@@ -207,11 +212,11 @@ function selectPieces() {
         typeElement.value = type;
     }
     // If no type was found in the URL the default type should be the first one on the list - 'piano'
-    const pieceType = pieceTypes.find((pieceType) => pieceType.id === typeElement.value);
+    const pieceType = PIECE_TYPES.find((pieceType) => pieceType.id === typeElement.value);
     let pageTitle;
     if (pieceType) {
         pageTitle = pieceType.title;
-        selectedPieces = pieces.filter((piece) => {
+        selectedPieces = PIECES.filter((piece) => {
             if (pieceType === PIANO || pieceType === INSTR) {
                 // Use the filter exclusively - return pieces that specify only this type
                 return piece.types.every((type) => type === pieceType);
@@ -223,10 +228,10 @@ function selectPieces() {
     } else if (keywordElement.value) {
         const keywordRegex = new RegExp(keywordElement.value, 'i');
         pageTitle = `Pieces matching "${keywordElement.value}"`;
-        selectedPieces = pieces.filter((piece) => piece.title.match(keywordRegex) || piece.description.match(keywordRegex));
+        selectedPieces = PIECES.filter((piece) => piece.title.match(keywordRegex) || piece.description.match(keywordRegex));
     } else {
         pageTitle = 'All pieces';
-        selectedPieces = pieces;
+        selectedPieces = PIECES;
     }
 
     // Since selectedPieces is global, sortPieces can find and mutate the array.

@@ -9,11 +9,11 @@
     <meta name="keywords" content="cars, driving, environment, war">
     <title>Remembrance Day for Traffic Dead</title>
     <link type="text/css" rel="stylesheet" href="../css/shs.css" />
-    <script type="text/javascript" src="../js/menu.js"></script>
+    <script src="../js/innerInit.js" type="module"></script>
     <div id="header"></div>
 </head>
 
-<body onload="innerInit();">
+<body>
     <div id="contents">
         <P>Every year on November 11 we make a point of remembering all those who died due to war.
             World War II was the deadliest military conflict in history, killing 70 - 85 <I>million</I> people (see
@@ -74,8 +74,8 @@
         <HR>
         <div>
             <canvas id="TWchart"></canvas>
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script type="text/javascript" src="./TrafficVsWar.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js" type="text/javascript"></script>
+            <script src="./TrafficVsWar.js" type="text/javascript"></script>
             <script>insertChart(document.getElementById('TWchart'));</script>
         </div>
         <HR>

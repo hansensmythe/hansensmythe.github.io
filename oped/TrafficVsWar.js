@@ -2,7 +2,7 @@
 // Traffic deaths prior to 1990 were extrapolated from US traffic deaths per year by 100,000 people from https://en.wikipedia.org/wiki/Motor_vehicle_fatality_rate_in_U.S._by_year
 // scaled up to global population figures starting in 1951 from https://www.worldometers.info/world-population/world-population-by-year/
 // Traffic deaths 1990-2019 from https://ourworldindata.org/grapher/road-traffic-deaths-sdgs?tab=table&time=earliest..2019
-const dataByYear = [
+const DATA_BY_YEAR = [
     {
         "year": 1946,
         "estCarDead": 0,
@@ -315,10 +315,10 @@ const dataByYear = [
 ];
 
 function insertChart(ctx) {
-    const labels = dataByYear.map(datum => datum.year);
-    const carDeaths = dataByYear.map(datum => datum.carDead || 0);
-    const estCarDeaths = dataByYear.map(datum => datum.estCarDead || 0);
-    const warDeaths = dataByYear.map(datum => datum.warDead);
+    const labels = DATA_BY_YEAR.map(datum => datum.year);
+    const carDeaths = DATA_BY_YEAR.map(datum => datum.carDead || 0);
+    const estCarDeaths = DATA_BY_YEAR.map(datum => datum.estCarDead || 0);
+    const warDeaths = DATA_BY_YEAR.map(datum => datum.warDead);
     Chart.defaults.color = 'red';
     new Chart(ctx, {
         type: 'bar',

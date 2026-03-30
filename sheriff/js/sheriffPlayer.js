@@ -1,4 +1,6 @@
-class Player {
+import { LEGAL_GOODS, CONTRABAND, getValidGoodTypes, getValidGoods } from './sheriffGoods.js';
+
+export class Player {
   constructor(name, key) {
     this.name = name;
     this.key = key;
@@ -129,7 +131,7 @@ class Player {
    */
   getLegalGoodsTotal() {
     let total = 0;
-    legalGoods.forEach((good) => {
+    LEGAL_GOODS.forEach((good) => {
       total += this.getCount(good.name) * good.value;
     });
     return total;
@@ -142,7 +144,7 @@ class Player {
    */
    getContrabandTotal() {
     let total = 0;
-    contraband.forEach((good) => {
+    CONTRABAND.forEach((good) => {
       total += this.getCount(good.name) * good.value;
     });
     return total;

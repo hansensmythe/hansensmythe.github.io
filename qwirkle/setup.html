@@ -8,8 +8,8 @@
     <meta name="keywords" content="Qwirkle">
     <title>Qwirkle Setup</title>
     <link type="text/css" rel="stylesheet" href="../css/shs.css" />
-    <script type="text/javascript" src="js/setup.js"></script>
-    <script type="text/javascript" src="../js/menu.js"></script>
+    <script src="js/setup.js" type="module"></script>
+    <script src="../js/innerInit.js" type="module"></script>
     <div id="header"></div>
     <style type="text/css">
       img {
@@ -40,7 +40,7 @@
       }
     </style>
   </head>
-  <body onload="innerInit();">
+  <body>
     <div id="contents">
       <p>We like to play <a href="https://www.ultraboardgames.com/qwirkle/qwirkle-connect.php" target="_top">Qwirkle Connect</a> to maximize point-scoring potential. Therefore, we like to set up the board to facilitate the creation of Qwirkles. This page provides a possible setup in which each quarter of the board offers the potential for a perfect 6x6 square of qwirkles, AND the two tiles of each diagonal line that are close enough to a line in the next quadrant are also qwirklable. Refresh this page to generate a new solution.</p>
       <p id="unused"></p>
@@ -98,8 +98,5 @@
         This page last updated <span id="updated">sometime</span>.
       </p>
     </div>
-    <script type="text/javascript">
-      loadQwirkleConnect();
-    </script>
   </body>
 </html>

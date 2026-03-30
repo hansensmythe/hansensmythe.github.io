@@ -42,16 +42,16 @@ const pumpernickel = new Good('pumpernickel', 9, 0, 1, 3);
 const royalRooster = new Good('royalRooster', 8, 1, 2, 2);
 const coin = new Good('coin', 1, 250, 250, 1);
 
-const goods = [apple, cheese, bread, chicken, pepper, mead, silk, crossbow, greenApple, goldenApple, goudaCheese, bleuCheese, ryeBread, pumpernickel, royalRooster, coin];
+export const GOODS = [apple, cheese, bread, chicken, pepper, mead, silk, crossbow, greenApple, goldenApple, goudaCheese, bleuCheese, ryeBread, pumpernickel, royalRooster, coin];
 
-function setThreePlayerMaxima() {
-  goods.forEach((good) => good.setThreePlayerMax());
+export function setThreePlayerMaxima() {
+  GOODS.forEach((good) => good.setThreePlayerMax());
 }
 
 /**
  * Goods are grouped by type, and bonus points are given for the top two players in each type.
  */
-class GoodType {
+export class GoodType {
   constructor(name, kingBonus, queenBonus, goods) {
     this.name = name;
     this.kingBonus = kingBonus;
@@ -64,11 +64,11 @@ class GoodType {
    * @returns {boolean} true if this goodType has at least one valid good, false otherwise
    */
   isValid() {
-    return this.goods.filter((good) => good.isValid()).length > 0;
+    return GOODS.filter((good) => good.isValid()).length > 0;
   }
 }
 
-const goodTypes = [
+export const GOOD_TYPES = [
   new GoodType('apples', 20, 10, [apple, greenApple, goldenApple]),
   new GoodType('cheeses', 15, 10, [cheese, goudaCheese, bleuCheese]),
   new GoodType('breads', 15, 10, [bread, ryeBread, pumpernickel]),
@@ -76,21 +76,21 @@ const goodTypes = [
 ];
 
 // Groups used only to determine winner in case of a tie
-const legalGoods = [apple, cheese, bread, chicken];
-const contraband = [pepper, mead, silk, crossbow];
+export const LEGAL_GOODS = [apple, cheese, bread, chicken];
+export const CONTRABAND = [pepper, mead, silk, crossbow];
 
 /**
  * In the three-player game, some goods are removed.
  * @returns {array} of only the goods that had a max greater than 0
  */
-function getValidGoods() {
-  return goods.filter((good) => good.isValid());
+export function getValidGoods() {
+  return GOODS.filter((good) => good.isValid());
 }
 
 /**
  * In the three-player game, some goods are removed. If all goods are removed from a type, the goodType itself is no longer valid.
- * @returns {array} of only the goodTypes that had one or more valid goods
+ * @returns {array} of only the GOOD_TYPES that had one or more valid goods
  */
-function getValidGoodTypes() {
-  return goodTypes.filter((goodType) => goodType.isValid());
+export function getValidGoodTypes() {
+  return GOOD_TYPES.filter((goodType) => goodType.isValid());
 }

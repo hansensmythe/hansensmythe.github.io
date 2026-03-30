@@ -11,15 +11,23 @@ script.onload = function() {
 script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
 document.head.appendChild(script);
 
-// Called from almost every page to create header bar
-function topInit() {
+// Called from index page to create header bar with added content
+export function indexInit() {
     init('');
-}
+    // add the Resume and links to the home page menu. Not worth doing for every page
+    const navUL = document.getElementById("nav");
+    navUL.appendChild(getMenuItem("", "resume.html", "Creative Resume"));
+};
 
 // Called from pages one level deeper than top level
-function innerInit() {
+export function innerInit() {
     init('../');
-}
+};
+
+// Called from top level pages
+export function topInit() {
+    init('');
+};
 
 function init(prefix) {
     const headerDiv = document.getElementById('header');
@@ -78,7 +86,7 @@ function init(prefix) {
 
 function getMenuItem(prefix, target, text) {
     // If the href ends with #, treat it the same as a home page hit
-    const href = window.location.href;
+    let href = window.location.href;
     if (href.charAt(href.length - 1) === '#') {
         href = 'index.html';
     }
