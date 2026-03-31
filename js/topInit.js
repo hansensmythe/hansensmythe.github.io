@@ -1,3 +1,5 @@
-import { topInit } from './menu.js';
+import { init } from './menu.js';
 
-window.addEventListener('load', topInit);
+window.addEventListener('load', () => {
+    init('');
+});

@@ -11,25 +11,7 @@ script.onload = function() {
 script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
 document.head.appendChild(script);
 
-// Called from index page to create header bar with added content
-export function indexInit() {
-    init('');
-    // add the Resume and links to the home page menu. Not worth doing for every page
-    const navUL = document.getElementById("nav");
-    navUL.appendChild(getMenuItem("", "resume.html", "Creative Resume"));
-};
-
-// Called from pages one level deeper than top level
-export function innerInit() {
-    init('../');
-};
-
-// Called from top level pages
-export function topInit() {
-    init('');
-};
-
-function init(prefix) {
+export function init(prefix) {
     const headerDiv = document.getElementById('header');
     // Add standard stuff prior to menu
     const hdrLeft = document.createElement('div');

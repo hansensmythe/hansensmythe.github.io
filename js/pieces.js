@@ -21,15 +21,6 @@ export const ARR = new PieceType('arr', 'Covers of other pieces');
 
 export const PIECE_TYPES = [PIANO, VOICE, INSTR, THEATRE, FILM, ORCH, EXP, ARR];
 
-/**
- * For pieces on SoundClick, open a new window that loads the SoundClick widget
- * @param {number} sid - Soundclick song ID
- */
-export function openWidgetWindow(sid)
-{
-    window.open(`https://www.soundclick.com/artist/utils/songVideo.cfm?bandID=246361&songid=${sid}`);
-}
-
 class Piece {
     /**
      * @param {string} title
@@ -56,7 +47,7 @@ class Piece {
         if (media.youtube) {
             this.recording = `https://www.youtube.com/watch?v=${media.youtube}`;
         } else if (media.soundClick) {
-            this.recording = `javascript:openWidgetWindow(${media.soundClick})`;
+            this.recording = `https://www.soundclick.com/music/songinfo_standalone/?songID=${media.soundClick}`;
         } else if (media.soundCloud) {
             this.recording = `https://soundcloud.com/steve-hansen-smythe/${media.soundCloud}`;
         } else if (media.mp3) {

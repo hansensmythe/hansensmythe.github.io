@@ -1,3 +1,5 @@
-import { innerInit } from './menu.js';
+import { init } from './menu.js';
 
-window.addEventListener('load', innerInit);
+window.addEventListener('load', () => {
+    init('../');
+});
