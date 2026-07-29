@@ -11,18 +11,24 @@ const AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + M
 const MJ_PER_HIROSHIMA = 63000000;
 // const MJ_PER_MEGATONNE = 4184000000;
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
-const YEARS_TO_DUPLICATE_HEAT = 1/6;
+const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+const YEARS_TO_RENDER = 75;
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let manufacturerSelector;
 let profileKey;
 let filteredManufacturers;
+let flightChart = null;
 
 function initialize() {
+    Chart.defaults.backgroundColor = '#9BD0F5';
+    Chart.defaults.borderColor = '#36A2EB';
+    Chart.defaults.color = '#f00';
     // Add constants to page
     document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('maxCO2ePerMJ').textContent = MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('mjPerKg').textContent = MJ_PER_KG_JET_FUEL;
+    document.getElementById('yearsToRender').textContent = YEARS_TO_RENDER;
 
     // Populate filtered subsets of the data by calling function in aircraft.js
     filteredManufacturers = getFilteredManufacturers();
@@ -114,7 +120,8 @@ function updateModel() {
 function recalculate() {
     const modelSelector = document.getElementById('modelSelector');
     const selectedFlight = document.querySelector('input[name="flight"]:checked');
-    const selectedProfile = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value].flightProfiles[selectedFlight.value];
+    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value]
+    const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
     // Populate data for this profile
     document.getElementById('seats').innerText = selectedProfile.seats;
     document.getElementById('distance').innerText = selectedProfile.kilometres;
@@ -128,21 +135,57 @@ function recalculate() {
     document.getElementById('seatFuelBurned').innerText = kgSeatFuelBurned.toFixed(2);
 
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
-    document.getElementById('immediate').innerText = megajoules.toFixed(2);
-    const seatMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
-    document.getElementById('pImmediate').innerText = seatMegajoules.toFixed(2);
-
-    // Convert grams per megajoule into kilograms for the flight
+    // Convert grams per megajoule into kilograms of CO2 for the flight
     const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
     document.getElementById('totalCO2').innerText = totalCO2.toFixed(2);
-    const seatTotalCO2 = seatMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('pTotalCO2').innerText = seatTotalCO2.toFixed(2);
-
+    const percentHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('immediate').innerText = `${percentHiroshima.toFixed(2)}%`;
     const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
     const yearsForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
     document.getElementById('hiroshima').innerText = yearsForHiroshima.toFixed(0);
+
+    const seatMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
+    const seatTotalCO2 = seatMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
+    document.getElementById('pTotalCO2').innerText = seatTotalCO2.toFixed(2);
+    const percentSeatHiroshima = seatMegajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('pImmediate').innerText = `${percentSeatHiroshima.toFixed(4)}%`;
     const mjSeatToMakeHiroshima = MJ_PER_HIROSHIMA / seatMegajoules;
     const seatYearsForHiroshima = mjSeatToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
     document.getElementById('pHiroshima').innerText = seatYearsForHiroshima.toFixed(0);
-}
 
+    const ctx = document.getElementById('IFChart').getContext('2d');
+    if (flightChart) {
+        flightChart.destroy(); // Free the canvas if a previous chart already exists there
+    }
+    flightChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from(
+                { length: YEARS_TO_RENDER },
+                (_, index) => new Date().getFullYear() + index
+            ),
+            datasets: [
+                {
+                    label: `${selectedModel.name} ${selectedProfile.name}`,
+                    data: Array.from(
+                        { length: YEARS_TO_RENDER },
+                        (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+                    ),
+                    fill: false,
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Hiroshima equivalents over time'
+                    }
+                }
+            }
+        }
+    });
+}

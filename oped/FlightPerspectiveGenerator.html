@@ -1,0 +1,145 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="description" content="Calculate the global heat impact of your flight">
+    <meta name="keywords" content="flying, environment, CO<sub>2</sub>">
+    <title>Flight Perspective Generator</title>
+    <link type="text/css" rel="stylesheet" href="../css/shs.css" />
+    <script src="../js/innerInit.js" type="module"></script>
+    <script src="./js/FlightPerspectiveGenerator.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style type="text/css">
+        table th {
+            text-align: right;
+        }
+
+        table td {
+            text-align: left;
+            padding-left: 20px;
+        }
+    </style>
+    <div id="header"></div>
+</head>
+
+<body>
+    <div id="contents">
+        <p>Let's say you want to go on holiday. Although you're probably aware that the latest data from <a
+                href="https://ceres.larc.nasa.gov/">CERES</a> for May, 2026 shows that the Earth is warming at a rate of
+            about 14 Hiroshima nuclear bombs (~63 terajoules, or 63,000,000 MJ) per second, or about 1,200,000 per day
+            due to an excess of atmospheric greenhouse gases, you might assume that doesn't apply to you because, after
+            all, it's just one flight.</p>
+        <p>When sunlight hits the Earth, the energy is radiated back out to space as longwave infrared radiation (heat).
+            However, greenhouse gases such as CO<sub>2</sub> trap this radiation, causing the atmosphere to warm until
+            the greenhouse gases are no longer present.</p>
+        <p>This page will help you figure out what your personal contribution is to that total. For example, if you live
+            in Kelowna BC and you want to holiday in Mexico, you'll take a short 1-hour hop in a Boeing 737-700 to
+            Calgary, then transfer to a Boeing 737 MAX 8 for the 5.5-hour 4000 km flight. In the process, they'll warm
+            the earth directly by burning the fuel, generating over 900,000 MJ of heat: about 1.4% of a Hiroshima.</p>
+        <p>Notwithstanding the direct heating, if we assume that the fuel was distilled from Alberta's oil sands*, the
+            first flight will be responsible for releasing about 14 tonnes of CO<sub>2</sub> (from mining, drilling,
+            transportation, refining, and burning), and the second about 85 tonnes, for about 100 tonnes total. What
+            happens to that CO<sub>2</sub>? Effectively: nothing. Of the three ways that greenhouse gases are removed
+            from the atmosphere (plant and ocean absorption, deep ocean, and rock weathering), the last two take
+            centuries to millenia to be effective, and the first one doesn't work because we have overwhelmed plant and
+            ocean carbon sinks, as is evident from the contining rise in atmospheric CO<sub>2</sub> concentrations since
+            we started measuring such things.</p>
+        <p>Therefore, these flights spawn what I call "ghost flights" that keep flying, effectively in perpetuity. How
+            often does each ghost flight fly? According to <a
+                href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978">Dr. Greg
+                Flato</a>, Senior Research Scientist with Environment and Climate Change Canada, about two months.
+            Therefore, we can calculate how many years it will take before they warm the Earth by one Hiroshima:
+            63,000,000 / 900,000, then divide by 6 to convert years to 2-month periods: 11.6 years.</p>
+        <p>But wait, this is a holiday, therefore these are return tickets, so it's actually more like 5.8 years.</p>
+        <p>In August 1945 when U.S. president Harry Truman had to decide whether to use an atomic bomb this powerful,
+            I'm sure he wrestled with his conscience. I suspect the only reason why people typically don't have second
+            thoughts about this is that when you fly, you don't get an enormous flash and a big mushroom cloud all at
+            once. It just builds up over a few years. If someone had been exploding atomic bombs off the coast of Europe
+            in the summer of 2026, people wouldn't be wondering why it was getting so effing hot, but we're doing the
+            equivalent by continuing to abuse fossil fuels for trivial pursuits such as driving and flying for pleasure.
+        </p>
+        <p>Here's a calculator so you can try this out for yourself. Select the approximate range (from Commuter to
+            Long-Haul, or select "All" for all the data), select the manufacturer and aircraft that will get you when
+            you want to go, and see the result. I used flight test data from <a
+                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>.
+
+        <fieldset>
+            <legend>Select flight profile range:</legend>
+            <div><input type="radio" id="commuter" name="profile" value="commuter" /><label for="commuter">Commuter
+                    flight ~560 km</label></div>
+            <div><input type="radio" id="regional" name="profile" value="regional" /><label for="regional">Regional
+                    flight 930 to 1300 km</label></div>
+            <div><input type="radio" id="short" name="profile" value="short" /><label for="short">Short-haul flight
+                    ~1900 km</label></div>
+            <div><input type="radio" id="medium" name="profile" value="medium" /><label for="medium">Medium-haul flight
+                    3700 to 5600 km, e.g. transcontinental or short transatlantic</label></div>
+            <div><input type="radio" id="long" name="profile" value="long" checked /><label for="long">Long-haul flight
+                    9300 to 13000 km, e.g. transpacific</label></div>
+            <div><input type="radio" id="all" name="profile" value="all" /><label for="all">All ranges</label></div>
+        </fieldset>
+        <p>Select an aircraft manufacturer, aircraft model, and flight configuration to see what the impact is of taking
+            that flight.</p>
+        <label for="manufacturerSelector">Aircraft manufacturer:</label>
+        <select id="manufacturerSelector"></select>
+
+        <label for="modelSelector">Model:</label>
+        <select id="modelSelector"></select>
+
+        <div id="flightButtonDiv"></div>
+
+        <p>Assuming <span id="seats">0</span> seats, travelling <span id="distance">0</span> kilometres, with <span
+                id="burn">0</span> kg/km fuel burn (at <span id="fuelPerSeat">0</span> L/100 km fuel per seat):</p>
+        <table>
+            <tr>
+                <td>Entire flight</td>
+                <td>Just your seat</td>
+            </tr>
+            <tr>
+                <th id="fuelBurned"></th>
+                <th id="seatFuelBurned"></th>
+                <td>Kilograms of fuel burned</td>
+            </tr>
+            <tr>
+                <th id="totalCO2">0</th>
+                <th id="pTotalCO2">0</th>
+                <td>Kilograms of CO<sub>2</sub> released over entire life cycle of the fuel (from mining or drilling to you being in the arrivals lounge)</td>
+            </tr>
+            <tr>
+                <th id="immediate"></th>
+                <th id="pImmediate"></th>
+                <td>Percentage of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel</td>
+            </tr>
+            <tr>
+                <th id="hiroshima" style="color: red;"></th>
+                <th id="pHiroshima"></th>
+                <td>Years until one Hiroshima bomb's worth of warming is generated by the greenhouse gases trapping heat from solar radiation</td>
+            </tr>
+        </table>
+
+        <div>
+            <canvas id="IFChart">
+                <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have appeared here.</p>
+            </canvas>
+            <p>On the relatively short timescale of only <span id="yearsToRender">0</span> years, the accumulated heat trend does not curve down significantly because it takes centuries to millenia for greenhouse gases actually to get removed from the atmosphere.</p>
+        </div>
+
+        <p>Multiply that single flight by all the world's air traffic. Is it really necessary that you take that flight?
+        </p>
+
+        <p>* I found in <a
+                href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub">"Life cycle
+                assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels"</a> (a
+            paper from Energy, Volume 88, August 2015) that using oil sands to create jet fuel is far less efficient
+            than Canada's 2030 target of 79.95 gCO<sub>2</sub>e/MJ (grams of carbon dioxide produced over the entire
+            life cycle, from mining through processing, transportation, refining, and finally burning). If jet fuel
+            comes from Alberta crude oil, it emits between <span id="minCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ and
+            <span id="maxCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ. <a
+                href="https://grokipedia.com/page/Aviation_fuel">Grokipedia</a> (and many other sources) reports that a
+            litre of jet fuel has a net specific energy of about <span id="mjPerKg">0</span> megajoules of heat per
+            kilogram.</p>
+    </div>
+</body>
+
+</html>

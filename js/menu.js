@@ -55,7 +55,7 @@ export function init(prefix) {
     navUL.appendChild(opedLI);
     const opedUL = document.createElement('ul');
     opedLI.appendChild(opedUL);
-    opedUL.appendChild(getMenuItem(prefix, 'oped/ImpactOfFlying.html', 'Global Heat Impact of Your Flight'));
+    opedUL.appendChild(getMenuItem(prefix, 'oped/FlightPerspectiveGenerator.html', 'Flight Perspective Generator'));
     opedUL.appendChild(getMenuItem(prefix, 'velomobile.html', 'My Velomobile'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/LandAcknowledgement.html', 'Land Acknowledgement'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/TrafficVsWar.html', 'Remembrance Day for Traffic Dead'));
