@@ -88,9 +88,13 @@
         <select id="modelSelector"></select>
 
         <div id="flightButtonDiv"></div>
+        <div>
+            <label for="distance">Kilometres:</label>
+            <input type="range" id="distance" step="10"></input>
+            <span id="distanceDisplay">0</span>
+        </div>
 
-        <p>Assuming <span id="seats">0</span> seats, travelling <span id="distance">0</span> kilometres, with <span
-                id="burn">0</span> kg/km fuel burn (at <span id="fuelPerSeat">0</span> L/100 km fuel per seat):</p>
+        <p>Assuming <span id="seats">0</span> seats and <span id="burn">0</span> kg/km fuel burn (at <span id="fuelPerSeat">0</span> L/100 km fuel per seat):</p>
         <table>
             <tr>
                 <td>Entire flight</td>

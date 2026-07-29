@@ -12,7 +12,11 @@ const MJ_PER_HIROSHIMA = 63000000;
 // const MJ_PER_MEGATONNE = 4184000000;
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+
+// Chart constants
 const YEARS_TO_RENDER = 75;
+const LABEL_FONT_SIZE = 20;
+const SLIDER_KM_RANGE = 0.25;
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let manufacturerSelector;
@@ -38,6 +42,17 @@ function initialize() {
     for (const profile of profileSelectors) {
         profile.addEventListener('input', filterByProfile);
     }
+
+    // Add a listener for tweaks to the kilometre value of a flight profile
+    const distanceSlider = document.getElementById('distance');
+    const distanceDisplay = document.getElementById('distanceDisplay');
+    // Triggers continuously while dragging
+    distanceSlider.addEventListener('input', function (event) {
+        distanceDisplay.textContent = event.target.value;
+    });
+    // Triggers when user releases the slider
+    distanceSlider.addEventListener('change', recalculateDistance);
+
     // Kick off an initial filterByProfile to populate the default
     filterByProfile({ target: { value: 'long' } });
 }
@@ -77,7 +92,7 @@ function replaceFlightProfileButtons(flightProfiles) {
             // Select the first item by default
             radio.checked = true;
         }
-        radio.addEventListener('input', recalculate);
+        radio.addEventListener('input', recalculateProfile);
 
         const label = document.createElement('label');
         label.setAttribute('for', id);
@@ -103,7 +118,7 @@ function selectManufacturer() {
 
     replaceFlightProfileButtons(selectedManufacturer.models[0].flightProfiles);
 
-    recalculate();
+    recalculateProfile();
 }
 
 // Called when a new model is selected from the dropdown
@@ -113,22 +128,41 @@ function updateModel() {
 
     replaceFlightProfileButtons(selectedModel.flightProfiles);
 
-    recalculate();
+    recalculateProfile();
 }
 
-// Called when a new value is selected from any dropdown
-function recalculate() {
+// Called when a new value is selected from any flight dropdown
+function recalculateProfile() {
     const modelSelector = document.getElementById('modelSelector');
     const selectedFlight = document.querySelector('input[name="flight"]:checked');
-    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value]
+    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
     const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
     // Populate data for this profile
     document.getElementById('seats').innerText = selectedProfile.seats;
-    document.getElementById('distance').innerText = selectedProfile.kilometres;
     document.getElementById('burn').innerText = selectedProfile.burn;
     document.getElementById('fuelPerSeat').innerText = selectedProfile.fuelPerSeat; // Display only - not for calculation
 
-    const kgFuelBurned = selectedProfile.burn * selectedProfile.kilometres;
+    // Recalculating the profile requires setting the distance slider's initial value and range.
+    // If the user moves the slider, the min and max won't change, but we'll need to recalculate all the distance-related values.
+    const distanceSlider = document.getElementById('distance');
+    const min = selectedProfile.kilometres * (1 - SLIDER_KM_RANGE);
+    const max = selectedProfile.kilometres * (1 + SLIDER_KM_RANGE);
+    distanceSlider.min = min.toFixed(0);
+    distanceSlider.max = max.toFixed(0);
+    distanceSlider.value = selectedProfile.kilometres;
+    const distanceDisplay = document.getElementById('distanceDisplay');
+    distanceDisplay.innerText = selectedProfile.kilometres;
+
+    recalculateDistance({ target: { value: selectedProfile.kilometres } });
+}
+
+function recalculateDistance(event) {
+    const modelSelector = document.getElementById('modelSelector');
+    const selectedFlight = document.querySelector('input[name="flight"]:checked');
+    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
+    const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
+
+    const kgFuelBurned = selectedProfile.burn * event.target.value;
     document.getElementById('fuelBurned').innerText = kgFuelBurned.toFixed(2);
     // Fuel per seat is in L/100 km. However, our calculations use kilograms, not litres
     const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats;
@@ -142,7 +176,7 @@ function recalculate() {
     document.getElementById('immediate').innerText = `${percentHiroshima.toFixed(2)}%`;
     const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
     const yearsForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('hiroshima').innerText = yearsForHiroshima.toFixed(0);
+    document.getElementById('hiroshima').innerText = yearsForHiroshima.toFixed(1);
 
     const seatMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
     const seatTotalCO2 = seatMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
@@ -177,12 +211,30 @@ function recalculate() {
             ]
         },
         options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: LABEL_FONT_SIZE
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Hiroshima equivalents over time'
+                        text: 'Hiroshima equivalents over time',
+                        font: {
+                            size: LABEL_FONT_SIZE,
+                            weight: 'bold'
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: LABEL_FONT_SIZE
+                        }
                     }
                 }
             }
