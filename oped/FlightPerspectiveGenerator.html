@@ -48,9 +48,11 @@
             we started measuring such things.</p>
         <p>Therefore, these flights spawn what I call "ghost flights" that keep flying, effectively in perpetuity. How
             often does each ghost flight fly? According to <a
-                href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978">Dr. Greg
-                Flato</a>, Senior Research Scientist with Environment and Climate Change Canada, about two months.
-            Therefore, we can calculate how many years it will take before they warm the Earth by one Hiroshima:
+                href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514">Time scales and ratios of
+                climate forcing due to thermal versus carbon dioxide emissions from fossil fuels</a> (Geophysical
+            Research Letters / Volume 42, Issue 11), within two months.
+            In the short term, we can then calculate how many years it will take before they warm the Earth by one
+            Hiroshima:
             63,000,000 / 900,000, then divide by 6 to convert years to 2-month periods: 11.6 years.</p>
         <p>But wait, this is a holiday, therefore these are return tickets, so it's actually more like 5.8 years.</p>
         <p>In August 1945 when U.S. president Harry Truman had to decide whether to use an atomic bomb this powerful,
@@ -63,11 +65,11 @@
         <p>Here's a calculator so you can try this out for yourself. Select the approximate range (from Commuter to
             Long-Haul, or select "All" for all the data), select the manufacturer and aircraft that will get you when
             you want to go, and see the result. I used flight test data from <a
-                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>.
+                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>, and added data on celebrity flights from <a href="https://celebrityprivatejettracker.com/leaderboard/">Celebrity Private Jet Tracker</a>.
 
         <fieldset>
             <legend>Select flight profile range:</legend>
-            <div><input type="radio" id="commuter" name="profile" value="commuter" /><label for="commuter">Commuter
+            <div><input type="radio" id="commuter" name="profile" value="commuter"/><label for="commuter">Commuter
                     flight ~560 km</label></div>
             <div><input type="radio" id="regional" name="profile" value="regional" /><label for="regional">Regional
                     flight 930 to 1300 km</label></div>
@@ -89,16 +91,25 @@
 
         <div id="flightButtonDiv"></div>
         <div>
-            <label for="distance">Kilometres:</label>
+            <label for="distance">Kilometres flown:</label>
             <input type="range" id="distance" step="10"></input>
             <span id="distanceDisplay">0</span>
         </div>
+        <div>
+            <input type="radio" id="oneway" name="isReturn"/><label for="oneway">One way</label>
+            <input type="radio" id="return" name="isReturn" checked /><label for="return">Return</label>
+        </div>
+        <div>
+            <label for="passengerSelector">How many people are flying?</label>
+            <select id="passengerSelector"></select>
+        </div>
 
-        <p>Assuming <span id="seats">0</span> seats and <span id="burn">0</span> kg/km fuel burn (at <span id="fuelPerSeat">0</span> L/100 km fuel per seat):</p>
+        <p>Assuming <span id="seats">0</span> seats and <span id="burn">0</span> kg/km fuel burn (at <span
+                id="fuelPerSeat">0</span> L/100 km fuel per seat):</p>
         <table>
             <tr>
                 <td>Entire flight</td>
-                <td>Just your seat</td>
+                <td>Just your seat(s)</td>
             </tr>
             <tr>
                 <th id="fuelBurned"></th>
@@ -108,25 +119,31 @@
             <tr>
                 <th id="totalCO2">0</th>
                 <th id="pTotalCO2">0</th>
-                <td>Kilograms of CO<sub>2</sub> released over entire life cycle of the fuel (from mining or drilling to you being in the arrivals lounge)</td>
+                <td>Kilograms of CO<sub>2</sub> released over entire life cycle of the fuel (from mining or drilling to
+                    you being in the arrivals lounge)</td>
             </tr>
             <tr>
                 <th id="immediate"></th>
                 <th id="pImmediate"></th>
-                <td>Percentage of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel</td>
+                <td>Percentage of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel
+                </td>
             </tr>
             <tr>
                 <th id="hiroshima" style="color: red;"></th>
                 <th id="pHiroshima"></th>
-                <td>Years until one Hiroshima bomb's worth of warming is generated by the greenhouse gases trapping heat from solar radiation</td>
+                <td>Years until one Hiroshima bomb's worth of warming is generated by the greenhouse gases trapping heat
+                    from solar radiation</td>
             </tr>
         </table>
 
         <div>
             <canvas id="IFChart">
-                <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have appeared here.</p>
+                <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have
+                    appeared here.</p>
             </canvas>
-            <p>On the relatively short timescale of only <span id="yearsToRender">0</span> years, the accumulated heat trend does not curve down significantly because it takes centuries to millenia for greenhouse gases actually to get removed from the atmosphere.</p>
+            <p>On the relatively short timescale of only <span id="yearsToRender">0</span> years, the accumulated heat
+                trend does not curve down significantly because it takes centuries to millenia for greenhouse gases
+                actually to get removed from the atmosphere.</p>
         </div>
 
         <p>Multiply that single flight by all the world's air traffic. Is it really necessary that you take that flight?
@@ -142,7 +159,8 @@
             <span id="maxCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ. <a
                 href="https://grokipedia.com/page/Aviation_fuel">Grokipedia</a> (and many other sources) reports that a
             litre of jet fuel has a net specific energy of about <span id="mjPerKg">0</span> megajoules of heat per
-            kilogram.</p>
+            kilogram.
+        </p>
     </div>
 </body>
 

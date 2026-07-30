@@ -12,6 +12,7 @@ const MJ_PER_HIROSHIMA = 63000000;
 // const MJ_PER_MEGATONNE = 4184000000;
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+const MAXIMUM_PASSENGERS = 8;
 
 // Chart constants
 const YEARS_TO_RENDER = 75;
@@ -24,7 +25,14 @@ let profileKey;
 let filteredManufacturers;
 let flightChart = null;
 
+/**
+ * Called once the DOM is loaded. Adds a generic event listener for changes to page controls, populates various static elements,
+ * adds a 'input' listener to the distance display, and kicks off a default profile display for long-haul flights.
+ */
 function initialize() {
+    // Listen for changes to all select elements
+    document.getElementById('contents').addEventListener('change', handleChangeEvent);
+
     Chart.defaults.backgroundColor = '#9BD0F5';
     Chart.defaults.borderColor = '#36A2EB';
     Chart.defaults.color = '#f00';
@@ -37,47 +45,76 @@ function initialize() {
     // Populate filtered subsets of the data by calling function in aircraft.js
     filteredManufacturers = getFilteredManufacturers();
 
-    // The flight profiles are used to filter the data provided. The initial checked profile is 'long' i.e. long-haul.
-    const profileSelectors = document.querySelectorAll('input[type="radio"][name="profile"]');
-    for (const profile of profileSelectors) {
-        profile.addEventListener('input', filterByProfile);
+    const passengerSelector = document.getElementById('passengerSelector');
+    for (let i = 1; i <= MAXIMUM_PASSENGERS; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        passengerSelector.appendChild(option);
     }
 
     // Add a listener for tweaks to the kilometre value of a flight profile
     const distanceSlider = document.getElementById('distance');
     const distanceDisplay = document.getElementById('distanceDisplay');
-    // Triggers continuously while dragging
+    // Triggers continuously while dragging. We do not recalculate until the 'change' event.
     distanceSlider.addEventListener('input', function (event) {
         distanceDisplay.textContent = event.target.value;
     });
-    // Triggers when user releases the slider
-    distanceSlider.addEventListener('change', recalculateDistance);
 
     // Kick off an initial filterByProfile to populate the default
-    filterByProfile({ target: { value: 'long' } });
+    filterByProfile('long');
 }
 
-// Called when a flight profile radio button is clicked
-function filterByProfile(event) {
-    profileKey = event.target.value;
+/**
+ * For every control, listen for a 'change' event and fire the appropriate function to update values.
+ * 
+ * @param {object} event - The object describing the changed element on the page
+ */
+function handleChangeEvent(event) {
+    // For radio buttons we can use the 'name' attribute to recognize the event, because each button has a different ID.
+    // However, dropdowns and sliders don't have or need a 'name' because their 'id' works to identify them.
+    if (event.target.name == 'profile') {
+        filterByProfile(event.target.value);
+    } else if (event.target.id == 'manufacturerSelector') {
+        selectManufacturer(event.target.value);
+    } else if (event.target.id == 'modelSelector') {
+        const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[event.target.value];
+        replaceFlightProfileButtons(selectedModel.flightProfiles);
+        recalculateProfile();
+    } else if (event.target.id == 'distance') {
+        recalculateDistance(event.target.value);
+    } else {
+        // event.target.name == 'flight' or event.target.name == 'isReturn' or event.target.id == 'passengerSelector'
+        recalculateProfile();
+    }
+}
 
+/**
+ * Called at initialization or when a flight profile radio button is clicked,
+ * to load the filtered manufacturers and populate the models, and for the first model, populate the flights.
+ *  
+ * @param {string} key - one of 'commuter', 'regional', 'short', 'medium', 'long', or 'all'. Used to get the subset of manufacturers matching that profile.
+ */
+function filterByProfile(key) {
+    // Store profileKey global value
+    profileKey = key;
     manufacturerSelector = document.getElementById('manufacturerSelector');
     // Clear all previous manufacturer lists
     manufacturerSelector.options.length = 0;
     filteredManufacturers[profileKey].forEach((manufacturer, index) => {
         manufacturerSelector.add(new Option(manufacturer.name, index));
     });
-    manufacturerSelector.addEventListener('input', selectManufacturer);
 
-    // Other selectors are populated once a manufacturer is selected
-    const modelSelector = document.getElementById('modelSelector');
-    modelSelector.addEventListener('input', updateModel);
-
-    // Because the first manufacturer is selected automatically without clicking an option,
-    // we need to call selectManufacturer explicitly to populate other dropdowns
-    selectManufacturer();
+    // Call selectManufacturer on the first element to populate other dropdowns
+    selectManufacturer(0);
 }
 
+/**
+ * Called when the model is initialized or updated, to create or replace the radio buttons for the flight profiles.
+ * Typically there will be just one, but for larger planes there was sometimes data for multiple configurations, e.g. different numbers of seats.
+ * 
+ * @param {FlightProfile[]} flightProfiles - Array of flight profile objects matching the selected model and filtered for the flight profile range.
+ */
 function replaceFlightProfileButtons(flightProfiles) {
     const flightButtonDiv = document.getElementById('flightButtonDiv');
     flightButtonDiv.replaceChildren();
@@ -92,7 +129,6 @@ function replaceFlightProfileButtons(flightProfiles) {
             // Select the first item by default
             radio.checked = true;
         }
-        radio.addEventListener('input', recalculateProfile);
 
         const label = document.createElement('label');
         label.setAttribute('for', id);
@@ -106,8 +142,14 @@ function replaceFlightProfileButtons(flightProfiles) {
     });
 }
 
-function selectManufacturer() {
-    const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
+/**
+ * Called whenever the flight profile range changes, or when a specific manufacturer is selected.
+ * Loads the models for the manufacturer and the flight profile buttons for the first model.
+ * 
+ * @param {number} manufacturerIndex 
+ */
+function selectManufacturer(manufacturerIndex) {
+    const selectedManufacturer = filteredManufacturers[profileKey][manufacturerIndex];
     // Clear all previous models and profiles
     const modelSelector = document.getElementById('modelSelector');
     modelSelector.options.length = 0;
@@ -121,17 +163,10 @@ function selectManufacturer() {
     recalculateProfile();
 }
 
-// Called when a new model is selected from the dropdown
-function updateModel() {
-    const modelSelector = document.getElementById('modelSelector');
-    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
-
-    replaceFlightProfileButtons(selectedModel.flightProfiles);
-
-    recalculateProfile();
-}
-
-// Called when a new value is selected from any flight dropdown
+/**
+ * Called when a manufacturer, model, flight configuration, or passenger count is changed. Populates seats, burn,
+ * fuelPerSeat, and distanceSlider, then recalculates the distance using default kilometres for the flight config.
+ */
 function recalculateProfile() {
     const modelSelector = document.getElementById('modelSelector');
     const selectedFlight = document.querySelector('input[name="flight"]:checked');
@@ -153,19 +188,27 @@ function recalculateProfile() {
     const distanceDisplay = document.getElementById('distanceDisplay');
     distanceDisplay.innerText = selectedProfile.kilometres;
 
-    recalculateDistance({ target: { value: selectedProfile.kilometres } });
+    recalculateDistance(selectedProfile.kilometres);
 }
 
-function recalculateDistance(event) {
+/**
+ * Calculates the kilograms of fuel burned, and derives all other reported values.
+ * @param {number} kilometres 
+ */
+function recalculateDistance(kilometres) {
     const modelSelector = document.getElementById('modelSelector');
     const selectedFlight = document.querySelector('input[name="flight"]:checked');
-    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
+    const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
+    const selectedModel = selectedManufacturer.models[modelSelector.value];
     const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
+    const returnButton = document.getElementById('return');
+    // Double the distance if it's a return flight
+    const kmMultiplier = returnButton.checked ? 2 : 1;
+    const passengerSelector = document.getElementById('passengerSelector');
 
-    const kgFuelBurned = selectedProfile.burn * event.target.value;
+    const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
     document.getElementById('fuelBurned').innerText = kgFuelBurned.toFixed(2);
-    // Fuel per seat is in L/100 km. However, our calculations use kilograms, not litres
-    const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats;
+    const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats * passengerSelector.value;
     document.getElementById('seatFuelBurned').innerText = kgSeatFuelBurned.toFixed(2);
 
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
@@ -200,14 +243,23 @@ function recalculateDistance(event) {
             ),
             datasets: [
                 {
-                    label: `${selectedModel.name} ${selectedProfile.name}`,
+                    label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}`,
                     data: Array.from(
                         { length: YEARS_TO_RENDER },
                         (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
                     ),
-                    fill: false,
-                    tension: 0.1
+                    fill: false
+                },
+                {
+                    label: `Just your seats`,
+                    data: Array.from(
+                        { length: YEARS_TO_RENDER },
+                        (_, index) => ((index + 1) * (seatMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+                    ),
+                    fill: true,
+                    backgroundColor: "#ff6a00"
                 }
+
             ]
         },
         options: {

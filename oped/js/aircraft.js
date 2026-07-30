@@ -79,16 +79,14 @@ class Model {
  * @param {number} seats - Number of seats in the aircraft
  * @param {number} kilometres - Distance route travelled while having its fuel efficiency tested
  * @param {number} burn - kilograms of jet fuel burned per kilometre travelled
- * @param {number} fuelPerSeat - Fuel efficiency per seat in L/100 km. Not used in calculation - only good for comparing with other transportation types
  */
 class FlightProfile {
-    constructor(key, name, seats, kilometres, burn, fuelPerSeat) {
+    constructor(key, name, seats, kilometres, burn) {
         this.key = key;
         this.name = name;
         this.seats = seats;
         this.kilometres = kilometres;
         this.burn = burn;
-        this.fuelPerSeat = fuelPerSeat;
     }
     isCommuter() {
         return this.key == 'commuter';
@@ -110,347 +108,422 @@ class FlightProfile {
 const MANUFACTURERS = [
     new Manufacturer('Airbus', [
         new Model('A220-100', [
-            new FlightProfile('regional', 'Regional (115 seats)', 115, 1100, 2.8, 3.07),
-            new FlightProfile('regional', 'Regional (125 seats)', 125, 930, 2.57, 2.57),
-            new FlightProfile('short', 'Short Haul', 125, 1900, 2.28, 2.28)
+            new FlightProfile('regional', 'Regional (115 seats)', 115, 1100, 2.8),
+            new FlightProfile('regional', 'Regional (125 seats)', 125, 930, 2.57),
+            new FlightProfile('short', 'Short Haul', 125, 1900, 2.28)
         ]),
         new Model('A220-300', [
-            new FlightProfile('regional', 'Regional (140 seats)', 140, 1100, 3.10, 2.75),
-            new FlightProfile('regional', 'Regional (160 seats)', 160, 930, 2.85, 2.23),
-            new FlightProfile('short', 'Short Haul (135 seats)', 135, 1900, 2.30, 2.13),
-            new FlightProfile('short', 'Short Haul (150 seats)', 150, 1900, 2.42, 2.02),
-            new FlightProfile('short', 'Short Haul (160 seats)', 160, 1900, 2.56, 2.00),
-            new FlightProfile('medium', 'Medium Haul', 150, 3700, 2.42, 2.02)
+            new FlightProfile('regional', 'Regional (140 seats)', 140, 1100, 3.10),
+            new FlightProfile('regional', 'Regional (160 seats)', 160, 930, 2.85),
+            new FlightProfile('short', 'Short Haul (135 seats)', 135, 1900, 2.30),
+            new FlightProfile('short', 'Short Haul (150 seats)', 150, 1900, 2.42),
+            new FlightProfile('short', 'Short Haul (160 seats)', 160, 1900, 2.56),
+            new FlightProfile('medium', 'Medium Haul', 150, 3700, 2.42)
         ]),
         new Model('A319', [
-            new FlightProfile('short', 'Short Haul', 124, 1900, 2.93, 2.95)
+            new FlightProfile('short', 'Short Haul', 124, 1900, 2.93)
         ]),
         new Model('A319neo', [
-            new FlightProfile('regional', 'Regional (124 seats)', 124, 1220, 2.82, 2.82),
-            new FlightProfile('regional', 'Regional (144 seats)', 144, 1100, 3.37, 2.92),
-            new FlightProfile('regional', 'Regional (154 seats)', 154, 1220, 2.79, 2.25),
-            new FlightProfile('short', 'Short Haul', 136, 1900, 2.4, 2.22)
+            new FlightProfile('regional', 'Regional (124 seats)', 124, 1220, 2.82),
+            new FlightProfile('regional', 'Regional (144 seats)', 144, 1100, 3.37),
+            new FlightProfile('regional', 'Regional (154 seats)', 154, 1220, 2.79),
+            new FlightProfile('short', 'Short Haul', 136, 1900, 2.4)
         ]),
         new Model('A320', [
-            new FlightProfile('short', 'Short Haul', 150, 1900, 3.13, 2.61),
-            new FlightProfile('medium', 'Medium Haul', 150, 3984, 2.91, 2.43)
+            new FlightProfile('short', 'Short Haul', 150, 1900, 3.13),
+            new FlightProfile('medium', 'Medium Haul', 150, 3984, 2.91)
         ]),
         new Model('A320neo', [
-            new FlightProfile('short', 'Short Haul', 180, 1900, 2.79, 1.94)
+            new FlightProfile('short', 'Short Haul', 180, 1900, 2.79)
         ]),
         new Model('A321-200', [
-            new FlightProfile('short', 'Short Haul', 180, 1900, 3.61, 2.50)
+            new FlightProfile('short', 'Short Haul', 180, 1900, 3.61)
         ]),
         new Model('A321neo', [
-            new FlightProfile('regional', 'Regional', 192, 1220, 3.30, 2.19),
-            new FlightProfile('short', 'Short Haul', 220, 1900, 3.47, 1.98)
+            new FlightProfile('regional', 'Regional', 192, 1220, 3.30),
+            new FlightProfile('short', 'Short Haul', 220, 1900, 3.47)
         ]),
         new Model('A321LR', [
-            new FlightProfile('medium', 'Medium Haul', 154, 6300, 2.99, 2.43)
+            new FlightProfile('medium', 'Medium Haul', 154, 6300, 2.99)
         ]),
         new Model('A330-200', [
-            new FlightProfile('short', 'Short Haul', 293, 1900, 5.6, 2.37),
-            new FlightProfile('medium', 'Medium Haul', 241, 5600, 6, 3.11),
-            new FlightProfile('long', 'Long Haul (241 seats)', 241, 11000, 6.4, 3.32),
-            new FlightProfile('long', 'Long Haul (248 seats)', 248, 10277, 6.55, 3.3)
+            new FlightProfile('short', 'Short Haul', 293, 1900, 5.6),
+            new FlightProfile('medium', 'Medium Haul', 241, 5600, 6),
+            new FlightProfile('long', 'Long Haul (241 seats)', 241, 11000, 6.4),
+            new FlightProfile('long', 'Long Haul (248 seats)', 248, 10277, 6.55)
         ]),
         new Model('A330-300', [
-            new FlightProfile('medium', 'Medium Haul', 262, 5600, 6.25, 2.98),
-            new FlightProfile('long', 'Long Haul', 274, 10275, 6.81, 3.11)
+            new FlightProfile('medium', 'Medium Haul', 262, 5600, 6.25),
+            new FlightProfile('long', 'Long Haul', 274, 10275, 6.81)
         ]),
         new Model('A330-800', [
-            new FlightProfile('long', 'Long Haul', 248, 8610, 5.45, 2.75)
+            new FlightProfile('long', 'Long Haul', 248, 8610, 5.45)
         ]),
         new Model('A330-900', [
-            new FlightProfile('medium', 'Medium Haul', 310, 6200, 6, 2.42),
-            new FlightProfile('long', 'Long Haul', 300, 8610, 5.94, 2.48)
+            new FlightProfile('medium', 'Medium Haul', 310, 6200, 6),
+            new FlightProfile('long', 'Long Haul', 300, 8610, 5.94)
         ]),
         new Model('A340-300', [
-            new FlightProfile('medium', 'Medium Haul', 262, 5600, 6.81, 3.25),
-            new FlightProfile('long', 'Long Haul', 262, 11000, 7.32, 3.49)
+            new FlightProfile('medium', 'Medium Haul', 262, 5600, 6.81),
+            new FlightProfile('long', 'Long Haul', 262, 11000, 7.32)
         ]),
         new Model('A350-900', [
-            new FlightProfile('long', 'Long Haul (315 seats, 9208 km)', 315, 9208, 6.03, 2.39),
-            new FlightProfile('long', 'Long Haul (315 seats, 12116 km)', 315, 12116, 7.07, 2.81),
-            new FlightProfile('long', 'Long Haul (318 seats)', 318, 10249, 6.52, 2.56)
+            new FlightProfile('long', 'Long Haul (315 seats, 9208 km)', 315, 9208, 6.03),
+            new FlightProfile('long', 'Long Haul (315 seats, 12116 km)', 315, 12116, 7.07),
+            new FlightProfile('long', 'Long Haul (318 seats)', 318, 10249, 6.52)
         ]),
         new Model('A350-1000', [
-            new FlightProfile('long', 'Long Haul (327 seats)', 327, 10243, 7.46, 2.85),
-            new FlightProfile('long', 'Long Haul (367 seats)', 367, 10243, 7.58, 2.58)
+            new FlightProfile('long', 'Long Haul (327 seats)', 327, 10243, 7.46),
+            new FlightProfile('long', 'Long Haul (367 seats)', 367, 10243, 7.58)
         ]),
         new Model('A380', [
-            new FlightProfile('medium', 'Medium Haul', 544, 3700, 13.6, 3.14),
-            new FlightProfile('long', 'Long Haul (525 seats)', 525, 13300, 13.78, 3.27),
-            new FlightProfile('long', 'Long Haul (544 seats)', 544, 11000, 13.78, 3.16)
+            new FlightProfile('medium', 'Medium Haul', 544, 3700, 13.6),
+            new FlightProfile('long', 'Long Haul (525 seats)', 525, 13300, 13.78),
+            new FlightProfile('long', 'Long Haul (544 seats)', 544, 11000, 13.78)
         ])
     ]),
     new Manufacturer('Antonov', [
         new Model('An-148', [
-            new FlightProfile('commuter', 'Commuter', 89, 446, 4.23, 5.95),
-            new FlightProfile('regional', 'Regional', 89, 1267, 2.89, 4.06),
-            new FlightProfile('short', 'Short Haul', 89, 2204, 2.75, 3.86)
+            new FlightProfile('commuter', 'Commuter', 89, 446, 4.23),
+            new FlightProfile('regional', 'Regional', 89, 1267, 2.89),
+            new FlightProfile('short', 'Short Haul', 89, 2204, 2.75)
         ]),
         new Model('An-158', [
-            new FlightProfile('commuter', 'Commuter', 99, 446, 4.34, 5.47),
-            new FlightProfile('regional', 'Regional', 99, 1267, 3, 3.79),
-            new FlightProfile('short', 'Short Haul', 99, 2204, 2.83, 3.57)
+            new FlightProfile('commuter', 'Commuter', 99, 446, 4.34),
+            new FlightProfile('regional', 'Regional', 99, 1267, 3),
+            new FlightProfile('short', 'Short Haul', 99, 2204, 2.83)
         ]),
     ]),
     new Manufacturer('ATR', [
         new Model('42-500', [
-            new FlightProfile('commuter', 'Commuter', 48, 560, 1.26, 3.15)
+            new FlightProfile('commuter', 'Commuter', 48, 560, 1.26)
         ]),
         new Model('42-600', [
-            new FlightProfile('regional', 'Regional', 50, 930, 1.30, 3.27)
+            new FlightProfile('regional', 'Regional', 50, 930, 1.30)
         ]),
         new Model('72-500', [
-            new FlightProfile('commuter', 'Commuter', 72, 560, 1.67, 2.89)
+            new FlightProfile('commuter', 'Commuter', 72, 560, 1.67)
         ]),
         new Model('72-500', [
-            new FlightProfile('commuter', 'Commuter', 70, 560, 1.42, 2.53)
+            new FlightProfile('commuter', 'Commuter', 70, 560, 1.42)
         ]),
         new Model('72-600', [
-            new FlightProfile('commuter', 'Commuter', 72, 560, 1.56, 2.79),
-            new FlightProfile('regional', 'Regional', 72, 930, 1.41, 2.46)
+            new FlightProfile('commuter', 'Commuter', 72, 560, 1.56),
+            new FlightProfile('regional', 'Regional', 72, 930, 1.41)
         ]),
     ]),
     new Manufacturer('Beechcraft', [
         new Model('1900D', [
-            new FlightProfile('commuter', 'Commuter', 19, 419, 1.00, 6.57)
+            new FlightProfile('commuter', 'Commuter', 19, 419, 1.00)
         ]),
     ]),
     new Manufacturer('Boeing', [
         new Model('737-300', [
-            new FlightProfile('regional', 'Regional', 126, 939, 3.49, 3.46)
+            new FlightProfile('regional', 'Regional', 126, 939, 3.49)
         ]),
         new Model('737-600', [
-            new FlightProfile('regional', 'Regional', 110, 930, 3.16, 3.59),
-            new FlightProfile('short', 'Short Haul', 110, 1900, 2.77, 3.15)
+            new FlightProfile('regional', 'Regional', 110, 930, 3.16),
+            new FlightProfile('short', 'Short Haul', 110, 1900, 2.77)
         ]),
         new Model('737-700', [
-            new FlightProfile('regional', 'Regional', 126, 930, 3.21, 3.19),
-            new FlightProfile('short', 'Short Haul (126 seats)', 126, 1900, 2.82, 2.79),
-            new FlightProfile('short', 'Short Haul (128 seats)', 128, 1900, 2.8, 2.71)
+            new FlightProfile('regional', 'Regional', 126, 930, 3.21),
+            new FlightProfile('short', 'Short Haul (126 seats)', 126, 1900, 2.82),
+            new FlightProfile('short', 'Short Haul (128 seats)', 128, 1900, 2.8)
         ]),
         new Model('737 MAX 7', [
-            new FlightProfile('regional', 'Regional (128 seats)', 128, 1220, 2.85, 2.77),
-            new FlightProfile('regional', 'Regional (144 seats)', 144, 1100, 3.39, 2.93),
-            new FlightProfile('short', 'Short Haul', 140, 1900, 2.51, 1.94)
+            new FlightProfile('regional', 'Regional (128 seats)', 128, 1220, 2.85),
+            new FlightProfile('regional', 'Regional (144 seats)', 144, 1100, 3.39),
+            new FlightProfile('short', 'Short Haul', 140, 1900, 2.51)
         ]),
         new Model('737-800', [
-            new FlightProfile('regional', 'Regional', 162, 930, 3.59, 2.77),
-            new FlightProfile('short', 'Short Haul (160 seats)', 160, 1900, 3.45, 2.68),
-            new FlightProfile('short', 'Short Haul (162 seats)', 162, 1900, 3.17, 2.44)
+            new FlightProfile('regional', 'Regional', 162, 930, 3.59),
+            new FlightProfile('short', 'Short Haul (160 seats)', 160, 1900, 3.45),
+            new FlightProfile('short', 'Short Haul (162 seats)', 162, 1900, 3.17)
         ]),
         new Model('737-800W', [
-            new FlightProfile('short', 'Short Haul', 162, 1900, 3.18, 2.45)
+            new FlightProfile('short', 'Short Haul', 162, 1900, 3.18)
         ]),
         new Model('737 MAX 8', [
-            new FlightProfile('regional', 'Regional', 166, 1220, 3.04, 2.28),
-            new FlightProfile('short', 'Short Haul', 162, 1900, 2.71, 2.04),
-            new FlightProfile('medium', 'Medium Haul', 168, 6300, 2.86, 2.13)
+            new FlightProfile('regional', 'Regional', 166, 1220, 3.04),
+            new FlightProfile('short', 'Short Haul', 162, 1900, 2.71),
+            new FlightProfile('medium', 'Medium Haul', 168, 6300, 2.86)
         ]),
         new Model('737-900ER', [
-            new FlightProfile('regional', 'Regional', 180, 930, 3.83, 2.66),
-            new FlightProfile('short', 'Short Haul', 180, 1900, 3.42, 2.38)
+            new FlightProfile('regional', 'Regional', 180, 930, 3.83),
+            new FlightProfile('short', 'Short Haul', 180, 1900, 3.42)
         ]),
         new Model('737-900ERW', [
-            new FlightProfile('short', 'Short Haul', 180, 1900, 3.42, 2.37)
+            new FlightProfile('short', 'Short Haul', 180, 1900, 3.42)
         ]),
         new Model('737 MAX 9', [
-            new FlightProfile('regional', 'Regional', 180, 1220, 3.30, 2.28),
-            new FlightProfile('short', 'Short Haul', 180, 1900, 2.91, 2.02),
-            new FlightProfile('medium', 'Medium Haul', 144, 6300, 2.91, 2.53)
+            new FlightProfile('regional', 'Regional', 180, 1220, 3.30),
+            new FlightProfile('short', 'Short Haul', 180, 1900, 2.91),
+            new FlightProfile('medium', 'Medium Haul', 144, 6300, 2.91)
         ]),
         new Model('747-400', [
-            new FlightProfile('medium', 'Medium Haul', 416, 3984, 10.77, 3.24),
-            new FlightProfile('long', 'Long Haul (393 seats)', 393, 10192, 11.82, 3.76),
-            new FlightProfile('long', 'Long Haul (416 seats)', 416, 11000, 11.11, 3.34),
-            new FlightProfile('long', 'Long Haul (487 seats)', 487, 10147, 12.31, 3.16)
+            new FlightProfile('medium', 'Medium Haul', 416, 3984, 10.77),
+            new FlightProfile('long', 'Long Haul (393 seats)', 393, 10192, 11.82),
+            new FlightProfile('long', 'Long Haul (416 seats)', 416, 11000, 11.11),
+            new FlightProfile('long', 'Long Haul (487 seats)', 487, 10147, 12.31)
         ]),
         new Model('747-8', [
-            new FlightProfile('medium', 'Medium Haul', 467, 5600, 9.9, 2.65),
-            new FlightProfile('long', 'Long Haul (405 seats)', 405, 13300, 10.9, 3.35),
-            new FlightProfile('long', 'Long Haul (467 seats)', 467, 11000, 10.54, 2.82)
+            new FlightProfile('medium', 'Medium Haul', 467, 5600, 9.9),
+            new FlightProfile('long', 'Long Haul (405 seats)', 405, 13300, 10.9),
+            new FlightProfile('long', 'Long Haul (467 seats)', 467, 11000, 10.54)
         ]),
         new Model('757-200', [
-            new FlightProfile('regional', 'Regional', 200, 930, 4.68, 2.91),
-            new FlightProfile('short', 'Short Haul (190 seats)', 190, 1900, 4.60, 3.02),
-            new FlightProfile('short', 'Short Haul (200 seats)', 200, 1900, 4.16, 2.59)
+            new FlightProfile('regional', 'Regional', 200, 930, 4.68),
+            new FlightProfile('regional', 'Donald Trump', 10, 1342, 29.71),
+            new FlightProfile('short', 'Short Haul (190 seats)', 190, 1900, 4.60),
+            new FlightProfile('short', 'Short Haul (200 seats)', 200, 1900, 4.16),
         ]),
         new Model('757-200W', [
-            new FlightProfile('medium', 'Medium Haul', 158, 6300, 3.79, 3.00)
+            new FlightProfile('medium', 'Medium Haul', 158, 6300, 3.79)
         ]),
         new Model('757-300', [
-            new FlightProfile('regional', 'Regional', 243, 930, 5.19, 2.66),
-            new FlightProfile('short', 'Short Haul', 243, 1900, 4.68, 2.40)
+            new FlightProfile('regional', 'Regional', 243, 930, 5.19),
+            new FlightProfile('short', 'Short Haul', 243, 1900, 4.68)
         ]),
         new Model('767-200ER', [
-            new FlightProfile('medium', 'Medium Haul (181 seats)', 181, 5600, 4.83, 3.34),
-            new FlightProfile('medium', 'Medium Haul (193 seats)', 193, 6300, 5.01, 3.25),
-            new FlightProfile('medium', 'Medium Haul (224 seats)', 224, 5600, 4.93, 2.75),
-            new FlightProfile('long', 'Long Haul (301 seats)', 301, 11000, 7.42, 3.08),
-            new FlightProfile('long', 'Long Haul (304 seats)', 304, 10251, 7.57, 3.11)
+            new FlightProfile('regional', 'Drake', 10, 1093, 25.62),
+            new FlightProfile('medium', 'Medium Haul (181 seats)', 181, 5600, 4.83),
+            new FlightProfile('medium', 'Medium Haul (193 seats)', 193, 6300, 5.01),
+            new FlightProfile('medium', 'Medium Haul (224 seats)', 224, 5600, 4.93),
+            new FlightProfile('long', 'Long Haul (301 seats)', 301, 11000, 7.42),
+            new FlightProfile('long', 'Long Haul (304 seats)', 304, 10251, 7.57),
         ]),
         new Model('767-300ER', [
-            new FlightProfile('medium', 'Medium Haul (218 seats)', 218, 3984, 5.38, 3.09),
-            new FlightProfile('medium', 'Medium Haul (269 seats)', 269, 5600, 5.51, 2.56)
+            new FlightProfile('medium', 'Medium Haul (218 seats)', 218, 3984, 5.38),
+            new FlightProfile('medium', 'Medium Haul (269 seats)', 269, 5600, 5.51)
         ]),
         new Model('767-400ER', [
-            new FlightProfile('medium', 'Medium Haul (245 seats)', 245, 5600, 5.78, 2.95),
-            new FlightProfile('medium', 'Medium Haul (304 seats)', 304, 5600, 5.93, 2.44)
+            new FlightProfile('medium', 'Medium Haul (245 seats)', 245, 5600, 5.78),
+            new FlightProfile('medium', 'Medium Haul (304 seats)', 304, 5600, 5.93)
         ]),
         new Model('777-200', [
-            new FlightProfile('medium', 'Medium Haul', 305, 5600, 6.83, 2.80)
+            new FlightProfile('medium', 'Medium Haul', 305, 5600, 6.83)
         ]),
         new Model('777-200ER', [
-            new FlightProfile('medium', 'Medium Haul', 301, 5600, 6.96, 2.89),
-            new FlightProfile('long', 'Long Haul', 301, 11000, 7.44, 3.09)
+            new FlightProfile('medium', 'Medium Haul', 301, 5600, 6.96),
+            new FlightProfile('long', 'Long Haul', 301, 11000, 7.44)
         ]),
         new Model('777-200LR', [
-            new FlightProfile('long', 'Long Haul', 291, 9208, 7.57, 3.25)
+            new FlightProfile('long', 'Long Haul', 291, 9208, 7.57)
         ]),
         new Model('777-300', [
-            new FlightProfile('medium', 'Medium Haul', 368, 5600, 7.88, 2.68)
+            new FlightProfile('medium', 'Medium Haul', 368, 5600, 7.88)
         ]),
         new Model('777-300ER', [
-            new FlightProfile('long', 'Long Haul', 344, 13300, 8.58, 3.11),
-            new FlightProfile('long', 'Long Haul (365 seats)', 365, 11000, 8.49, 2.91),
-            new FlightProfile('long', 'Long Haul (382 seats)', 382, 10199, 8.86, 2.9)
+            new FlightProfile('long', 'Long Haul', 344, 13300, 8.58),
+            new FlightProfile('long', 'Long Haul (365 seats)', 365, 11000, 8.49),
+            new FlightProfile('long', 'Long Haul (382 seats)', 382, 10199, 8.86)
         ]),
         new Model('777-9X', [
-            new FlightProfile('long', 'Long Haul', 395, 13300, 7.69, 2.42)
+            new FlightProfile('long', 'Long Haul', 395, 13300, 7.69)
         ]),
         new Model('787-8', [
-            new FlightProfile('short', 'Short Haul', 248, 1900, 5.50, 2.77),
-            new FlightProfile('medium', 'Medium Haul (238 seats)', 238, 6300, 5.11, 2.68),
-            new FlightProfile('medium', 'Medium Haul (291 seats)', 291, 6300, 5.26, 2.26),
-            new FlightProfile('long', 'Long Haul', 243, 8610, 5.38, 2.77)
+            new FlightProfile('short', 'Short Haul', 248, 1900, 5.50),
+            new FlightProfile('medium', 'Medium Haul (238 seats)', 238, 6300, 5.11),
+            new FlightProfile('medium', 'Medium Haul (291 seats)', 291, 6300, 5.26),
+            new FlightProfile('long', 'Long Haul', 243, 8610, 5.38)
         ]),
         new Model('787-8 GEnx', [
-            new FlightProfile('long', 'Long Haul', 220, 10255, 5.3, 3.01)
+            new FlightProfile('long', 'Long Haul', 220, 10255, 5.3)
         ]),
         new Model('787-8 Trent', [
-            new FlightProfile('long', 'Long Haul', 220, 10255, 5.51, 3.13)
+            new FlightProfile('long', 'Long Haul', 220, 10255, 5.51)
         ]),
         new Model('787-9', [
-            new FlightProfile('short', 'Short Haul', 296, 1900, 5.67, 2.39),
-            new FlightProfile('medium', 'Medium Haul', 304, 6200, 5.77, 2.37),
-            new FlightProfile('long', 'Long Haul (291 seats)', 291, 12116, 7.18, 3.08),
-            new FlightProfile('long', 'Long Haul (304 seats)', 304, 9208, 5.63, 2.31)
+            new FlightProfile('short', 'Short Haul', 296, 1900, 5.67),
+            new FlightProfile('medium', 'Medium Haul', 304, 6200, 5.77),
+            new FlightProfile('long', 'Long Haul (291 seats)', 291, 12116, 7.18),
+            new FlightProfile('long', 'Long Haul (304 seats)', 304, 9208, 5.63)
         ]),
         new Model('787-9 GEnx', [
-            new FlightProfile('long', 'Long Haul (266 seats)', 266, 10249, 5.62, 2.64),
-            new FlightProfile('long', 'Long Haul (294 seats)', 294, 8610, 5.85, 2.49)
+            new FlightProfile('long', 'Long Haul (266 seats)', 266, 10249, 5.62),
+            new FlightProfile('long', 'Long Haul (294 seats)', 294, 8610, 5.85)
         ]),
         new Model('787-10', [
-            new FlightProfile('short', 'Short Haul', 336, 1900, 6.09, 2.27)
+            new FlightProfile('short', 'Short Haul', 336, 1900, 6.09)
         ]),
         new Model('787-10 GEnx', [
-            new FlightProfile('long', 'Long Haul', 337, 10240, 6.12, 2.27)
+            new FlightProfile('long', 'Long Haul', 337, 10240, 6.12)
         ]),
         new Model('787-10 Trent', [
-            new FlightProfile('long', 'Long Haul', 337, 10240, 6.24, 2.31)
+            new FlightProfile('long', 'Long Haul', 337, 10240, 6.24)
         ]),
     ]),
     new Manufacturer('Bombardier', [
+        new Model('Challenger 350', [
+            new FlightProfile('regional', 'Tom Cruise', 10, 1535, 1.68)
+        ]),
+        new Model('Challenger 600', [
+            new FlightProfile('commuter', 'Kid Rock', 10, 846, 1.66)
+        ]),
         new Model('CRJ100', [
-            new FlightProfile('commuter', 'Commuter', 50, 560, 2.21, 5.50),
-            new FlightProfile('regional', 'Regional', 50, 1069, 1.87, 4.68)
+            new FlightProfile('commuter', 'Commuter', 50, 560, 2.21),
+            new FlightProfile('regional', 'Regional', 50, 1069, 1.87)
         ]),
         new Model('CRJ200', [
-            new FlightProfile('commuter', 'Commuter', 50, 560, 2.18, 5.43),
-            new FlightProfile('regional', 'Regional', 50, 1070, 1.80, 4.49)
+            new FlightProfile('commuter', 'Commuter', 50, 560, 2.18),
+            new FlightProfile('regional', 'Regional', 50, 1070, 1.80)
         ]),
         new Model('CRJ700', [
-            new FlightProfile('commuter', 'Commuter', 70, 560, 2.95, 5.25),
-            new FlightProfile('regional', 'Regional', 70, 1063, 2.45, 4.36)
+            new FlightProfile('commuter', 'Commuter', 70, 560, 2.95),
+            new FlightProfile('regional', 'Regional', 70, 1063, 2.45)
         ]),
         new Model('CRJ900', [
-            new FlightProfile('commuter', 'Commuter', 88, 560, 3.47, 4.91),
-            new FlightProfile('regional', 'Regional', 88, 1061, 2.78, 3.94)
+            new FlightProfile('commuter', 'Commuter', 88, 560, 3.47),
+            new FlightProfile('regional', 'Regional', 88, 1061, 2.78)
         ]),
         new Model('CRJ1000', [
-            new FlightProfile('regional', 'Regional', 100, 930, 2.66, 3.33)
+            new FlightProfile('regional', 'Regional', 100, 930, 2.66)
         ]),
         new Model('Dash 8 Q400', [
-            new FlightProfile('commuter', 'Commuter', 78, 560, 2.16, 3.46),
-            new FlightProfile('regional', 'Regional', 74, 930, 2.31, 3.90),
-            new FlightProfile('regional', 'Regional', 74, 1100, 1.83, 3.09)
+            new FlightProfile('commuter', 'Commuter', 78, 560, 2.16),
+            new FlightProfile('regional', 'Regional', 74, 930, 2.31),
+            new FlightProfile('regional', 'Regional', 74, 1100, 1.83)
         ]),
+        new Model('Global 7500', [
+            new FlightProfile('short', 'Kylie Jenner', 14, 2476, 2.38),
+            new FlightProfile('short', 'Matt Damon', 14, 2236, 2.35)
+        ]),
+        new Model('Global Express', [
+            new FlightProfile('commuter', 'Elton John', 14, 595, 3.17),
+            new FlightProfile('regional', 'Mark Cuban', 14, 1556, 2.34),
+            new FlightProfile('short', 'Playboy Corporation', 14, 1836, 2.1),
+            new FlightProfile('short', 'Mark Wahlberg', 14, 2108, 2.41)
+        ]),
+    ]),
+    new Manufacturer('Cessna', [
+        new Model('Citation 750', [
+            new FlightProfile('short', 'Judge Judy', 8, 2402, 1.41)
+        ]),
+        new Model('Citation Sovereign', [
+            new FlightProfile('short', 'Harrison Ford', 8, 1934, 0.88)
+        ]),
+        new Model('Citation Latitude', [
+            new FlightProfile('commuter', 'Ron DeSantis', 9, 496, 2.42)
+        ]),
+    ]),
+    new Manufacturer('Dassault', [
+        new Model('Falcon 7X', [
+            new FlightProfile('short', 'Taylor Swift ', 12, 1763, 1.54)
+        ]),
+        new Model('Falcon 900', [
+            new FlightProfile('regional', 'Kenny Chesney', 10, 1261, 1.38),
+            new FlightProfile('regional', 'Michael Bloomberg ', 10, 1505, 1.51),
+            new FlightProfile('regional', 'Taylor Swift', 10, 1590, 1.26),
+            new FlightProfile('short', 'Michael Bloomberg ', 10, 1640, 1.43),
+            new FlightProfile('short', 'Tommy Hilfiger', 10, 1782, 1.43),
+            new FlightProfile('short', 'Michael Bloomberg', 10, 1847, 1.4),
+            new FlightProfile('short', 'Max Verstappen', 10, 1968, 1.42),
+        ])
     ]),
     new Manufacturer('Dornier', [
         new Model('228', [
-            new FlightProfile('commuter', 'Commuter', 19, 560, 0.94, 6.22)
+            new FlightProfile('commuter', 'Commuter', 19, 560, 0.94)
         ]),
         new Model('328', [
-            new FlightProfile('commuter', 'Commuter', 32, 560, 1.22, 4.76),
-            new FlightProfile('regional', 'Regional', 31, 1100, 1.08, 4.35)
+            new FlightProfile('commuter', 'Commuter', 32, 560, 1.22),
+            new FlightProfile('regional', 'Regional', 31, 1100, 1.08)
         ]),
     ]),
     new Manufacturer('Embraer', [
         new Model('Brasilia', [
-            new FlightProfile('commuter', 'Commuter', 30, 560, 0.92, 3.82)
+            new FlightProfile('commuter', 'Commuter', 30, 560, 0.92)
         ]),
         new Model('E-Jet E2-175', [
-            new FlightProfile('regional', 'Regional', 88, 1100, 2.44, 3.44)
+            new FlightProfile('regional', 'Regional', 88, 1100, 2.44)
         ]),
         new Model('E-Jet E2-190', [
-            new FlightProfile('regional', 'Regional', 106, 930, 2.48, 2.93)
+            new FlightProfile('regional', 'Regional', 106, 930, 2.48)
         ]),
         new Model('E-Jet E2-190', [
-            new FlightProfile('regional', 'Regional', 106, 1100, 2.83, 3.32)
+            new FlightProfile('regional', 'Regional', 106, 1100, 2.83)
         ]),
         new Model('E-Jet E2-195', [
-            new FlightProfile('regional', 'Regional', 132, 930, 2.62, 2.50)
+            new FlightProfile('regional', 'Regional', 132, 930, 2.62)
         ]),
         new Model('E-Jet E2-195', [
-            new FlightProfile('regional', 'Regional', 132, 1100, 3.07, 2.90)
+            new FlightProfile('regional', 'Regional', 132, 1100, 3.07)
         ]),
         new Model('E-Jet-170', [
-            new FlightProfile('regional', 'Regional', 80, 1122, 2.6, 4.08)
+            new FlightProfile('regional', 'Regional', 80, 1122, 2.6)
         ]),
         new Model('E-Jet-175', [
-            new FlightProfile('regional', 'Regional', 88, 1120, 2.80, 3.97)
+            new FlightProfile('regional', 'Regional', 88, 1120, 2.80)
         ]),
         new Model('E-Jet-190', [
-            new FlightProfile('regional', 'Regional', 114, 1124, 3.24, 3.54)
+            new FlightProfile('regional', 'Regional', 114, 1124, 3.24),
+            new FlightProfile('short', 'Tyler Perry', 10, 2058, 3.73),
+            new FlightProfile('short', 'Travis Scott', 10, 2218, 3.24)
         ]),
         new Model('E-Jet-195', [
-            new FlightProfile('regional', 'Regional', 122, 1124, 3.21, 3.28)
+            new FlightProfile('regional', 'Regional', 122, 1124, 3.21)
         ]),
         new Model('ERJ-135ER', [
-            new FlightProfile('commuter', 'Commuter', 37, 572, 1.64, 5.52),
-            new FlightProfile('regional', 'Regional', 37, 1104, 1.44, 4.86)
+            new FlightProfile('commuter', 'Commuter', 37, 572, 1.64),
+            new FlightProfile('regional', 'Regional', 37, 1104, 1.44)
         ]),
         new Model('ERJ-145ER', [
-            new FlightProfile('commuter', 'Commuter', 50, 565, 1.76, 4.37),
-            new FlightProfile('regional', 'Regional', 50, 1107, 1.55, 3.86)
+            new FlightProfile('commuter', 'Commuter', 50, 565, 1.76),
+            new FlightProfile('regional', 'Regional', 50, 1107, 1.55)
+        ]),
+    ]),
+    new Manufacturer('Gulfstream', [
+        new Model('II', [
+            new FlightProfile('short', 'Tyler Perry', 10, 2058, 3.73)
+        ]),
+        new Model('IV', [
+            new FlightProfile('regional', 'Floyd Mayweather', 14, 1434, 2.53),
+            new FlightProfile('short', 'Blake Shelton', 14, 1702, 2.48),
+            new FlightProfile('short', 'Alex Rodriquez', 14, 1728, 2.23),
+            new FlightProfile('short', 'Dr. Phil', 14, 1863, 2.21),
+            new FlightProfile('short', 'Magic Johnson', 14, 2070, 1.46),
+            new FlightProfile('short', 'Dan Bilzerian', 14, 2263, 2.2)
+        ]),
+        new Model('V', [
+            new FlightProfile('commuter', 'Steve Wynn', 14, 874, 2.21),
+            new FlightProfile('regional', 'Tiger Woods', 14, 1313, 1.98),
+            new FlightProfile('regional', 'Michael Jordan', 14, 1495, 1.9),
+            new FlightProfile('regional', 'Jim Carrey', 14, 1521, 1.93),
+            new FlightProfile('short', 'Under Armour Corporation', 14, 1607, 1.93),
+            new FlightProfile('short', 'Phil Mickelson', 14, 1613, 1.35),
+            new FlightProfile('short', 'Caesars Palace Casino', 14, 1639, 1.86),
+            new FlightProfile('short', 'Jerry Jones', 14, 1889, 1.67),
+            new FlightProfile('short', 'George Lucas', 14, 2009, 1.69),
+            new FlightProfile('short', 'P', 14, 2038, 1.81),
+            new FlightProfile('short', 'Elon Musk ', 14, 2075, 1.71),
+            new FlightProfile('short', 'Jay Z', 14, 2138, 1.7),
+            new FlightProfile('short', 'Google', 14, 2209, 1.74),
+            new FlightProfile('short', 'Peter Thiel', 14, 2260, 1.8),
+            new FlightProfile('medium', 'Lady Gaga', 14, 2655, 1.81)
         ]),
     ]),
     new Manufacturer('Irkut', [
         new Model('MC-21-300', [
-            new FlightProfile('medium', 'Medium Haul', 163, 3240, 3.04, 2.33)
+            new FlightProfile('medium', 'Medium Haul', 163, 3240, 3.04)
         ]),
     ]),
     new Manufacturer('Pilatus', [
         new Model('PC-12', [
-            new FlightProfile('regional', 'Regional', 9, 930, 0.41, 5.66)
+            new FlightProfile('regional', 'Regional', 9, 930, 0.41)
         ]),
     ]),
     new Manufacturer('Quest', [
         new Model('Kodiak', [
-            new FlightProfile('short', 'Short Haul', 9, 1900, 0.71, 6.28)
+            new FlightProfile('short', 'Short Haul', 9, 1900, 0.71)
         ]),
     ]),
     new Manufacturer('Saab', [
         new Model('340', [
-            new FlightProfile('commuter', 'Commuter', 32, 560, 1.1, 4.29),
-            new FlightProfile('regional', 'Regional', 31, 930, 0.95, 3.83)
+            new FlightProfile('commuter', 'Commuter', 32, 560, 1.1),
+            new FlightProfile('regional', 'Regional', 31, 930, 0.95)
         ]),
         new Model('2000', [
-            new FlightProfile('commuter', 'Commuter', 50, 560, 1.75, 4.39),
-            new FlightProfile('regional', 'Regional', 50, 930, 1.54, 3.85)
+            new FlightProfile('commuter', 'Commuter', 50, 560, 1.75),
+            new FlightProfile('regional', 'Regional', 50, 930, 1.54)
         ]),
     ]),
     new Manufacturer('Sukhoi', [
