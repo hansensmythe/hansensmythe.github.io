@@ -12,7 +12,7 @@ const MJ_PER_HIROSHIMA = 63000000;
 // const MJ_PER_MEGATONNE = 4184000000;
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
-const MAXIMUM_PASSENGERS = 8;
+const MAXIMUM_PASSENGERS = 10;
 
 // Chart constants
 const YEARS_TO_RENDER = 75;
@@ -44,14 +44,6 @@ function initialize() {
 
     // Populate filtered subsets of the data by calling function in aircraft.js
     filteredManufacturers = getFilteredManufacturers();
-
-    const passengerSelector = document.getElementById('passengerSelector');
-    for (let i = 1; i <= MAXIMUM_PASSENGERS; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.text = i;
-        passengerSelector.appendChild(option);
-    }
 
     // Add a listener for tweaks to the kilometre value of a flight profile
     const distanceSlider = document.getElementById('distance');
@@ -111,7 +103,8 @@ function filterByProfile(key) {
 
 /**
  * Called when the model is initialized or updated, to create or replace the radio buttons for the flight profiles.
- * Typically there will be just one, but for larger planes there was sometimes data for multiple configurations, e.g. different numbers of seats.
+ * Typically there will be just one, but for larger planes there was sometimes data for multiple configurations,
+ * e.g. different numbers of seats, or custom data for different celebrities.
  * 
  * @param {FlightProfile[]} flightProfiles - Array of flight profile objects matching the selected model and filtered for the flight profile range.
  */
@@ -173,9 +166,8 @@ function recalculateProfile() {
     const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
     const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
     // Populate data for this profile
-    document.getElementById('seats').innerText = selectedProfile.seats;
+    document.getElementById('seats').innerText = selectedProfile.seats > 1 ? `${selectedProfile.seats} seats` : 'private owner uses entire plane';
     document.getElementById('burn').innerText = selectedProfile.burn;
-    document.getElementById('fuelPerSeat').innerText = selectedProfile.fuelPerSeat; // Display only - not for calculation
 
     // Recalculating the profile requires setting the distance slider's initial value and range.
     // If the user moves the slider, the min and max won't change, but we'll need to recalculate all the distance-related values.
@@ -187,6 +179,17 @@ function recalculateProfile() {
     distanceSlider.value = selectedProfile.kilometres;
     const distanceDisplay = document.getElementById('distanceDisplay');
     distanceDisplay.innerText = selectedProfile.kilometres;
+
+    const passengerSelector = document.getElementById('passengerSelector');
+    passengerSelector.options.length = 0;
+    // Deal with celebrities where the entire plane counts as one seat, no matter how many people are in it
+    const maximumPassengers = selectedProfile.seats == 1 ? 1 : MAXIMUM_PASSENGERS;
+    for (let i = 1; i <= maximumPassengers; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        passengerSelector.appendChild(option);
+    }
 
     recalculateDistance(selectedProfile.kilometres);
 }
@@ -216,7 +219,7 @@ function recalculateDistance(kilometres) {
     const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
     document.getElementById('totalCO2').innerText = totalCO2.toFixed(2);
     const percentHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('immediate').innerText = `${percentHiroshima.toFixed(2)}%`;
+    document.getElementById('immediate').innerText = `${percentHiroshima.toFixed(3)}%`;
     const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
     const yearsForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
     document.getElementById('hiroshima').innerText = yearsForHiroshima.toFixed(1);
@@ -225,15 +228,38 @@ function recalculateDistance(kilometres) {
     const seatTotalCO2 = seatMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
     document.getElementById('pTotalCO2').innerText = seatTotalCO2.toFixed(2);
     const percentSeatHiroshima = seatMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('pImmediate').innerText = `${percentSeatHiroshima.toFixed(4)}%`;
+    document.getElementById('pImmediate').innerText = `${percentSeatHiroshima.toFixed(3)}%`;
     const mjSeatToMakeHiroshima = MJ_PER_HIROSHIMA / seatMegajoules;
     const seatYearsForHiroshima = mjSeatToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('pHiroshima').innerText = seatYearsForHiroshima.toFixed(0);
+    document.getElementById('pHiroshima').innerText = seatYearsForHiroshima.toFixed(1);
 
     const ctx = document.getElementById('IFChart').getContext('2d');
     if (flightChart) {
         flightChart.destroy(); // Free the canvas if a previous chart already exists there
     }
+    const datasets = [
+        {
+            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}${selectedProfile.privateFlightsPerYear ? ' (' + selectedProfile.privateFlightsPerYear + ' flights per year)': ''}`,
+            data: Array.from(
+                { length: YEARS_TO_RENDER },
+                (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+            ),
+            fill: false
+        }
+    ];
+    if (selectedProfile.seats > passengerSelector.value) {
+        datasets.push({
+            label: `Just your seats`,
+            data: Array.from(
+                { length: YEARS_TO_RENDER },
+                (_, index) => ((index + 1) * (seatMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+            ),
+            fill: true,
+            backgroundColor: "#ff6a00"
+        }
+        );
+    }
+
     flightChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -241,26 +267,7 @@ function recalculateDistance(kilometres) {
                 { length: YEARS_TO_RENDER },
                 (_, index) => new Date().getFullYear() + index
             ),
-            datasets: [
-                {
-                    label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}`,
-                    data: Array.from(
-                        { length: YEARS_TO_RENDER },
-                        (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
-                    ),
-                    fill: false
-                },
-                {
-                    label: `Just your seats`,
-                    data: Array.from(
-                        { length: YEARS_TO_RENDER },
-                        (_, index) => ((index + 1) * (seatMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
-                    ),
-                    fill: true,
-                    backgroundColor: "#ff6a00"
-                }
-
-            ]
+            datasets: datasets
         },
         options: {
             plugins: {
