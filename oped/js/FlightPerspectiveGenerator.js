@@ -46,7 +46,7 @@ function initialize() {
     filteredManufacturers = getFilteredManufacturers();
 
     // Add a listener for tweaks to the kilometre value of a flight profile
-    const distanceSlider = document.getElementById('distance');
+    const distanceSlider = document.getElementById('distanceSlider');
     const distanceDisplay = document.getElementById('distanceDisplay');
     // Triggers continuously while dragging. We do not recalculate until the 'change' event.
     distanceSlider.addEventListener('input', function (event) {
@@ -65,7 +65,7 @@ function initialize() {
 function handleChangeEvent(event) {
     // For radio buttons we can use the 'name' attribute to recognize the event, because each button has a different ID.
     // However, dropdowns and sliders don't have or need a 'name' because their 'id' works to identify them.
-    if (event.target.name == 'profile') {
+    if (event.target.name == 'profileFilter') {
         filterByProfile(event.target.value);
     } else if (event.target.id == 'manufacturerSelector') {
         selectManufacturer(event.target.value);
@@ -73,11 +73,16 @@ function handleChangeEvent(event) {
         const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[event.target.value];
         replaceFlightProfileButtons(selectedModel.flightProfiles);
         recalculateProfile();
-    } else if (event.target.id == 'distance') {
-        recalculateDistance(event.target.value);
-    } else {
-        // event.target.name == 'flight' or event.target.name == 'isReturn' or event.target.id == 'passengerSelector'
+    } else if (event.target.name == 'flightProfile') {
         recalculateProfile();
+    } else if (event.target.id == 'distanceSlider') {
+        buildChart(event.target.value, document.getElementById('passengerSelector').value);
+    } else if (event.target.id == 'passengerSelector') {
+        buildChart(document.getElementById('distanceSlider').value, event.target.value);
+    } else if (event.target.name == 'isReturn') {
+        buildChart(document.getElementById('distanceSlider').value, document.getElementById('passengerSelector').value);
+    } else {
+        console.log(`Found unhandled change event for id=${event.target.id} or name=${event.target.name}`)
     }
 }
 
@@ -115,7 +120,7 @@ function replaceFlightProfileButtons(flightProfiles) {
         const id = 'flight' + index;
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = 'flight';
+        radio.name = 'flightProfile';
         radio.value = index;
         radio.id = id;
         if (index == 0) {
@@ -156,22 +161,26 @@ function selectManufacturer(manufacturerIndex) {
     recalculateProfile();
 }
 
+// Convenience function for recalculateProfile and buildChart
+function getSelectedProfileIndex() {
+    return document.querySelector('input[name="flightProfile"]:checked').value;
+}
+
 /**
- * Called when a manufacturer, model, flight configuration, or passenger count is changed. Populates seats, burn,
- * fuelPerSeat, and distanceSlider, then recalculates the distance using default kilometres for the flight config.
+ * Called when a manufacturer, model, or flight configuration is changed. Populates seats, burn, fuelPerSeat,
+ * and distanceSlider, then recalculates the distance using default kilometres for the flight config.
  */
 function recalculateProfile() {
     const modelSelector = document.getElementById('modelSelector');
-    const selectedFlight = document.querySelector('input[name="flight"]:checked');
     const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
-    const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
+    const selectedProfile = selectedModel.flightProfiles[getSelectedProfileIndex()];
     // Populate data for this profile
-    document.getElementById('seats').innerText = selectedProfile.seats > 1 ? `${selectedProfile.seats} seats` : 'private owner uses entire plane';
+    document.getElementById('seats').innerText = selectedProfile.isPrivate() ? 'private owner uses entire plane' : `${selectedProfile.seats} seats`;
     document.getElementById('burn').innerText = selectedProfile.burn;
 
     // Recalculating the profile requires setting the distance slider's initial value and range.
     // If the user moves the slider, the min and max won't change, but we'll need to recalculate all the distance-related values.
-    const distanceSlider = document.getElementById('distance');
+    const distanceSlider = document.getElementById('distanceSlider');
     const min = selectedProfile.kilometres * (1 - SLIDER_KM_RANGE);
     const max = selectedProfile.kilometres * (1 + SLIDER_KM_RANGE);
     distanceSlider.min = min.toFixed(0);
@@ -183,7 +192,7 @@ function recalculateProfile() {
     const passengerSelector = document.getElementById('passengerSelector');
     passengerSelector.options.length = 0;
     // Deal with celebrities where the entire plane counts as one seat, no matter how many people are in it
-    const maximumPassengers = selectedProfile.seats == 1 ? 1 : MAXIMUM_PASSENGERS;
+    const maximumPassengers = selectedProfile.isPrivate() ? 1 : MAXIMUM_PASSENGERS;
     for (let i = 1; i <= maximumPassengers; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -191,29 +200,28 @@ function recalculateProfile() {
         passengerSelector.appendChild(option);
     }
 
-    recalculateDistance(selectedProfile.kilometres);
+    // We have just repopulated the passenger count, so by default it's 1
+    buildChart(selectedProfile.kilometres, 1);
 }
 
 /**
- * Calculates the kilograms of fuel burned, and derives all other reported values.
+ * Calculates the kilograms of fuel burned overall and just the share for the given number of passengers,
+ * then derives all other reported values to insert into the data and chart.
+ * 
  * @param {number} kilometres 
+ * @param {number} passengerCount 
  */
-function recalculateDistance(kilometres) {
+function buildChart(kilometres, passengerCount) {
     const modelSelector = document.getElementById('modelSelector');
-    const selectedFlight = document.querySelector('input[name="flight"]:checked');
     const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
     const selectedModel = selectedManufacturer.models[modelSelector.value];
-    const selectedProfile = selectedModel.flightProfiles[selectedFlight.value];
+    const selectedProfile = selectedModel.flightProfiles[getSelectedProfileIndex()];
     const returnButton = document.getElementById('return');
     // Double the distance if it's a return flight
     const kmMultiplier = returnButton.checked ? 2 : 1;
-    const passengerSelector = document.getElementById('passengerSelector');
 
     const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
     document.getElementById('fuelBurned').innerText = kgFuelBurned.toFixed(2);
-    const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats * passengerSelector.value;
-    document.getElementById('seatFuelBurned').innerText = kgSeatFuelBurned.toFixed(2);
-
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
     // Convert grams per megajoule into kilograms of CO2 for the flight
     const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
@@ -224,6 +232,8 @@ function recalculateDistance(kilometres) {
     const yearsForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
     document.getElementById('hiroshima').innerText = yearsForHiroshima.toFixed(1);
 
+    const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
+    document.getElementById('seatFuelBurned').innerText = kgSeatFuelBurned.toFixed(2);
     const seatMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
     const seatTotalCO2 = seatMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
     document.getElementById('pTotalCO2').innerText = seatTotalCO2.toFixed(2);
@@ -247,7 +257,7 @@ function recalculateDistance(kilometres) {
             fill: false
         }
     ];
-    if (selectedProfile.seats > passengerSelector.value) {
+    if (!selectedProfile.isPrivate()) {
         datasets.push({
             label: `Just your seats`,
             data: Array.from(

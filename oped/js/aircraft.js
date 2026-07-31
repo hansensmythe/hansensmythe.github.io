@@ -1,5 +1,6 @@
 /*
-    Data extracted from https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft on 24 July 2026
+    Data extracted from https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft
+    and https://celebrityprivatejettracker.com/leaderboard/ on 24 July 2026
 */
 
 /**
@@ -114,7 +115,7 @@ class FlightProfile {
         return this.key == 'long';
     }
     isPrivate() {
-        return this.privateFlightsPerYear > 0;
+        return this.key == 'private';
     }
 }
 
@@ -286,7 +287,7 @@ const MANUFACTURERS = [
         ]),
         new Model('757-200', [
             new FlightProfile('regional', 'Regional', 200, 930, 4.68),
-            new FlightProfile('regional', 'Donald Trump', 1, 1342, 29.71, 480),
+            new FlightProfile('private', 'Donald Trump', 1, 1342, 29.71, 480),
             new FlightProfile('short', 'Short Haul (190 seats)', 190, 1900, 4.60),
             new FlightProfile('short', 'Short Haul (200 seats)', 200, 1900, 4.16),
         ]),
@@ -298,7 +299,7 @@ const MANUFACTURERS = [
             new FlightProfile('short', 'Short Haul', 243, 1900, 4.68)
         ]),
         new Model('767-200ER', [
-            new FlightProfile('regional', 'Drake', 1, 1093, 25.62, 141),
+            new FlightProfile('private', 'Drake', 1, 1093, 25.62, 141),
             new FlightProfile('medium', 'Medium Haul (181 seats)', 181, 5600, 4.83),
             new FlightProfile('medium', 'Medium Haul (193 seats)', 193, 6300, 5.01),
             new FlightProfile('medium', 'Medium Haul (224 seats)', 224, 5600, 4.93),
@@ -368,10 +369,10 @@ const MANUFACTURERS = [
     ]),
     new Manufacturer('Bombardier', [
         new Model('Challenger 350', [
-            new FlightProfile('regional', 'Tom Cruise', 1, 1535, 1.68, 367)
+            new FlightProfile('private', 'Tom Cruise', 1, 1535, 1.68, 367)
         ]),
         new Model('Challenger 600', [
-            new FlightProfile('commuter', 'Kid Rock', 1, 846, 1.66, 245)
+            new FlightProfile('private', 'Kid Rock', 1, 846, 1.66, 245)
         ]),
         new Model('CRJ100', [
             new FlightProfile('commuter', 'Commuter', 50, 560, 2.21),
@@ -398,39 +399,39 @@ const MANUFACTURERS = [
             new FlightProfile('regional', 'Regional', 74, 1100, 1.83)
         ]),
         new Model('Global 7500', [
-            new FlightProfile('short', 'Kylie Jenner', 1, 2476, 2.38, 271),
-            new FlightProfile('short', 'Matt Damon', 1, 2236, 2.35, 234)
+            new FlightProfile('private', 'Kylie Jenner', 1, 2476, 2.38, 271),
+            new FlightProfile('private', 'Matt Damon', 1, 2236, 2.35, 234)
         ]),
         new Model('Global Express', [
-            new FlightProfile('commuter', 'Elton John', 1, 595, 3.17, 51),
-            new FlightProfile('regional', 'Mark Cuban', 1, 1556, 2.34, 206),
-            new FlightProfile('short', 'Playboy Corporation', 1, 1836, 2.1, 15),
-            new FlightProfile('short', 'Mark Wahlberg', 1, 2108, 2.41, 174)
+            new FlightProfile('private', 'Elton John', 1, 595, 3.17, 51),
+            new FlightProfile('private', 'Mark Cuban', 1, 1556, 2.34, 206),
+            new FlightProfile('private', 'Playboy Corporation', 1, 1836, 2.1, 15),
+            new FlightProfile('private', 'Mark Wahlberg', 1, 2108, 2.41, 174)
         ]),
     ]),
     new Manufacturer('Cessna', [
         new Model('Citation 750', [
-            new FlightProfile('short', 'Judge Judy', 1, 2402, 1.41, 123)
+            new FlightProfile('private', 'Judge Judy', 1, 2402, 1.41, 123)
         ]),
         new Model('Citation Latitude', [
-            new FlightProfile('commuter', 'Ron DeSantis', 1, 496, 2.42, 855)
+            new FlightProfile('private', 'Ron DeSantis', 1, 496, 2.42, 855)
         ]),
         new Model('Citation Sovereign', [
-            new FlightProfile('short', 'Harrison Ford', 1, 1934, 0.88, 81)
+            new FlightProfile('private', 'Harrison Ford', 1, 1934, 0.88, 81)
         ]),
     ]),
     new Manufacturer('Dassault', [
         new Model('Falcon 7X', [
-            new FlightProfile('short', 'Taylor Swift (plane #1)', 1, 1763, 1.54, 136)
+            new FlightProfile('private', 'Taylor Swift (plane #1)', 1, 1763, 1.54, 136)
         ]),
         new Model('Falcon 900', [
-            new FlightProfile('regional', 'Kenny Chesney', 1, 1261, 1.38, 289),
-            new FlightProfile('short', 'Max Verstappen', 1, 1968, 1.42, 95),
-            new FlightProfile('short', 'Michael Bloomberg (plane #1)', 1, 1847, 1.4, 365),
-            new FlightProfile('regional', 'Michael Bloomberg (plane #2)', 1, 1505, 1.51, 382),
-            new FlightProfile('short', 'Michael Bloomberg (plane #3)', 1, 1640, 1.43, 155),
-            new FlightProfile('regional', 'Taylor Swift (sold)', 1, 1590, 1.26, 41),
-            new FlightProfile('short', 'Tommy Hilfiger', 1, 1782, 1.43, 146),
+            new FlightProfile('private', 'Kenny Chesney', 1, 1261, 1.38, 289),
+            new FlightProfile('private', 'Max Verstappen', 1, 1968, 1.42, 95),
+            new FlightProfile('private', 'Michael Bloomberg (plane #1)', 1, 1847, 1.4, 365),
+            new FlightProfile('private', 'Michael Bloomberg (plane #2)', 1, 1505, 1.51, 382),
+            new FlightProfile('private', 'Michael Bloomberg (plane #3)', 1, 1640, 1.43, 155),
+            new FlightProfile('private', 'Taylor Swift (sold)', 1, 1590, 1.26, 41),
+            new FlightProfile('private', 'Tommy Hilfiger', 1, 1782, 1.43, 146),
         ])
     ]),
     new Manufacturer('Dornier', [
@@ -469,8 +470,8 @@ const MANUFACTURERS = [
         ]),
         new Model('E-Jet-190', [
             new FlightProfile('regional', 'Regional', 114, 1124, 3.24),
-            new FlightProfile('short', 'Travis Scott', 1, 2218, 3.24, 419),
-            new FlightProfile('short', 'Tyler Perry', 1, 2058, 3.73, 121),
+            new FlightProfile('private', 'Travis Scott', 1, 2218, 3.24, 419),
+            new FlightProfile('private', 'Tyler Perry', 1, 2058, 3.73, 121),
         ]),
         new Model('E-Jet-195', [
             new FlightProfile('regional', 'Regional', 122, 1124, 3.21)
@@ -486,52 +487,52 @@ const MANUFACTURERS = [
     ]),
     new Manufacturer('Gulfstream', [
         new Model('II', [
-            new FlightProfile('short', 'Magic Johnson', 1, 2070, 1.46, 15)
+            new FlightProfile('private', 'Magic Johnson', 1, 2070, 1.46, 15)
         ]),
         new Model('IV', [
-            new FlightProfile('short', 'Alex Rodriquez', 1, 1728, 2.23, 241),
-            new FlightProfile('short', 'Blake Shelton', 1, 1702, 2.48, 170),
-            new FlightProfile('short', 'Dan Bilzerian', 1, 2263, 2.2, 93),
-            new FlightProfile('regional', 'Floyd Mayweather', 1, 1434, 2.53, 95),
-            new FlightProfile('short', 'Dr. Phil', 1, 1863, 2.21, 155),
+            new FlightProfile('private', 'Alex Rodriquez', 1, 1728, 2.23, 241),
+            new FlightProfile('private', 'Blake Shelton', 1, 1702, 2.48, 170),
+            new FlightProfile('private', 'Dan Bilzerian', 1, 2263, 2.2, 93),
+            new FlightProfile('private', 'Floyd Mayweather', 1, 1434, 2.53, 95),
+            new FlightProfile('private', 'Dr. Phil', 1, 1863, 2.21, 155),
         ]),
         new Model('V', [
-            new FlightProfile('short', 'Caesars Palace Casino', 1, 1639, 1.86, 222),
-            new FlightProfile('short', 'Elon Musk (plane #2)', 1, 2075, 1.71, 240),
-            new FlightProfile('short', 'George Lucas', 1, 2009, 1.69, 222),
-            new FlightProfile('short', 'Google', 1, 2209, 1.74, 141),
-            new FlightProfile('short', 'Jay Z', 1, 2138, 1.7, 291),
-            new FlightProfile('short', 'Jerry Jones', 1, 1889, 1.67, 167),
-            new FlightProfile('regional', 'Jim Carrey', 1, 1521, 1.93, 229),
-            new FlightProfile('medium', 'Lady Gaga', 1, 2655, 1.81, 142),
-            new FlightProfile('regional', 'Michael Jordan', 1, 1495, 1.9, 116),
-            new FlightProfile('short', 'P. Diddy', 1, 2038, 1.81, 438),
-            new FlightProfile('short', 'Peter Thiel', 1, 2260, 1.8, 83),
-            new FlightProfile('short', 'Phil Mickelson', 1, 1613, 1.35, 2),
-            new FlightProfile('commuter', 'Steve Wynn', 1, 874, 2.21, 682),
-            new FlightProfile('regional', 'Tiger Woods', 1, 1313, 1.98, 60),
-            new FlightProfile('short', 'Under Armour Corporation', 1, 1607, 1.93, 236),
+            new FlightProfile('private', 'Caesars Palace Casino', 1, 1639, 1.86, 222),
+            new FlightProfile('private', 'Elon Musk (plane #2)', 1, 2075, 1.71, 240),
+            new FlightProfile('private', 'George Lucas', 1, 2009, 1.69, 222),
+            new FlightProfile('private', 'Google', 1, 2209, 1.74, 141),
+            new FlightProfile('private', 'Jay Z', 1, 2138, 1.7, 291),
+            new FlightProfile('private', 'Jerry Jones', 1, 1889, 1.67, 167),
+            new FlightProfile('private', 'Jim Carrey', 1, 1521, 1.93, 229),
+            new FlightProfile('private', 'Lady Gaga', 1, 2655, 1.81, 142),
+            new FlightProfile('private', 'Michael Jordan', 1, 1495, 1.9, 116),
+            new FlightProfile('private', 'P. Diddy', 1, 2038, 1.81, 438),
+            new FlightProfile('private', 'Peter Thiel', 1, 2260, 1.8, 83),
+            new FlightProfile('private', 'Phil Mickelson', 1, 1613, 1.35, 2),
+            new FlightProfile('private', 'Steve Wynn', 1, 874, 2.21, 682),
+            new FlightProfile('private', 'Tiger Woods', 1, 1313, 1.98, 60),
+            new FlightProfile('private', 'Under Armour Corporation', 1, 1607, 1.93, 236),
         ]),
         new Model('G650', [
-            new FlightProfile('medium', 'Bill Gates (plane #1)', 1, 2551, 2.15, 355),
-            new FlightProfile('medium', 'Bill Gates (plane #2)', 1, 2543, 2.16, 235),
-            new FlightProfile('medium', 'David Geffen', 1, 2824, 2.09, 109),
-            new FlightProfile('short', 'Elon Musk (plane #1)', 1, 2323, 2.13, 358),
-            new FlightProfile('short', 'Eric Schmidt', 1, 1983, 2.28, 687),
-            new FlightProfile('medium', 'Jeff Bezos (plane #1)', 1, 4456, 1.84, 8),
-            new FlightProfile('short', 'Jeff Bezos (plane #2)', 1, 1777, 1.96, 4),
-            new FlightProfile('medium', 'Kim Kardashian', 1, 2918, 2.13, 326),
-            new FlightProfile('short', 'Larry Ellison', 1, 2117, 2.39, 125),
-            new FlightProfile('medium', 'Marc Benioff', 1, 2649, 2.32, 175),
-            new FlightProfile('short', 'Mark Zuckerberg', 1, 1888, 2.41, 335),
-            new FlightProfile('short', 'Nike Corporation', 1, 2239, 2.41, 204),
-            new FlightProfile('short', 'Oprah Winfrey', 1, 1931, 2.37, 260),
-            new FlightProfile('regional', 'Phil Knight', 1, 1573, 2.74, 222),
-            new FlightProfile('short', 'Ronald Perelman', 1, 1727, 2.22, 186),
-            new FlightProfile('short', 'Rupert Murdoch', 1, 2111, 2.36, 110),
-            new FlightProfile('medium', 'Sergey Brin', 1, 3444, 2.09, 126),
-            new FlightProfile('short', 'Steve Ballmer', 1, 1662, 2.32, 408),
-            new FlightProfile('short', 'Steven Spielberg', 1, 2464, 2.21, 130),
+            new FlightProfile('private', 'Bill Gates (plane #1)', 1, 2551, 2.15, 355),
+            new FlightProfile('private', 'Bill Gates (plane #2)', 1, 2543, 2.16, 235),
+            new FlightProfile('private', 'David Geffen', 1, 2824, 2.09, 109),
+            new FlightProfile('private', 'Elon Musk (plane #1)', 1, 2323, 2.13, 358),
+            new FlightProfile('private', 'Eric Schmidt', 1, 1983, 2.28, 687),
+            new FlightProfile('private', 'Jeff Bezos (plane #1)', 1, 4456, 1.84, 8),
+            new FlightProfile('private', 'Jeff Bezos (plane #2)', 1, 1777, 1.96, 4),
+            new FlightProfile('private', 'Kim Kardashian', 1, 2918, 2.13, 326),
+            new FlightProfile('private', 'Larry Ellison', 1, 2117, 2.39, 125),
+            new FlightProfile('private', 'Marc Benioff', 1, 2649, 2.32, 175),
+            new FlightProfile('private', 'Mark Zuckerberg', 1, 1888, 2.41, 335),
+            new FlightProfile('private', 'Nike Corporation', 1, 2239, 2.41, 204),
+            new FlightProfile('private', 'Oprah Winfrey', 1, 1931, 2.37, 260),
+            new FlightProfile('private', 'Phil Knight', 1, 1573, 2.74, 222),
+            new FlightProfile('private', 'Ronald Perelman', 1, 1727, 2.22, 186),
+            new FlightProfile('private', 'Rupert Murdoch', 1, 2111, 2.36, 110),
+            new FlightProfile('private', 'Sergey Brin', 1, 3444, 2.09, 126),
+            new FlightProfile('private', 'Steve Ballmer', 1, 1662, 2.32, 408),
+            new FlightProfile('private', 'Steven Spielberg', 1, 2464, 2.21, 130),
         ])
     ]),
     new Manufacturer('Irkut', [
@@ -546,7 +547,7 @@ const MANUFACTURERS = [
     ]),
     new Manufacturer('Learjet', [
         new Model('60', [
-            new FlightProfile('regional', 'Luke Bryan', 1, 969, 1.19, 880)
+            new FlightProfile('private', 'Luke Bryan', 1, 969, 1.19, 880)
         ]),
     ]),
     new Manufacturer('Quest', [
@@ -566,7 +567,7 @@ const MANUFACTURERS = [
     ]),
     new Manufacturer('Sukhoi', [
         new Model('SSJ100', [
-            new FlightProfile('regional', 'Regional', 98, 930, 2.81, 3.59)
+            new FlightProfile('regional', 'Regional', 98, 930, 2.81)
         ]),
     ])
 ]

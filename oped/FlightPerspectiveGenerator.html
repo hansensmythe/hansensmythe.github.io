@@ -69,18 +69,18 @@
 
         <fieldset>
             <legend>Select flight profile range:</legend>
-            <div><input type="radio" id="commuter" name="profile" value="commuter"/><label for="commuter">Commuter
+            <div><input type="radio" id="commuter" name="profileFilter" value="commuter"/><label for="commuter">Commuter
                     flight ~560 km</label></div>
-            <div><input type="radio" id="regional" name="profile" value="regional" /><label for="regional">Regional
+            <div><input type="radio" id="regional" name="profileFilter" value="regional" /><label for="regional">Regional
                     flight 930 to 1300 km</label></div>
-            <div><input type="radio" id="short" name="profile" value="short" /><label for="short">Short-haul flight
+            <div><input type="radio" id="short" name="profileFilter" value="short" /><label for="short">Short-haul flight
                     ~1900 km</label></div>
-            <div><input type="radio" id="medium" name="profile" value="medium" /><label for="medium">Medium-haul flight
+            <div><input type="radio" id="medium" name="profileFilter" value="medium" /><label for="medium">Medium-haul flight
                     3700 to 5600 km, e.g. transcontinental or short transatlantic</label></div>
-            <div><input type="radio" id="long" name="profile" value="long" checked /><label for="long">Long-haul flight
+            <div><input type="radio" id="long" name="profileFilter" value="long" checked /><label for="long">Long-haul flight
                     9300 to 13000 km, e.g. transpacific</label></div>
-            <div><input type="radio" id="private" name="profile" value="private"/><label for="long">Private aircraft only</label></div>
-            <div><input type="radio" id="all" name="profile" value="all" /><label for="all">All ranges</label></div>
+            <div><input type="radio" id="private" name="profileFilter" value="private"/><label for="long">Private aircraft only</label></div>
+            <div><input type="radio" id="all" name="profileFilter" value="all" /><label for="all">All ranges</label></div>
         </fieldset>
         <p>Select an aircraft manufacturer, aircraft model, and flight configuration to see what the impact is of taking
             that flight.</p>
@@ -92,8 +92,8 @@
 
         <div id="flightButtonDiv"></div>
         <div>
-            <label for="distance">Kilometres flown:</label>
-            <input type="range" id="distance" step="10"></input>
+            <label for="distanceSlider">Kilometres flown:</label>
+            <input type="range" id="distanceSlider" step="10"></input>
             <span id="distanceDisplay">0</span>
         </div>
         <div>
@@ -120,7 +120,7 @@
                 <th id="totalCO2">0</th>
                 <th id="pTotalCO2">0</th>
                 <td>Kilograms of CO<sub>2</sub> released over entire life cycle of the fuel (from mining or drilling to
-                    you being in the arrivals lounge)</td>
+                    you arriving at your destination)</td>
             </tr>
             <tr>
                 <th id="immediate"></th>
