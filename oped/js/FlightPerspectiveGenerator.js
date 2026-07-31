@@ -206,65 +206,39 @@ function recalculateProfile() {
     buildChart(selectedProfile.kilometres, 1);
 }
 
+// Use a standard formatter to add commas to numbers for readability
+function getFormattedNumber(x) {
+    // TODO: Can we get formatting and also number of decimals? 
+    return x.toLocaleString();
+}
+
 /**
- * Calculates the kilograms of fuel burned overall and just the share for the given number of passengers,
- * then derives all other reported values to insert into the data and chart.
- * 
- * @param {number} kilometres 
- * @param {number} passengerCount 
- */
+* Calculates the kilograms of fuel burned overall and just the share for the given number of passengers,
+* then derives all other reported values to insert into the data and chart.
+* 
+* @param {number} kilometres 
+* @param {number} passengerCount 
+*/
 function buildChart(kilometres, passengerCount) {
     const modelSelector = document.getElementById('modelSelector');
     const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
     const selectedModel = selectedManufacturer.models[modelSelector.value];
     const selectedProfile = selectedModel.flightProfiles[getSelectedProfileIndex()];
-    const returnButton = document.getElementById('returnTicket');
+    const returnButton = document.getElementById('returnFlight');
     // Double the distance if it's a return flight
     const kmMultiplier = returnButton.checked ? 2 : 1;
+    const flightText = `this ${returnButton.checked ? 'return' : 'one way'} flight`;
 
     const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
-    document.getElementById('flightFuelBurned').innerText = kgFuelBurned.toFixed(2);
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
-    // Convert grams per megajoule into kilograms of CO2 for the flight
-    const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('flightTotalCO2').innerText = totalCO2.toFixed(2);
-    const percentHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('flightImmediateHeat').innerText = `${percentHiroshima.toFixed(3)}%`;
-    const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
+    writeFlightData(kgFuelBurned, megajoules, flightText);
 
-    // The second column provides information on personal fraction of the heating of public passengers,
-    // or in the case of private jets, the annual amount of heating from all the flights: two very different contexts.
-    const seatsText = passengerCount == 1 ? 'Just your seat' : `Just your ${passengerCount} seats`;
-    const col2Label = selectedProfile.isPrivate() ? 'Annual total' : seatsText;
-    document.getElementById('col2Header').innerText = col2Label;
+    // For public passengers, the second set of data provides information on personal fraction of the heating,
+    // but for private jets, the annual amount of heating from all the flights: two very different contexts.
     const kgContextFuelBurned = selectedProfile.isPrivate() ? kgFuelBurned * selectedProfile.privateFlightsPerYear : kgFuelBurned / selectedProfile.seats * passengerCount;
-    document.getElementById('contextFuelBurned').innerText = kgContextFuelBurned.toFixed(2);
     const contextMegajoules = kgContextFuelBurned * MJ_PER_KG_JET_FUEL;
-    const contextTotalCO2 = contextMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('contextTotalCO2').innerText = contextTotalCO2.toFixed(2);
-    const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('contextImmediateHeat').innerText = `${percentContextHiroshima.toFixed(3)}%`;
-    const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
-
-    // Some egregious flyers generate a Hiroshima's worth of warming in less than a year. Change the time context for readability.
-    let timeForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    let contextTimeForHiroshima = mjContextToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    let timeLabel = 'Years';
-    if (timeForHiroshima < 1 || contextTimeForHiroshima < 1) {
-        // Try months
-        timeForHiroshima *= MONTHS_PER_YEAR;
-        contextTimeForHiroshima *= MONTHS_PER_YEAR;
-        timeLabel = 'Months';
-    }
-    if (timeForHiroshima < 1 || contextTimeForHiroshima < 1) {
-        // Try days
-        timeForHiroshima *= AVG_DAYS_PER_MONTH;
-        contextTimeForHiroshima *= AVG_DAYS_PER_MONTH;
-        timeLabel = 'Days';
-    }
-    document.getElementById('flightGreenhouseHeat').innerText = timeForHiroshima.toFixed(1);
-    document.getElementById('contextGreenhouseHeat').innerText = contextTimeForHiroshima.toFixed(1);
-    document.getElementById('timeUnit').textContent = timeLabel;
+    const seatsText = passengerCount == 1 ? 'your seat' : `your ${passengerCount} seats`;
+    writeContextData(kgContextFuelBurned, contextMegajoules, seatsText, selectedProfile);
 
     const ctx = document.getElementById('IFChart').getContext('2d');
     if (flightChart) {
@@ -272,7 +246,7 @@ function buildChart(kilometres, passengerCount) {
     }
     const datasets = [
         {
-            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}${selectedProfile.isPrivate() ? ' (1 of ' + selectedProfile.privateFlightsPerYear + ' flights per year)' : ''}`,
+            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}`,
             data: Array.from(
                 { length: YEARS_TO_RENDER },
                 (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
@@ -280,7 +254,7 @@ function buildChart(kilometres, passengerCount) {
             backgroundColor: "#b6c6d5"
         },
         {
-            label: col2Label,
+            label: selectedProfile.isPrivate() ? 'Annual flights' : seatsText,
             data: Array.from(
                 { length: YEARS_TO_RENDER },
                 (_, index) => ((index + 1) * (contextMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
@@ -329,3 +303,42 @@ function buildChart(kilometres, passengerCount) {
         }
     });
 }
+
+// Populate the flight-specific values on the page
+function writeFlightData(kgFuelBurned, megajoules, flightText) {
+    document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg on ${flightText}`;
+    // Convert grams per megajoule into kilograms of CO2 for the flight
+    document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000)} kg on ${flightText}`;
+    document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(megajoules / MJ_PER_HIROSHIMA * 100)}% on ${flightText}`;
+    const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
+    document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT)} years for ${flightText}`;
+}
+
+// Populate the values on the page that change with context: annual for private jets, just your seats for public flights
+function writeContextData(kgContextFuelBurned, contextMegajoules, seatsText, selectedProfile) {
+    document.getElementById('contextFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
+
+    const contextTotalCO2 = contextMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
+    document.getElementById('contextTotalCO2').innerText = `${getFormattedNumber(contextTotalCO2)} kg ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
+
+    const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('contextImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}% ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText }`;
+
+    // Because the time duration for context data can change, the label for the data is generated here
+    const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
+    // Some egregious private flyers generate a Hiroshima's worth of warming in less than a year. Change the time context for readability.
+    let contextTimeForHiroshima = mjContextToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
+    let contextTimeLabel = 'years';
+    if (contextTimeForHiroshima < 1) {
+        // Try months
+        contextTimeForHiroshima *= MONTHS_PER_YEAR;
+        contextTimeLabel = 'months';
+    }
+    if (contextTimeForHiroshima < 1) {
+        // Try days
+        contextTimeForHiroshima *= AVG_DAYS_PER_MONTH;
+        contextTimeLabel = 'days';
+    }
+    document.getElementById('contextGreenhouseHeat').innerText = `${getFormattedNumber(contextTimeForHiroshima)} ${contextTimeLabel} ${selectedProfile.isPrivate() ? ' at the current rate of ' + selectedProfile.privateFlightsPerYear + ' flights per year' : ' by ' + seatsText }`;
+}
+
