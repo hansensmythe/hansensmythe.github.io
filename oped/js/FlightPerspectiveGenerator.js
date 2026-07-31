@@ -12,6 +12,8 @@ const MJ_PER_HIROSHIMA = 63000000;
 // const MJ_PER_MEGATONNE = 4184000000;
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+const MONTHS_PER_YEAR = 12;
+const AVG_DAYS_PER_MONTH = 30.4375;
 const MAXIMUM_PASSENGERS = 10;
 
 // Chart constants
@@ -229,8 +231,6 @@ function buildChart(kilometres, passengerCount) {
     const percentHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('flightImmediateHeat').innerText = `${percentHiroshima.toFixed(3)}%`;
     const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
-    const yearsForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('flightGreenhouseHeat').innerText = yearsForHiroshima.toFixed(1);
 
     // The second column provides information on personal fraction of the heating of public passengers,
     // or in the case of private jets, the annual amount of heating from all the flights: two very different contexts.
@@ -245,8 +245,26 @@ function buildChart(kilometres, passengerCount) {
     const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('contextImmediateHeat').innerText = `${percentContextHiroshima.toFixed(3)}%`;
     const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
-    const contextYearsForHiroshima = mjContextToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('contextGreenhouseHeat').innerText = contextYearsForHiroshima.toFixed(1);
+
+    // Some egregious flyers generate a Hiroshima's worth of warming in less than a year. Change the time context for readability.
+    let timeForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
+    let contextTimeForHiroshima = mjContextToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
+    let timeLabel = 'Years';
+    if (timeForHiroshima < 1 || contextTimeForHiroshima < 1) {
+        // Try months
+        timeForHiroshima *= MONTHS_PER_YEAR;
+        contextTimeForHiroshima *= MONTHS_PER_YEAR;
+        timeLabel = 'Months';
+    }
+    if (timeForHiroshima < 1 || contextTimeForHiroshima < 1) {
+        // Try days
+        timeForHiroshima *= AVG_DAYS_PER_MONTH;
+        contextTimeForHiroshima *= AVG_DAYS_PER_MONTH;
+        timeLabel = 'Days';
+    }
+    document.getElementById('flightGreenhouseHeat').innerText = timeForHiroshima.toFixed(1);
+    document.getElementById('contextGreenhouseHeat').innerText = contextTimeForHiroshima.toFixed(1);
+    document.getElementById('timeUnit').textContent = timeLabel;
 
     const ctx = document.getElementById('IFChart').getContext('2d');
     if (flightChart) {
