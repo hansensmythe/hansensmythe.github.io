@@ -254,7 +254,7 @@ function buildChart(kilometres, passengerCount) {
             backgroundColor: "#b6c6d5"
         },
         {
-            label: selectedProfile.isPrivate() ? 'Annual flights' : seatsText,
+            label: selectedProfile.isPrivate() ? "One year's worth of flights" : seatsText,
             data: Array.from(
                 { length: YEARS_TO_RENDER },
                 (_, index) => ((index + 1) * (contextMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
