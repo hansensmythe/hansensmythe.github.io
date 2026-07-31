@@ -79,6 +79,7 @@
                     3700 to 5600 km, e.g. transcontinental or short transatlantic</label></div>
             <div><input type="radio" id="long" name="profile" value="long" checked /><label for="long">Long-haul flight
                     9300 to 13000 km, e.g. transpacific</label></div>
+            <div><input type="radio" id="private" name="profile" value="private"/><label for="long">Private aircraft only</label></div>
             <div><input type="radio" id="all" name="profile" value="all" /><label for="all">All ranges</label></div>
         </fieldset>
         <p>Select an aircraft manufacturer, aircraft model, and flight configuration to see what the impact is of taking
@@ -104,7 +105,7 @@
             <select id="passengerSelector"></select>
         </div>
 
-        <p>Assuming <span id="seats">0</span> and <span id="burn">0</span> kg/km fuel burn:</p>
+        <p>Assuming <span id="seats">0</span> consuming fuel at a rate of <span id="burn">0</span> kg/km:</p>
         <table>
             <tr>
                 <td>Entire flight</td>

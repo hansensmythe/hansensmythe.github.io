@@ -28,6 +28,9 @@ class Manufacturer {
     getLongHaulModels() {
         return this.models.filter(model => model.hasLongHaulProfiles());
     }
+    getPrivateModels() {
+        return this.models.filter(model => model.hasPrivateProfiles());
+    }
 }
 
 /**
@@ -70,7 +73,12 @@ class Model {
     getLongHaulProfiles() {
         return this.flightProfiles.filter(profile => profile.isLongHaul());
     }
-}
+    hasPrivateProfiles() {
+        return this.flightProfiles.some(profile => profile.isPrivate());
+    }
+    getPrivateProfiles() {
+        return this.flightProfiles.filter(profile => profile.isPrivate());
+    }}
 
 /**
  * @constructor
@@ -104,6 +112,9 @@ class FlightProfile {
     }
     isLongHaul() {
         return this.key == 'long';
+    }
+    isPrivate() {
+        return this.privateFlightsPerYear > 0;
     }
 }
 
@@ -572,6 +583,7 @@ export function getFilteredManufacturers() {
         short: [],
         medium: [],
         long: [],
+        private: [],
         all: MANUFACTURERS
     };
 
@@ -624,6 +636,15 @@ export function getFilteredManufacturers() {
                 filteredLongHaulModels.push(new Model(model.name, model.getLongHaulProfiles()));
             });
             filteredManufacturers.long.push(new Manufacturer(manufacturer.name, filteredLongHaulModels));
+        }
+
+        const privateModels = manufacturer.getPrivateModels();
+        if (privateModels.length > 0) {
+            const filteredPrivateModels = [];
+            privateModels.forEach((model) => {
+                filteredPrivateModels.push(new Model(model.name, model.getPrivateProfiles()));
+            });
+            filteredManufacturers.private.push(new Manufacturer(manufacturer.name, filteredPrivateModels));
         }
     });
 

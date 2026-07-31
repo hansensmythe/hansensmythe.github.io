@@ -85,7 +85,7 @@ function handleChangeEvent(event) {
  * Called at initialization or when a flight profile radio button is clicked,
  * to load the filtered manufacturers and populate the models, and for the first model, populate the flights.
  *  
- * @param {string} key - one of 'commuter', 'regional', 'short', 'medium', 'long', or 'all'. Used to get the subset of manufacturers matching that profile.
+ * @param {string} key - one of 'commuter', 'regional', 'short', 'medium', 'long', 'private', or 'all'. Used to get the subset of manufacturers matching that profile.
  */
 function filterByProfile(key) {
     // Store profileKey global value
@@ -239,7 +239,7 @@ function recalculateDistance(kilometres) {
     }
     const datasets = [
         {
-            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}${selectedProfile.privateFlightsPerYear ? ' (' + selectedProfile.privateFlightsPerYear + ' flights per year)': ''}`,
+            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}${selectedProfile.privateFlightsPerYear ? ' (1 of ' + selectedProfile.privateFlightsPerYear + ' flights per year)': ''}`,
             data: Array.from(
                 { length: YEARS_TO_RENDER },
                 (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
