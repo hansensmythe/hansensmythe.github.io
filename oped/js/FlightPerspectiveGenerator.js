@@ -216,32 +216,37 @@ function buildChart(kilometres, passengerCount) {
     const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
     const selectedModel = selectedManufacturer.models[modelSelector.value];
     const selectedProfile = selectedModel.flightProfiles[getSelectedProfileIndex()];
-    const returnButton = document.getElementById('return');
+    const returnButton = document.getElementById('returnTicket');
     // Double the distance if it's a return flight
     const kmMultiplier = returnButton.checked ? 2 : 1;
 
     const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
-    document.getElementById('fuelBurned').innerText = kgFuelBurned.toFixed(2);
+    document.getElementById('flightFuelBurned').innerText = kgFuelBurned.toFixed(2);
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
     // Convert grams per megajoule into kilograms of CO2 for the flight
     const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('totalCO2').innerText = totalCO2.toFixed(2);
+    document.getElementById('flightTotalCO2').innerText = totalCO2.toFixed(2);
     const percentHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('immediate').innerText = `${percentHiroshima.toFixed(3)}%`;
+    document.getElementById('flightImmediateHeat').innerText = `${percentHiroshima.toFixed(3)}%`;
     const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
     const yearsForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('hiroshima').innerText = yearsForHiroshima.toFixed(1);
+    document.getElementById('flightGreenhouseHeat').innerText = yearsForHiroshima.toFixed(1);
 
-    const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
-    document.getElementById('seatFuelBurned').innerText = kgSeatFuelBurned.toFixed(2);
-    const seatMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
-    const seatTotalCO2 = seatMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('pTotalCO2').innerText = seatTotalCO2.toFixed(2);
-    const percentSeatHiroshima = seatMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('pImmediate').innerText = `${percentSeatHiroshima.toFixed(3)}%`;
-    const mjSeatToMakeHiroshima = MJ_PER_HIROSHIMA / seatMegajoules;
-    const seatYearsForHiroshima = mjSeatToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('pHiroshima').innerText = seatYearsForHiroshima.toFixed(1);
+    // The second column provides information on personal fraction of the heating of public passengers,
+    // or in the case of private jets, the annual amount of heating from all the flights: two very different contexts.
+    const seatsText = passengerCount == 1 ? 'Just your seat' : `Just your ${passengerCount} seats`;
+    const col2Label = selectedProfile.isPrivate() ? 'Annual total' : seatsText;
+    document.getElementById('col2Header').innerText = col2Label;
+    const kgContextFuelBurned = selectedProfile.isPrivate() ? kgFuelBurned * selectedProfile.privateFlightsPerYear : kgFuelBurned / selectedProfile.seats * passengerCount;
+    document.getElementById('contextFuelBurned').innerText = kgContextFuelBurned.toFixed(2);
+    const contextMegajoules = kgContextFuelBurned * MJ_PER_KG_JET_FUEL;
+    const contextTotalCO2 = contextMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
+    document.getElementById('contextTotalCO2').innerText = contextTotalCO2.toFixed(2);
+    const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('contextImmediateHeat').innerText = `${percentContextHiroshima.toFixed(3)}%`;
+    const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
+    const contextYearsForHiroshima = mjContextToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
+    document.getElementById('contextGreenhouseHeat').innerText = contextYearsForHiroshima.toFixed(1);
 
     const ctx = document.getElementById('IFChart').getContext('2d');
     if (flightChart) {
@@ -249,26 +254,22 @@ function buildChart(kilometres, passengerCount) {
     }
     const datasets = [
         {
-            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}${selectedProfile.privateFlightsPerYear ? ' (1 of ' + selectedProfile.privateFlightsPerYear + ' flights per year)': ''}`,
+            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}${selectedProfile.isPrivate() ? ' (1 of ' + selectedProfile.privateFlightsPerYear + ' flights per year)' : ''}`,
             data: Array.from(
                 { length: YEARS_TO_RENDER },
                 (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
             ),
-            fill: false
-        }
-    ];
-    if (!selectedProfile.isPrivate()) {
-        datasets.push({
-            label: `Just your seats`,
+            backgroundColor: "#b6c6d5"
+        },
+        {
+            label: col2Label,
             data: Array.from(
                 { length: YEARS_TO_RENDER },
-                (_, index) => ((index + 1) * (seatMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+                (_, index) => ((index + 1) * (contextMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
             ),
-            fill: true,
             backgroundColor: "#ff6a00"
         }
-        );
-    }
+    ];
 
     flightChart = new Chart(ctx, {
         type: 'line',
