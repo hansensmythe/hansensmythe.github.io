@@ -26,6 +26,7 @@ let manufacturerSelector;
 let profileKey;
 let filteredManufacturers;
 let flightChart = null;
+let additionalChart = null;
 
 /**
  * Called once the DOM is loaded. Adds a generic event listener for changes to page controls, populates various static elements,
@@ -78,11 +79,11 @@ function handleChangeEvent(event) {
     } else if (event.target.name == 'flightProfile') {
         recalculateProfile();
     } else if (event.target.id == 'distanceSlider') {
-        buildChart(event.target.value, document.getElementById('passengerSelector').value);
+        writeData(event.target.value, document.getElementById('passengerSelector').value);
     } else if (event.target.id == 'passengerSelector') {
-        buildChart(document.getElementById('distanceSlider').value, event.target.value);
+        writeData(document.getElementById('distanceSlider').value, event.target.value);
     } else if (event.target.name == 'isReturn') {
-        buildChart(document.getElementById('distanceSlider').value, document.getElementById('passengerSelector').value);
+        writeData(document.getElementById('distanceSlider').value, document.getElementById('passengerSelector').value);
     } else {
         console.log(`Found unhandled change event for id=${event.target.id} or name=${event.target.name}`)
     }
@@ -203,7 +204,7 @@ function recalculateProfile() {
     }
 
     // We have just repopulated the passenger count, so by default it's 1
-    buildChart(selectedProfile.kilometres, 1);
+    writeData(selectedProfile.kilometres, 1);
 }
 
 // Use a standard formatter to add commas to numbers for readability
@@ -219,7 +220,7 @@ function getFormattedNumber(x) {
 * @param {number} kilometres 
 * @param {number} passengerCount 
 */
-function buildChart(kilometres, passengerCount) {
+function writeData(kilometres, passengerCount) {
     const modelSelector = document.getElementById('modelSelector');
     const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
     const selectedModel = selectedManufacturer.models[modelSelector.value];
@@ -227,85 +228,31 @@ function buildChart(kilometres, passengerCount) {
     const returnButton = document.getElementById('returnFlight');
     // Double the distance if it's a return flight
     const kmMultiplier = returnButton.checked ? 2 : 1;
-    const flightText = `this ${returnButton.checked ? 'return' : 'one way'} flight`;
 
     const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
-    writeFlightData(kgFuelBurned, megajoules, flightText);
+    writeFlightData(kgFuelBurned, megajoules, returnButton.checked);
 
     // For public passengers, the second set of data provides information on personal fraction of the heating,
     // but for private jets, the annual amount of heating from all the flights: two very different contexts.
     const kgContextFuelBurned = selectedProfile.isPrivate() ? kgFuelBurned * selectedProfile.privateFlightsPerYear : kgFuelBurned / selectedProfile.seats * passengerCount;
     const contextMegajoules = kgContextFuelBurned * MJ_PER_KG_JET_FUEL;
     const seatsText = passengerCount == 1 ? 'your seat' : `your ${passengerCount} seats`;
-    writeContextData(kgContextFuelBurned, contextMegajoules, seatsText, selectedProfile);
+    writeContextData(selectedProfile, kgContextFuelBurned, contextMegajoules, seatsText);
 
-    const ctx = document.getElementById('IFChart').getContext('2d');
-    if (flightChart) {
-        flightChart.destroy(); // Free the canvas if a previous chart already exists there
-    }
-    const datasets = [
-        {
-            label: `${selectedManufacturer.name} ${selectedModel.name} - ${selectedProfile.name}`,
-            data: Array.from(
-                { length: YEARS_TO_RENDER },
-                (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
-            ),
-            backgroundColor: "#b6c6d5"
-        },
-        {
-            label: selectedProfile.isPrivate() ? "One year's worth of flights" : seatsText,
-            data: Array.from(
-                { length: YEARS_TO_RENDER },
-                (_, index) => ((index + 1) * (contextMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
-            ),
-            backgroundColor: "#ff6a00"
-        }
-    ];
-
-    flightChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Array.from(
-                { length: YEARS_TO_RENDER },
-                (_, index) => new Date().getFullYear() + index
-            ),
-            datasets: datasets
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        font: {
-                            size: LABEL_FONT_SIZE
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Hiroshima equivalents over time',
-                        font: {
-                            size: LABEL_FONT_SIZE,
-                            weight: 'bold'
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            size: LABEL_FONT_SIZE
-                        }
-                    }
-                }
-            }
-        }
-    });
+    buildCharts(selectedManufacturer, selectedModel, selectedProfile, megajoules, contextMegajoules, seatsText);
 }
 
-// Populate the flight-specific values on the page
-function writeFlightData(kgFuelBurned, megajoules, flightText) {
+/**
+ * Populate the flight-specific values on the page
+ * 
+ * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or two flights if return trip)
+ * @param {number} megajoules - Amount of heat generated from this flight
+ * @param {boolean} isReturnFlight - false if one way flight, true if return flight
+ */
+function writeFlightData(kgFuelBurned, megajoules, isReturnFlight) {
+    const flightText = `this ${isReturnFlight ? 'return' : 'one way'} flight`;
+    document.getElementById('flightTitle').innerText = `${flightText.toUpperCase()}`;
     document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg on ${flightText}`;
     // Convert grams per megajoule into kilograms of CO2 for the flight
     document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000)} kg on ${flightText}`;
@@ -314,15 +261,23 @@ function writeFlightData(kgFuelBurned, megajoules, flightText) {
     document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT)} years for ${flightText}`;
 }
 
-// Populate the values on the page that change with context: annual for private jets, just your seats for public flights
-function writeContextData(kgContextFuelBurned, contextMegajoules, seatsText, selectedProfile) {
+/**
+ * Populate the values on the page that change with context: annual for private jets, just your seats for public flights
+ * 
+ * @param {object} selectedProfile - The selected flight profile
+ * @param {number} kgContextFuelBurned - kilograms of fuel burned either by the subset of passengers or the annual superset of flights
+ * @param {number} contextMegajoules - Amount of heat generated either from the passenger subset or the annual superset
+ * @param {string} seatsText - singular or plural description of seats
+ */
+function writeContextData(selectedProfile, kgContextFuelBurned, contextMegajoules, seatsText) {
+    document.getElementById('additionalTitle').innerText = `${selectedProfile.isPrivate() ? selectedProfile.privateFlightsPerYear + ' ANNUAL FLIGHTS' : 'JUST ' + seatsText.toUpperCase()}`;
     document.getElementById('contextFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
 
     const contextTotalCO2 = contextMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
     document.getElementById('contextTotalCO2').innerText = `${getFormattedNumber(contextTotalCO2)} kg ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
 
     const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('contextImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}% ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText }`;
+    document.getElementById('contextImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}% ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
 
     // Because the time duration for context data can change, the label for the data is generated here
     const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
@@ -339,6 +294,107 @@ function writeContextData(kgContextFuelBurned, contextMegajoules, seatsText, sel
         contextTimeForHiroshima *= AVG_DAYS_PER_MONTH;
         contextTimeLabel = 'days';
     }
-    document.getElementById('contextGreenhouseHeat').innerText = `${getFormattedNumber(contextTimeForHiroshima)} ${contextTimeLabel} ${selectedProfile.isPrivate() ? ' at the current rate of ' + selectedProfile.privateFlightsPerYear + ' flights per year' : ' by ' + seatsText }`;
+    document.getElementById('contextGreenhouseHeat').innerText = `${getFormattedNumber(contextTimeForHiroshima)} ${contextTimeLabel} ${selectedProfile.isPrivate() ? ' at the current rate of ' + selectedProfile.privateFlightsPerYear + ' flights per year' : ' by ' + seatsText}`;
 }
 
+/**
+ * Build the charts from the data.
+ * 
+ * @param {object} selectedManufacturer - The aircraft manufacturer for the selected model
+ * @param {object} selectedModel - The aircraft model for the selected flight profile
+ * @param {object} selectedProfile - The selected flight profile
+ * @param {number} megajoules - Amount of heat generated by the flight, derived from the kg of fuel burned
+ * @param {number} contextMegajoules - Amount of heat generated either from the passenger subset or the annual superset
+ * @param {string} seatsText - singular or plural description of seats
+ */
+function buildCharts(selectedManufacturer, selectedModel, selectedProfile, megajoules, contextMegajoules, seatsText) {
+    const options = {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: LABEL_FONT_SIZE
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Hiroshima equivalents over time',
+                    font: {
+                        size: LABEL_FONT_SIZE,
+                        weight: 'bold'
+                    }
+                },
+                ticks: {
+                    font: {
+                        size: LABEL_FONT_SIZE
+                    }
+                }
+            }
+        }
+    };
+
+    buildFlightChart(options, selectedManufacturer.name, selectedModel.name, selectedProfile.name, megajoules);
+
+    buildAdditionalChart(options, selectedProfile.isPrivate(), seatsText, contextMegajoules);
+}
+
+function buildFlightChart(options, manufacturerName, modelName, profileName, megajoules) {
+    const flightContext = document.getElementById('FlightChart').getContext('2d');
+    if (flightChart) {
+        flightChart.destroy(); // Free the canvas if a previous chart already exists there
+    }
+
+    flightChart = new Chart(flightContext, {
+        type: 'line',
+        data: {
+            labels: Array.from(
+                { length: YEARS_TO_RENDER },
+                (_, index) => new Date().getFullYear() + index
+            ),
+            datasets: [
+                {
+                    label: `${manufacturerName} ${modelName} - ${profileName}`,
+                    data: Array.from(
+                        { length: YEARS_TO_RENDER },
+                        (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+                    ),
+                    backgroundColor: "#b6c6d5"
+                }
+            ]
+        },
+        options: options
+    });
+}
+
+function buildAdditionalChart(options, isPrivate, seatsText, contextMegajoules) {
+    const additionalContext = document.getElementById('AdditionalChart').getContext('2d');
+    if (additionalChart) {
+        additionalChart.destroy(); // Free the canvas if a previous chart already exists there
+    }
+
+    additionalChart = new Chart(additionalContext, {
+        type: 'line',
+        data: {
+            labels: Array.from(
+                { length: YEARS_TO_RENDER },
+                (_, index) => new Date().getFullYear() + index
+            ),
+            datasets: [
+                {
+                    label: isPrivate ? "One year's worth of flights" : seatsText,
+                    data: Array.from(
+                        { length: YEARS_TO_RENDER },
+                        (_, index) => ((index + 1) * (contextMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
+                    ),
+                    backgroundColor: "#ff6a00"
+                }
+            ]
+        },
+        options: options
+    });
+}

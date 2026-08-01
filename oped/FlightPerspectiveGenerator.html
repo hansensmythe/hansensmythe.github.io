@@ -11,6 +11,9 @@
     <script src="../js/innerInit.js" type="module"></script>
     <script src="./js/FlightPerspectiveGenerator.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        h1 { text-align: center; }
+    </style>
     <div id="header"></div>
 </head>
 
@@ -54,23 +57,32 @@
         </p>
         <p>Here's a calculator so you can try this out for yourself. Select the approximate range (from Commuter to
             Long-Haul, or select "All" for all the data), select the manufacturer and aircraft that will get you when
-            you want to go, and see the result. I used flight test data from <a href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>,
-            and added data on celebrity private flights from <a href="https://celebrityprivatejettracker.com/leaderboard/">Celebrity Private Jet Tracker</a>.
+            you want to go, and see the result. I used flight test data from <a
+                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>,
+            and added data on celebrity private flights from <a
+                href="https://celebrityprivatejettracker.com/leaderboard/">Celebrity Private Jet Tracker</a>.
 
         <fieldset>
             <legend>Select flight profile range:</legend>
-            <div><input type="radio" id="commuter" name="profileFilter" value="commuter"/><label for="commuter">Commuter
+            <div><input type="radio" id="commuter" name="profileFilter" value="commuter" /><label
+                    for="commuter">Commuter
                     flight ~560 km</label></div>
-            <div><input type="radio" id="regional" name="profileFilter" value="regional" /><label for="regional">Regional
+            <div><input type="radio" id="regional" name="profileFilter" value="regional" /><label
+                    for="regional">Regional
                     flight 930 to 1300 km</label></div>
-            <div><input type="radio" id="short" name="profileFilter" value="short" /><label for="short">Short-haul flight
+            <div><input type="radio" id="short" name="profileFilter" value="short" /><label for="short">Short-haul
+                    flight
                     ~1900 km</label></div>
-            <div><input type="radio" id="medium" name="profileFilter" value="medium" /><label for="medium">Medium-haul flight
+            <div><input type="radio" id="medium" name="profileFilter" value="medium" /><label for="medium">Medium-haul
+                    flight
                     3700 to 5600 km, e.g. transcontinental or short transatlantic</label></div>
-            <div><input type="radio" id="long" name="profileFilter" value="long" checked /><label for="long">Long-haul flight
+            <div><input type="radio" id="long" name="profileFilter" value="long" checked /><label for="long">Long-haul
+                    flight
                     9300 to 13000 km, e.g. transpacific</label></div>
-            <div><input type="radio" id="private" name="profileFilter" value="private"/><label for="long">Private aircraft only</label></div>
-            <div><input type="radio" id="all" name="profileFilter" value="all" /><label for="all">All ranges</label></div>
+            <div><input type="radio" id="private" name="profileFilter" value="private" /><label for="long">Private
+                    aircraft only</label></div>
+            <div><input type="radio" id="all" name="profileFilter" value="all" /><label for="all">All ranges</label>
+            </div>
         </fieldset>
         <p>Select an aircraft manufacturer, aircraft model, and flight configuration to see what the impact is of taking
             that flight.</p>
@@ -87,7 +99,7 @@
             <span id="distanceDisplay">0</span>
         </div>
         <div>
-            <input type="radio" id="oneWayFlight" name="isReturn" checked/><label for="oneway">One way</label>
+            <input type="radio" id="oneWayFlight" name="isReturn" checked /><label for="oneway">One way</label>
             <input type="radio" id="returnFlight" name="isReturn" /><label for="return">Return</label>
         </div>
         <div>
@@ -96,29 +108,48 @@
         </div>
 
         <p>Assuming <span id="seats">0</span> consuming fuel at a rate of <span id="burn">0</span> kg/km:</p>
+        <h1 id="flightTitle"></h1>
         <dl>
             <dt>Fuel burned</dt>
             <dd id="flightFuelBurned"></dd>
-            <dd id="contextFuelBurned"></dd>
-            <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your destination)</dt>
+            <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your
+                destination)</dt>
             <dd id="flightTotalCO2"></dd>
-            <dd id="contextTotalCO2"></dd>
             <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel</dt>
             <dd id="flightImmediateHeat"></dd>
-            <dd id="contextImmediateHeat"></dd>
-            <dt>Time until one Hiroshima bomb's worth of warming is generated by the emitted greenhouse gases trapping heat from solar radiation</dt>
+            <dt>Time until one Hiroshima bomb's worth of warming is generated by the emitted greenhouse gases trapping
+                heat from solar radiation</dt>
             <dd id="flightGreenhouseHeat"></dd>
-            <dd id="contextGreenhouseHeat"></dd>
         </dl>
- 
+
         <div>
-            <canvas id="IFChart">
+            <canvas id="FlightChart">
                 <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have
                     appeared here.</p>
             </canvas>
             <p>On the relatively short timescale of only <span id="yearsToRender">0</span> years, the accumulated heat
                 trend does not curve down significantly because it takes centuries to millenia for greenhouse gases
                 actually to get removed from the atmosphere.</p>
+        </div>
+
+        <h1 id="additionalTitle"></h1>
+        <dl>
+            <dt>Fuel burned</dt>
+            <dd id="contextFuelBurned"></dd>
+            <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your
+                destination)</dt>
+            <dd id="contextTotalCO2"></dd>
+            <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel</dt>
+            <dd id="contextImmediateHeat"></dd>
+            <dt>Time until one Hiroshima bomb's worth of warming is generated by the emitted greenhouse gases trapping
+                heat from solar radiation</dt>
+            <dd id="contextGreenhouseHeat"></dd>
+        </dl>
+        <div>
+            <canvas id="AdditionalChart">
+                <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have
+                    appeared here.</p>
+            </canvas>
         </div>
 
         <p>Multiply that single flight by all the world's air traffic. Is it really necessary that you take that flight?
