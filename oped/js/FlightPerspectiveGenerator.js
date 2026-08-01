@@ -271,13 +271,13 @@ function writeFlightData(kgFuelBurned, megajoules, isReturnFlight) {
  */
 function writeContextData(selectedProfile, kgContextFuelBurned, contextMegajoules, seatsText) {
     document.getElementById('additionalTitle').innerText = `${selectedProfile.isPrivate() ? selectedProfile.privateFlightsPerYear + ' ANNUAL FLIGHTS' : 'JUST ' + seatsText.toUpperCase()}`;
-    document.getElementById('contextFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
+    document.getElementById('contextFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg ${selectedProfile.isPrivate() ? 'annually' : ''}`;
 
     const contextTotalCO2 = contextMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('contextTotalCO2').innerText = `${getFormattedNumber(contextTotalCO2)} kg ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
+    document.getElementById('contextTotalCO2').innerText = `${getFormattedNumber(contextTotalCO2)} kg ${selectedProfile.isPrivate() ? 'annually' : ''}`;
 
     const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('contextImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}% ${selectedProfile.isPrivate() ? 'annually' : 'for ' + seatsText}`;
+    document.getElementById('contextImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}% ${selectedProfile.isPrivate() ? 'annually' : ''}`;
 
     // Because the time duration for context data can change, the label for the data is generated here
     const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
@@ -294,7 +294,7 @@ function writeContextData(selectedProfile, kgContextFuelBurned, contextMegajoule
         contextTimeForHiroshima *= AVG_DAYS_PER_MONTH;
         contextTimeLabel = 'days';
     }
-    document.getElementById('contextGreenhouseHeat').innerText = `${getFormattedNumber(contextTimeForHiroshima)} ${contextTimeLabel} ${selectedProfile.isPrivate() ? ' at the current rate of ' + selectedProfile.privateFlightsPerYear + ' flights per year' : ' by ' + seatsText}`;
+    document.getElementById('contextGreenhouseHeat').innerText = `${getFormattedNumber(contextTimeForHiroshima)} ${contextTimeLabel} ${selectedProfile.isPrivate() ? ' at the current rate of ' + selectedProfile.privateFlightsPerYear + ' flights per year' : ''}`;
 }
 
 /**
