@@ -253,12 +253,12 @@ function writeData(kilometres, passengerCount) {
 function writeFlightData(kgFuelBurned, megajoules, isReturnFlight) {
     const flightText = `this ${isReturnFlight ? 'return' : 'one way'} flight`;
     document.getElementById('flightTitle').innerText = `${flightText.toUpperCase()}`;
-    document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg on ${flightText}`;
+    document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
     // Convert grams per megajoule into kilograms of CO2 for the flight
-    document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000)} kg on ${flightText}`;
-    document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(megajoules / MJ_PER_HIROSHIMA * 100)}% on ${flightText}`;
+    document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000)} kg`;
+    document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(megajoules / MJ_PER_HIROSHIMA * 100)}%`;
     const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
-    document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT)} years for ${flightText}`;
+    document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT)} years`;
 }
 
 /**
