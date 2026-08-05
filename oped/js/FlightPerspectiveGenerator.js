@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', initialize);
-import { getFilteredManufacturers } from './aircraft.js';
+import { MODELS } from './flights.js';
 
 // From https://www.bts.gov/content/energy-consumption-mode-transportation-0
 const MJ_PER_KG_JET_FUEL = 43.1;
@@ -9,24 +9,34 @@ const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
 const AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2;
 // Megajoules of heat for different types of nuclear bomb
 const MJ_PER_HIROSHIMA = 63000000;
-// const MJ_PER_MEGATONNE = 4184000000;
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
-const MONTHS_PER_YEAR = 12;
-const AVG_DAYS_PER_MONTH = 30.4375;
 const MAXIMUM_PASSENGERS = 10;
 
+// Control constants
+const MODEL_BUTTON_NAME = 'model';
+const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
+const SLIDER_KM_RANGE = 0.25; // Percent higher or lower for kilometre range
+
 // Chart constants
-const YEARS_TO_RENDER = 75;
+const YEARS_TO_RENDER = 10000; // TODO: This should be user-modifiable
 const LABEL_FONT_SIZE = 20;
-const SLIDER_KM_RANGE = 0.25;
+// Fraction of CO2 handled by the pulse response model, separated into multiple half-life equations
+const BIOSPHERE_FRACTION = 0.3;
+const DEEP_OCEAN_FRACTION = 0.3;
+const GEOLOGICAL_FRACTION = 0.4;
+// Years before half of the CO2 is absorbed
+const BIOSPHERE_HALFLIFE = 1/50;
+const DEEP_OCEAN_HALFLIFE = 1/500;
+const GEOLOGICAL_HALFLIFE = 1/10000;
+// Annual reduction from each source of CO2 sequestration
+const BIOSPHERE_ANNUAL_REDUCTION = 0.5 ** BIOSPHERE_HALFLIFE; // 50 years until half is taken up by plants and upper ocean
+const DEEP_OCEAN_ANNUAL_REDUCTION = 0.5 ** DEEP_OCEAN_HALFLIFE; // 500 years until half is taken up by the deep ocean
+const GEOLOGICAL_ANNUAL_REDUCTION = 0.5 ** GEOLOGICAL_HALFLIFE; // 10000 years until rock weathering sequesters half the CO2
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
-let manufacturerSelector;
-let profileKey;
-let filteredManufacturers;
+let seatsChart = null;
 let flightChart = null;
-let additionalChart = null;
 
 /**
  * Called once the DOM is loaded. Adds a generic event listener for changes to page controls, populates various static elements,
@@ -35,18 +45,15 @@ let additionalChart = null;
 function initialize() {
     // Listen for changes to all select elements
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
+    document.getElementById('contents').addEventListener('input', handleInputEvent);
 
-    Chart.defaults.backgroundColor = '#9BD0F5';
-    Chart.defaults.borderColor = '#36A2EB';
-    Chart.defaults.color = '#f00';
+    // Chart.defaults.backgroundColor = '#9BD0F5';
+    // Chart.defaults.borderColor = '#36A2EB';
+    // Chart.defaults.color = '#f00';
     // Add constants to page
     document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('maxCO2ePerMJ').textContent = MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('mjPerKg').textContent = MJ_PER_KG_JET_FUEL;
-    document.getElementById('yearsToRender').textContent = YEARS_TO_RENDER;
-
-    // Populate filtered subsets of the data by calling function in aircraft.js
-    filteredManufacturers = getFilteredManufacturers();
 
     // Add a listener for tweaks to the kilometre value of a flight profile
     const distanceSlider = document.getElementById('distanceSlider');
@@ -56,8 +63,7 @@ function initialize() {
         distanceDisplay.textContent = event.target.value;
     });
 
-    // Kick off an initial filterByProfile to populate the default
-    filterByProfile('long');
+    // TODO: Is there a meaningful default that we should kick off?
 }
 
 /**
@@ -68,63 +74,64 @@ function initialize() {
 function handleChangeEvent(event) {
     // For radio buttons we can use the 'name' attribute to recognize the event, because each button has a different ID.
     // However, dropdowns and sliders don't have or need a 'name' because their 'id' works to identify them.
-    if (event.target.name == 'profileFilter') {
-        filterByProfile(event.target.value);
-    } else if (event.target.id == 'manufacturerSelector') {
-        selectManufacturer(event.target.value);
-    } else if (event.target.id == 'modelSelector') {
-        const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[event.target.value];
-        replaceFlightProfileButtons(selectedModel.flightProfiles);
-        recalculateProfile();
-    } else if (event.target.name == 'flightProfile') {
-        recalculateProfile();
+    if (event.target.name == MODEL_BUTTON_NAME) {
+        // A specific model has been chosen from the model radio buttons, so update the flight profile buttons
+        const selectedModelProfiles = MODELS[event.target.value];
+        const flightProfileNames = selectedModelProfiles.map(flightProfile => flightProfile.name);
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, flightProfileNames, true);
+        // Recalculate using the default first flight profile
+        recalculateProfile(selectedModelProfiles[0]);
+    } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
+        // A flight profile other than the default first profile has been selected.
+        const selectedModel = MODELS[getSelectedButtonValue(MODEL_BUTTON_NAME)];
+        recalculateProfile(selectedModel[event.target.value]);
     } else if (event.target.id == 'distanceSlider') {
         writeData(event.target.value, document.getElementById('passengerSelector').value);
     } else if (event.target.id == 'passengerSelector') {
         writeData(document.getElementById('distanceSlider').value, event.target.value);
     } else if (event.target.name == 'isReturn') {
         writeData(document.getElementById('distanceSlider').value, document.getElementById('passengerSelector').value);
-    } else {
-        console.log(`Found unhandled change event for id=${event.target.id} or name=${event.target.name}`)
     }
+
+    // We don't need to listen for 'change' events from modelSearch, so no 'else' is needed here
 }
 
 /**
- * Called at initialization or when a flight profile radio button is clicked,
- * to load the filtered manufacturers and populate the models, and for the first model, populate the flights.
- *  
- * @param {string} key - one of 'commuter', 'regional', 'short', 'medium', 'long', 'private', or 'all'. Used to get the subset of manufacturers matching that profile.
- */
-function filterByProfile(key) {
-    // Store profileKey global value
-    profileKey = key;
-    manufacturerSelector = document.getElementById('manufacturerSelector');
-    // Clear all previous manufacturer lists
-    manufacturerSelector.options.length = 0;
-    filteredManufacturers[profileKey].forEach((manufacturer, index) => {
-        manufacturerSelector.add(new Option(manufacturer.name, index));
-    });
-
-    // Call selectManufacturer on the first element to populate other dropdowns
-    selectManufacturer(0);
-}
-
-/**
- * Called when the model is initialized or updated, to create or replace the radio buttons for the flight profiles.
- * Typically there will be just one, but for larger planes there was sometimes data for multiple configurations,
- * e.g. different numbers of seats, or custom data for different celebrities.
+ * For every control, listen for an 'input' event and fire the appropriate function to update values.
  * 
- * @param {FlightProfile[]} flightProfiles - Array of flight profile objects matching the selected model and filtered for the flight profile range.
+ * @param {object} event - The object describing the input element on the page
  */
-function replaceFlightProfileButtons(flightProfiles) {
-    const flightButtonDiv = document.getElementById('flightButtonDiv');
-    flightButtonDiv.replaceChildren();
-    flightProfiles.forEach((profile, index) => {
-        const id = 'flight' + index;
+function handleInputEvent(event) {
+    // The only control that we care about for 'input' events is typing into the modelSearch box
+    if (event.target.name == 'modelSearch') {
+        const filteredModelKeys = Object.keys(MODELS).filter((modelKey) => {
+            // Using a safe, case-insensitive search, return only the models with names matching the search term
+            const escapedValue = event.target.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return new RegExp(escapedValue, 'i').test(modelKey);
+        });
+        replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelKeys, false);
+    }
+
+    // We don't need to listen for 'input' events from any other controls, so no 'else' is needed here
+}
+
+/**
+ * Utility function to replace radio buttons in a div
+ * 
+ * @param {string} divId - The target div to populate with radio buttons
+ * @param {string} buttonName - Common identifier for all radio buttons within this div
+ * @param {string[]} optionStrings - Array of strings to be used as option values
+ * @param {boolean} isIndexed - True if the buttons represent array items where the value is an array index, false if buttons represent object keys as strings
+ */
+function replaceButtons(divId, buttonName, optionStrings, isIndexed) {
+    const buttonDiv = document.getElementById(divId);
+    buttonDiv.replaceChildren();
+    optionStrings.forEach((optionString, index) => {
+        const id = `${buttonName}${index}`;
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = 'flightProfile';
-        radio.value = index;
+        radio.name = buttonName;
+        radio.value = isIndexed ? index : optionString;
         radio.id = id;
         if (index == 0) {
             // Select the first item by default
@@ -133,52 +140,30 @@ function replaceFlightProfileButtons(flightProfiles) {
 
         const label = document.createElement('label');
         label.setAttribute('for', id);
-        label.innerHTML = profile.name;
+        label.innerHTML = optionString;
 
         // Create a div for each label and radio button so they are organized vertically
         const innerDiv = document.createElement('div');
         innerDiv.appendChild(radio);
         innerDiv.appendChild(label);
-        flightButtonDiv.appendChild(innerDiv);
+        buttonDiv.appendChild(innerDiv);
     });
 }
 
-/**
- * Called whenever the flight profile range changes, or when a specific manufacturer is selected.
- * Loads the models for the manufacturer and the flight profile buttons for the first model.
- * 
- * @param {number} manufacturerIndex 
- */
-function selectManufacturer(manufacturerIndex) {
-    const selectedManufacturer = filteredManufacturers[profileKey][manufacturerIndex];
-    // Clear all previous models and profiles
-    const modelSelector = document.getElementById('modelSelector');
-    modelSelector.options.length = 0;
-    // For each model containing the selected profile type, populate the model dropdown
-    selectedManufacturer.models.forEach((model, index) => {
-        modelSelector.add(new Option(model.name, index));
-    });
-
-    replaceFlightProfileButtons(selectedManufacturer.models[0].flightProfiles);
-
-    recalculateProfile();
-}
-
-// Convenience function for recalculateProfile and buildChart
-function getSelectedProfileIndex() {
-    return document.querySelector('input[name="flightProfile"]:checked').value;
+// Convenience function for recalculateProfile and buildChart. Used both for models and flight profiles.
+function getSelectedButtonValue(buttonName) {
+    return document.querySelector(`input[name="${buttonName}"]:checked`).value;
 }
 
 /**
- * Called when a manufacturer, model, or flight configuration is changed. Populates seats, burn, fuelPerSeat,
+ * Called when a model or flight configuration is changed. Populates seats, burn, fuelPerSeat,
  * and distanceSlider, then recalculates the distance using default kilometres for the flight config.
+ * 
+ * @param {FlightProfile} selectedProfile - A single flight profile object
  */
-function recalculateProfile() {
-    const modelSelector = document.getElementById('modelSelector');
-    const selectedModel = filteredManufacturers[profileKey][manufacturerSelector.value].models[modelSelector.value];
-    const selectedProfile = selectedModel.flightProfiles[getSelectedProfileIndex()];
+function recalculateProfile(selectedProfile) {
     // Populate data for this profile
-    document.getElementById('seats').innerText = selectedProfile.isPrivate() ? 'private owner uses entire plane' : `${selectedProfile.seats} seats`;
+    document.getElementById('seats').innerText = `${selectedProfile.seats} seats`;
     document.getElementById('burn').innerText = selectedProfile.burn;
 
     // Recalculating the profile requires setting the distance slider's initial value and range.
@@ -195,7 +180,7 @@ function recalculateProfile() {
     const passengerSelector = document.getElementById('passengerSelector');
     passengerSelector.options.length = 0;
     // Deal with celebrities where the entire plane counts as one seat, no matter how many people are in it
-    const maximumPassengers = selectedProfile.isPrivate() ? 1 : MAXIMUM_PASSENGERS;
+    const maximumPassengers = MAXIMUM_PASSENGERS;
     for (let i = 1; i <= maximumPassengers; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -209,7 +194,7 @@ function recalculateProfile() {
 
 // Use a standard formatter to add commas to numbers for readability
 function getFormattedNumber(x) {
-    // TODO: Can we get formatting and also number of decimals? 
+    // TODO: Can we get formatting at the same time as controlling for number of decimals? 
     return x.toLocaleString();
 }
 
@@ -221,10 +206,10 @@ function getFormattedNumber(x) {
 * @param {number} passengerCount 
 */
 function writeData(kilometres, passengerCount) {
-    const modelSelector = document.getElementById('modelSelector');
-    const selectedManufacturer = filteredManufacturers[profileKey][manufacturerSelector.value];
-    const selectedModel = selectedManufacturer.models[modelSelector.value];
-    const selectedProfile = selectedModel.flightProfiles[getSelectedProfileIndex()];
+    const modelName = getSelectedButtonValue(MODEL_BUTTON_NAME);
+    const selectedModel = MODELS[modelName];
+    const selectedProfile = selectedModel[getSelectedButtonValue(FLIGHT_PROFILE_BUTTON_NAME)];
+    // TODO: Getting undefined selectedProfile here. Is getting button index broken?
     const returnButton = document.getElementById('returnFlight');
     // Double the distance if it's a return flight
     const kmMultiplier = returnButton.checked ? 2 : 1;
@@ -233,14 +218,33 @@ function writeData(kilometres, passengerCount) {
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
     writeFlightData(kgFuelBurned, megajoules, returnButton.checked);
 
-    // For public passengers, the second set of data provides information on personal fraction of the heating,
-    // but for private jets, the annual amount of heating from all the flights: two very different contexts.
-    const kgContextFuelBurned = selectedProfile.isPrivate() ? kgFuelBurned * selectedProfile.privateFlightsPerYear : kgFuelBurned / selectedProfile.seats * passengerCount;
-    const contextMegajoules = kgContextFuelBurned * MJ_PER_KG_JET_FUEL;
-    const seatsText = passengerCount == 1 ? 'your seat' : `your ${passengerCount} seats`;
-    writeContextData(selectedProfile, kgContextFuelBurned, contextMegajoules, seatsText);
+    const kgContextFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
+    const seatsMegajoules = kgContextFuelBurned * MJ_PER_KG_JET_FUEL;
+    const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
+    writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText);
 
-    buildCharts(selectedManufacturer, selectedModel, selectedProfile, megajoules, contextMegajoules, seatsText);
+    buildCharts(modelName, selectedProfile, megajoules, seatsMegajoules, seatsText);
+}
+
+/**
+ * Populate the values on the page for just your seats.
+ * 
+ * @param {number} kgContextFuelBurned - kilograms of fuel burned either by the subset of passengers or the annual superset of flights
+ * @param {number} seatsMegajoules - Amount of heat generated either from the passenger subset or the annual superset
+ * @param {string} seatsText - singular or plural description of seats
+ */
+function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText) {
+    document.getElementById('seatsTitle').innerText = `RUNNING TOTAL FOR JUST ${seatsText.toUpperCase()}`;
+    document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg`;
+
+    const seatsTotalCO2 = seatsMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
+    document.getElementById('seatsTotalCO2').innerText = `${getFormattedNumber(seatsTotalCO2)} kg`;
+
+    const percentContextHiroshima = seatsMegajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('seatsImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
+
+    const seatsTimeForHiroshima = MJ_PER_HIROSHIMA / seatsMegajoules * YEARS_TO_DUPLICATE_HEAT;
+    document.getElementById('seatsGreenhouseHeat').innerText = `${getFormattedNumber(seatsTimeForHiroshima)} years`;
 }
 
 /**
@@ -252,73 +256,46 @@ function writeData(kilometres, passengerCount) {
  */
 function writeFlightData(kgFuelBurned, megajoules, isReturnFlight) {
     const flightText = `this ${isReturnFlight ? 'return' : 'one way'} flight`;
-    document.getElementById('flightTitle').innerText = `${flightText.toUpperCase()}`;
+    document.getElementById('flightTitle').innerText = `RUNNING TOTAL FOR ${flightText.toUpperCase()}`;
     document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
-    // Convert grams per megajoule into kilograms of CO2 for the flight
-    document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000)} kg`;
-    document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(megajoules / MJ_PER_HIROSHIMA * 100)}%`;
-    const mjToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
-    document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT)} years`;
-}
 
-/**
- * Populate the values on the page that change with context: annual for private jets, just your seats for public flights
- * 
- * @param {object} selectedProfile - The selected flight profile
- * @param {number} kgContextFuelBurned - kilograms of fuel burned either by the subset of passengers or the annual superset of flights
- * @param {number} contextMegajoules - Amount of heat generated either from the passenger subset or the annual superset
- * @param {string} seatsText - singular or plural description of seats
- */
-function writeContextData(selectedProfile, kgContextFuelBurned, contextMegajoules, seatsText) {
-    document.getElementById('additionalTitle').innerText = `${selectedProfile.isPrivate() ? selectedProfile.privateFlightsPerYear + ' ANNUAL FLIGHTS' : 'JUST ' + seatsText.toUpperCase()}`;
-    document.getElementById('contextFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg ${selectedProfile.isPrivate() ? 'annually' : ''}`;
+    const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
+    document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(totalCO2)} kg`;
 
-    const contextTotalCO2 = contextMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
-    document.getElementById('contextTotalCO2').innerText = `${getFormattedNumber(contextTotalCO2)} kg ${selectedProfile.isPrivate() ? 'annually' : ''}`;
+    const percentContextHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    const percentContextHiroshima = contextMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('contextImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}% ${selectedProfile.isPrivate() ? 'annually' : ''}`;
-
-    // Because the time duration for context data can change, the label for the data is generated here
-    const mjContextToMakeHiroshima = MJ_PER_HIROSHIMA / contextMegajoules;
-    // Some egregious private flyers generate a Hiroshima's worth of warming in less than a year. Change the time context for readability.
-    let contextTimeForHiroshima = mjContextToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT;
-    let contextTimeLabel = 'years';
-    if (contextTimeForHiroshima < 1) {
-        // Try months
-        contextTimeForHiroshima *= MONTHS_PER_YEAR;
-        contextTimeLabel = 'months';
-    }
-    if (contextTimeForHiroshima < 1) {
-        // Try days
-        contextTimeForHiroshima *= AVG_DAYS_PER_MONTH;
-        contextTimeLabel = 'days';
-    }
-    document.getElementById('contextGreenhouseHeat').innerText = `${getFormattedNumber(contextTimeForHiroshima)} ${contextTimeLabel} ${selectedProfile.isPrivate() ? ' at the current rate of ' + selectedProfile.privateFlightsPerYear + ' flights per year' : ''}`;
+    const timeForHiroshima = MJ_PER_HIROSHIMA / megajoules * YEARS_TO_DUPLICATE_HEAT;
+    document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(timeForHiroshima)} years`;
 }
 
 /**
  * Build the charts from the data.
  * 
- * @param {object} selectedManufacturer - The aircraft manufacturer for the selected model
- * @param {object} selectedModel - The aircraft model for the selected flight profile
+ * @param {object} modelName - The name of the aircraft model for the selected flight profile
  * @param {object} selectedProfile - The selected flight profile
  * @param {number} megajoules - Amount of heat generated by the flight, derived from the kg of fuel burned
- * @param {number} contextMegajoules - Amount of heat generated either from the passenger subset or the annual superset
+ * @param {number} seatsMegajoules - Amount of heat generated either from the passenger subset or the annual superset
  * @param {string} seatsText - singular or plural description of seats
  */
-function buildCharts(selectedManufacturer, selectedModel, selectedProfile, megajoules, contextMegajoules, seatsText) {
+function buildCharts(modelName, selectedProfile, megajoules, seatsMegajoules, seatsText) {
     const options = {
         plugins: {
             legend: {
                 labels: {
                     font: {
                         size: LABEL_FONT_SIZE
-                    }
+                    },
+                    color: 'white'
                 }
             }
         },
         scales: {
+            x: {
+                ticks: {
+                    color: 'cyan'
+                }
+            },
             y: {
                 beginAtZero: true,
                 title: {
@@ -327,28 +304,85 @@ function buildCharts(selectedManufacturer, selectedModel, selectedProfile, megaj
                     font: {
                         size: LABEL_FONT_SIZE,
                         weight: 'bold'
-                    }
+                    },
+                    color: 'red',
                 },
                 ticks: {
                     font: {
                         size: LABEL_FONT_SIZE
-                    }
+                    },
+                    color: 'red',
+                    beginAtZero: true
                 }
             }
         }
     };
 
-    buildFlightChart(options, selectedManufacturer.name, selectedModel.name, selectedProfile.name, megajoules);
+    buildSeatsChart(options, modelName, seatsText, seatsMegajoules);
 
-    buildAdditionalChart(options, selectedProfile.isPrivate(), seatsText, contextMegajoules);
+    buildFlightChart(options, modelName, selectedProfile.name, megajoules);
 }
 
-function buildFlightChart(options, manufacturerName, modelName, profileName, megajoules) {
+/**
+ * 
+ * @param {*} initialAnnualHiroshimas 
+ * @param {*} yearsToRender 
+ */
+function calculateDataArray(initialAnnualHiroshimas, yearsToRender) {
+    let biosphereCO2HeatRemaining = initialAnnualHiroshimas * BIOSPHERE_FRACTION;
+    let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * DEEP_OCEAN_FRACTION;
+    let geologicalCO2HeatRemaining = initialAnnualHiroshimas * GEOLOGICAL_FRACTION;
+
+    // Use the Pulse Response Model to generate a sum of exponentials.
+    const totalAnnualHiroshimas = [];
+    let runningTotal = 0;
+    for (let i = 0; i < yearsToRender; i++) {
+        const totalThisYear = biosphereCO2HeatRemaining + deepOceanCO2HeatRemaining + geologicalCO2HeatRemaining;
+        totalAnnualHiroshimas.push(totalThisYear + runningTotal);
+        runningTotal += totalThisYear;
+        // Reduce the annual total by the annual reduction for each halflife
+        biosphereCO2HeatRemaining *= BIOSPHERE_ANNUAL_REDUCTION;
+        deepOceanCO2HeatRemaining *= DEEP_OCEAN_ANNUAL_REDUCTION;
+        geologicalCO2HeatRemaining *= GEOLOGICAL_ANNUAL_REDUCTION;
+    }
+    return totalAnnualHiroshimas;
+
+}
+
+function buildSeatsChart(options, modelName, seatsText, seatsMegajoules) {
+    const seatsContext = document.getElementById('SeatsChart').getContext('2d');
+    if (seatsChart) {
+        seatsChart.destroy(); // Free the canvas if a previous chart already exists there
+    }
+
+    // Chart is imported in HTML. Ignore the warning about Chart being undefined.
+    seatsChart = new Chart(seatsContext, {
+        type: 'line',
+        data: {
+            labels: Array.from(
+                { length: YEARS_TO_RENDER },
+                (_, index) => new Date().getFullYear() + index
+            ),
+            datasets: [
+                {
+                    label: `${seatsText} on ${modelName}`,
+                    data: calculateDataArray((seatsMegajoules / YEARS_TO_DUPLICATE_HEAT) / MJ_PER_HIROSHIMA, YEARS_TO_RENDER),
+                    borderColor: '#FF0000',
+                    backgroundColor: "#ff6a00"
+                }
+            ]
+        },
+        options: options
+    });
+}
+
+function buildFlightChart(options, modelName, profileName, megajoules) {
     const flightContext = document.getElementById('FlightChart').getContext('2d');
     if (flightChart) {
         flightChart.destroy(); // Free the canvas if a previous chart already exists there
     }
 
+    // Chart is imported in HTML. Ignore the warning about Chart being undefined.
     flightChart = new Chart(flightContext, {
         type: 'line',
         data: {
@@ -358,40 +392,10 @@ function buildFlightChart(options, manufacturerName, modelName, profileName, meg
             ),
             datasets: [
                 {
-                    label: `${manufacturerName} ${modelName} - ${profileName}`,
-                    data: Array.from(
-                        { length: YEARS_TO_RENDER },
-                        (_, index) => ((index + 1) * (megajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
-                    ),
+                    label: `${modelName} - ${profileName}`,
+                    data: calculateDataArray((megajoules / YEARS_TO_DUPLICATE_HEAT) / MJ_PER_HIROSHIMA, YEARS_TO_RENDER),
+                    borderColor: '#FF0000',
                     backgroundColor: "#b6c6d5"
-                }
-            ]
-        },
-        options: options
-    });
-}
-
-function buildAdditionalChart(options, isPrivate, seatsText, contextMegajoules) {
-    const additionalContext = document.getElementById('AdditionalChart').getContext('2d');
-    if (additionalChart) {
-        additionalChart.destroy(); // Free the canvas if a previous chart already exists there
-    }
-
-    additionalChart = new Chart(additionalContext, {
-        type: 'line',
-        data: {
-            labels: Array.from(
-                { length: YEARS_TO_RENDER },
-                (_, index) => new Date().getFullYear() + index
-            ),
-            datasets: [
-                {
-                    label: isPrivate ? "One year's worth of flights" : seatsText,
-                    data: Array.from(
-                        { length: YEARS_TO_RENDER },
-                        (_, index) => ((index + 1) * (contextMegajoules / YEARS_TO_DUPLICATE_HEAT)) / MJ_PER_HIROSHIMA
-                    ),
-                    backgroundColor: "#ff6a00"
                 }
             ]
         },

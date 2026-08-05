@@ -1,6 +1,11 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', initialize);
+
 import { CELEBRITIES } from './celebrityFlights.js';
+import { Chart, ArcElement, Tooltip, Legend, LinearScale } from 'chart.js';
+
+// Register the chart components globally so that we can set defaults in initialize function
+Chart.register(ArcElement, Tooltip, Legend, LinearScale);
 
 // From https://www.bts.gov/content/energy-consumption-mode-transportation-0
 const MJ_PER_KG_JET_FUEL = 43.1;
@@ -237,6 +242,13 @@ function buildCharts(selectedProfile, megajoules, annualMegajoules) {
     buildAnnualChart(options, selectedProfile.model, annualMegajoules);
 }
 
+/**
+ * Write the data to the Flight chart, which shows the impact of a single flight
+ * 
+ * @param {object} options 
+ * @param {string} modelName 
+ * @param {number} megajoules 
+ */
 function buildFlightChart(options, modelName, megajoules) {
     const flightContext = document.getElementById('FlightChart').getContext('2d');
     if (flightChart) {
@@ -265,6 +277,13 @@ function buildFlightChart(options, modelName, megajoules) {
     });
 }
 
+/**
+ * Write the data to the Annual chart, which shows the impact of flying for a year at the given rate
+ * 
+ * @param {object} options 
+ * @param {string} modelName 
+ * @param {number} annualMegajoules 
+ */
 function buildAnnualChart(options, modelName, annualMegajoules) {
     const annualContext = document.getElementById('AnnualChart').getContext('2d');
     if (annualChart) {

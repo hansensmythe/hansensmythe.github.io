@@ -56,6 +56,7 @@ export function init(prefix) {
     const opedUL = document.createElement('ul');
     opedLI.appendChild(opedUL);
     opedUL.appendChild(getMenuItem(prefix, 'oped/FlightPerspectiveGenerator.html', 'Flight Perspective Generator'));
+    opedUL.appendChild(getMenuItem(prefix, 'oped/CelebrityFlightPerspectiveGenerator.html', 'Celebrity Flight Perspective Generator'));
     opedUL.appendChild(getMenuItem(prefix, 'velomobile.html', 'My Velomobile'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/LandAcknowledgement.html', 'Land Acknowledgement'));
     opedUL.appendChild(getMenuItem(prefix, 'oped/TrafficVsWar.html', 'Remembrance Day for Traffic Dead'));
