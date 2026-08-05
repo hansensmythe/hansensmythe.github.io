@@ -59,17 +59,17 @@
             equivalent by continuing to abuse fossil fuels for trivial pursuits such as driving and flying for pleasure.
         </p>
         <p>Here's a calculator so you can try this out for yourself. Select the approximate range (from Commuter to
-            Long-Haul, or select "All" for all the data), select the manufacturer and aircraft that will get you when
+            Long-Haul, or select "All" for all the data), select the aircraft that will get you when
             you want to go, and see the result. I used flight test data from <a
-                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>,
-            and added data on celebrity private flights from <a
-                href="https://celebrityprivatejettracker.com/leaderboard/">Celebrity Private Jet Tracker</a>.
+                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>.
+            If you want to compare yourself with a celebrity, check out my related page <a
+                href="CeelebrityFlightPerspectiveGenerator.html">Celebrity Flight Perspective Generator</a>.
+        <p>Search for an aircraft model (e.g. 'Boe' to show all aircraft made by Boeing, or 'Dash' to find Bombardier
+            Dash 8, etc.), then choose a flight configuration (if there is more than one) to see what the impact is of
+            taking that flight.</p>
 
+        <input type="text" name="modelSearch" placeholder="Enter aircraft search text">
         <fieldset>
-            <legend>Select flight profile range:</legend>
-            <div><input type="radio" id="commuter" name="profileFilter" value="commuter" /><label
-                    for="commuter">Commuter
-                    flight ~560 km</label></div>
             <legend>Matching aircraft models:</legend>
             <div id="modelButtonDiv"></div>
         </fieldset>
