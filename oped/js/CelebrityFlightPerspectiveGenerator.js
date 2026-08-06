@@ -1,7 +1,7 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', initialize);
 
-import { CELEBRITIES } from './celebrityFlights.js';
+import { CELEBRITIES } from './celebrityFlightsData.js';
 import { Chart, ArcElement, Tooltip, Legend, LinearScale } from 'chart.js';
 
 // Register the chart components globally so that we can set defaults in initialize function
