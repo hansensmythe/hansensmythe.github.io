@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', initialize);
 import { MODELS } from './flights.js';
+import { buildChart } from './flightCharts.js';
 
 // From https://www.bts.gov/content/energy-consumption-mode-transportation-0
 const MJ_PER_KG_JET_FUEL = 43.1;
@@ -7,20 +8,9 @@ const MJ_PER_KG_JET_FUEL = 43.1;
 const MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 92.5;
 const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
 const AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2;
-// Megajoules of heat for different types of nuclear bomb
-const MJ_PER_HIROSHIMA = 63000000;
+const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
-const MAXIMUM_PASSENGERS = 10;
-
-// Control constants
-const MODEL_BUTTON_NAME = 'model';
-const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
-const SLIDER_KM_RANGE = 0.25; // Percent higher or lower for kilometre range
-
-// Chart constants
-const YEARS_TO_RENDER = 10000; // TODO: This should be user-modifiable
-const LABEL_FONT_SIZE = 20;
 // Fraction of CO2 handled by the pulse response model, separated into multiple half-life equations
 const BIOSPHERE_FRACTION = 0.3;
 const DEEP_OCEAN_FRACTION = 0.3;
@@ -34,6 +24,14 @@ const BIOSPHERE_ANNUAL_REDUCTION = 0.5 ** BIOSPHERE_HALFLIFE; // 50 years until 
 const DEEP_OCEAN_ANNUAL_REDUCTION = 0.5 ** DEEP_OCEAN_HALFLIFE; // 500 years until half is taken up by the deep ocean
 const GEOLOGICAL_ANNUAL_REDUCTION = 0.5 ** GEOLOGICAL_HALFLIFE; // 10000 years until rock weathering sequesters half the CO2
 
+// Cap the number of passengers for which to calculate a subset
+const MAXIMUM_PASSENGERS = 10;
+
+// Control constants
+const MODEL_BUTTON_NAME = 'model';
+const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
+const SLIDER_KM_RANGE = 0.25; // Percent higher or lower for kilometre range
+
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let seatsChart = null;
 let flightChart = null;
@@ -43,27 +41,13 @@ let flightChart = null;
  * adds a 'input' listener to the distance display, and kicks off a default profile display for long-haul flights.
  */
 function initialize() {
-    // Listen for changes to all select elements
+    // Listen for changes to all page elements
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
     document.getElementById('contents').addEventListener('input', handleInputEvent);
-
-    // Chart.defaults.backgroundColor = '#9BD0F5';
-    // Chart.defaults.borderColor = '#36A2EB';
-    // Chart.defaults.color = '#f00';
     // Add constants to page
     document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('maxCO2ePerMJ').textContent = MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('mjPerKg').textContent = MJ_PER_KG_JET_FUEL;
-
-    // Add a listener for tweaks to the kilometre value of a flight profile
-    const distanceSlider = document.getElementById('distanceSlider');
-    const distanceDisplay = document.getElementById('distanceDisplay');
-    // Triggers continuously while dragging. We do not recalculate until the 'change' event.
-    distanceSlider.addEventListener('input', function (event) {
-        distanceDisplay.textContent = event.target.value;
-    });
-
-    // TODO: Is there a meaningful default that we should kick off?
 }
 
 /**
@@ -84,16 +68,17 @@ function handleChangeEvent(event) {
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
         // A flight profile other than the default first profile has been selected.
         const selectedModel = MODELS[getSelectedButtonValue(MODEL_BUTTON_NAME)];
-        recalculateProfile(selectedModel[event.target.value]);
-    } else if (event.target.id == 'distanceSlider') {
-        writeData(event.target.value, document.getElementById('passengerSelector').value);
-    } else if (event.target.id == 'passengerSelector') {
-        writeData(document.getElementById('distanceSlider').value, event.target.value);
-    } else if (event.target.name == 'isReturn') {
-        writeData(document.getElementById('distanceSlider').value, document.getElementById('passengerSelector').value);
+        if (selectedModel) {
+            recalculateProfile(selectedModel[event.target.value]);
+        }
+    } else if (event.target.id == 'distanceSlider' ||
+               event.target.id == 'yearsSlider' || 
+               event.target.id == 'passengerSelector' ||
+               event.target.name == 'isReturn') {
+        writeData();
     }
 
-    // We don't need to listen for 'change' events from modelSearch, so no 'else' is needed here
+    // We don't need to listen for 'change' events from modelSearch, so no 'else' is needed here.
 }
 
 /**
@@ -110,6 +95,14 @@ function handleInputEvent(event) {
             return new RegExp(escapedValue, 'i').test(modelKey);
         });
         replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelKeys, false);
+        // And now that no model is selected, clear the flight profiles
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
+    } else if (event.target.id == 'distanceSlider') {
+        const distanceDisplay = document.getElementById('distanceDisplay');
+        distanceDisplay.textContent = event.target.value;
+    } else if (event.target.id == 'yearsSlider') {
+        const yearsDisplay = document.getElementById('yearsDisplay');
+        yearsDisplay.textContent = event.target.value;
     }
 
     // We don't need to listen for 'input' events from any other controls, so no 'else' is needed here
@@ -133,8 +126,8 @@ function replaceButtons(divId, buttonName, optionStrings, isIndexed) {
         radio.name = buttonName;
         radio.value = isIndexed ? index : optionString;
         radio.id = id;
-        if (index == 0) {
-            // Select the first item by default
+        if (isIndexed && index == 0) {
+            // Select the first item by default - this is the first and possibly only Flight Profile
             radio.checked = true;
         }
 
@@ -150,9 +143,17 @@ function replaceButtons(divId, buttonName, optionStrings, isIndexed) {
     });
 }
 
-// Convenience function for recalculateProfile and buildChart. Used both for models and flight profiles.
+// Convenience function for recalculateProfile. Used both for models and flight profiles.
+// Returns undefined if no button had been checked, so calling methods can tell when to bail out.
 function getSelectedButtonValue(buttonName) {
-    return document.querySelector(`input[name="${buttonName}"]:checked`).value;
+    // Note that if a model has not been selected, but the user starts playing with the other controls,
+    // change events will get generated that will try to recalculate things, but we won't find a value.
+    const queryResult = document.querySelector(`input[name="${buttonName}"]:checked`);
+    if (queryResult) {
+        return queryResult.value;
+    } else {
+        return undefined;
+    }
 }
 
 /**
@@ -199,31 +200,73 @@ function getFormattedNumber(x) {
 }
 
 /**
+ * Calculate the annual reduction in greenhouse heat resulting from a matching reduction in CO2
+ * due to the action of the three main greenhouse gas sequestration processes, at different time scales.
+ * 
+ * @param {number} megajoules - Amount of heat generated from the initial burning of fossil fuel
+ * @param {number} yearsToRender - Integer between about 10 and 10000
+ */
+function calculateData(megajoules, yearsToRender) {
+    const initialAnnualHiroshimas = (megajoules / YEARS_TO_DUPLICATE_HEAT) / MJ_PER_HIROSHIMA;
+    let biosphereCO2HeatRemaining = initialAnnualHiroshimas * BIOSPHERE_FRACTION;
+    let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * DEEP_OCEAN_FRACTION;
+    let geologicalCO2HeatRemaining = initialAnnualHiroshimas * GEOLOGICAL_FRACTION;
+
+    // Use the Pulse Response Model to generate a sum of exponentials.
+    const data = [];
+    let runningTotal = 0;
+    let yearsTo1Hiroshima = 0;
+    for (let i = 0; i < yearsToRender; i++) {
+        // At i==0, the total will equal the initial megajoules translated into annual Hiroshima equivalents
+        const totalThisYear = biosphereCO2HeatRemaining + deepOceanCO2HeatRemaining + geologicalCO2HeatRemaining;
+        data.push(totalThisYear + runningTotal);
+        runningTotal += totalThisYear;
+        if (!yearsTo1Hiroshima && runningTotal >= 1) {
+            yearsTo1Hiroshima = i;
+        }
+        // For every year, reduce the total by the annual reduction for each halflife
+        biosphereCO2HeatRemaining *= BIOSPHERE_ANNUAL_REDUCTION;
+        deepOceanCO2HeatRemaining *= DEEP_OCEAN_ANNUAL_REDUCTION;
+        geologicalCO2HeatRemaining *= GEOLOGICAL_ANNUAL_REDUCTION;
+    }
+
+    return { 
+        data,
+        yearsTo1Hiroshima
+     };
+}
+
+/**
 * Calculates the kilograms of fuel burned overall and just the share for the given number of passengers,
 * then derives all other reported values to insert into the data and chart.
-* 
-* @param {number} kilometres 
-* @param {number} passengerCount 
 */
-function writeData(kilometres, passengerCount) {
+function writeData() {
     const modelName = getSelectedButtonValue(MODEL_BUTTON_NAME);
-    const selectedModel = MODELS[modelName];
-    const selectedProfile = selectedModel[getSelectedButtonValue(FLIGHT_PROFILE_BUTTON_NAME)];
-    // TODO: Getting undefined selectedProfile here. Is getting button index broken?
-    const returnButton = document.getElementById('returnFlight');
-    // Double the distance if it's a return flight
-    const kmMultiplier = returnButton.checked ? 2 : 1;
+    if (!modelName) {
+        // The user is playing with other controls before the model has been chosen. Ignore.
+    } else {
+        const yearsToRender = document.getElementById('yearsSlider').value;
+        const kilometres = document.getElementById('distanceSlider').value;
+        const passengerCount = document.getElementById('passengerSelector').value;
+        const returnButton = document.getElementById('returnFlight');
+        const selectedModel = MODELS[modelName];
+        const selectedProfile = selectedModel[getSelectedButtonValue(FLIGHT_PROFILE_BUTTON_NAME)];
+        // Double the distance if it's a return flight
+        const kmMultiplier = returnButton.checked ? 2 : 1;
+        const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
+        const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
+        const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
+        const seatsMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
 
-    const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
-    const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
-    writeFlightData(kgFuelBurned, megajoules, returnButton.checked);
+        const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
+        const { data: seatsData, yearsTo1Hiroshima: seatsYearsTo1Hiroshima } = calculateData(seatsMegajoules, yearsToRender);
+        writeSeatsData(kgSeatFuelBurned, seatsMegajoules, seatsText, seatsYearsTo1Hiroshima);
+        seatsChart = buildChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText, 'red');
 
-    const kgContextFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
-    const seatsMegajoules = kgContextFuelBurned * MJ_PER_KG_JET_FUEL;
-    const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
-    writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText);
-
-    buildCharts(modelName, selectedProfile, megajoules, seatsMegajoules, seatsText);
+        const { data, yearsTo1Hiroshima } = calculateData(megajoules, yearsToRender);
+        writeFlightData(kgFuelBurned, megajoules, returnButton.checked, yearsTo1Hiroshima);
+        flightChart = buildChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`, 'yellow');
+    }
 }
 
 /**
@@ -232,8 +275,9 @@ function writeData(kilometres, passengerCount) {
  * @param {number} kgContextFuelBurned - kilograms of fuel burned either by the subset of passengers or the annual superset of flights
  * @param {number} seatsMegajoules - Amount of heat generated either from the passenger subset or the annual superset
  * @param {string} seatsText - singular or plural description of seats
+ * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight generates one Hiroshima's warming
  */
-function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText) {
+function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText, seatsYearsTo1Hiroshima) {
     document.getElementById('seatsTitle').innerText = `RUNNING TOTAL FOR JUST ${seatsText.toUpperCase()}`;
     document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg`;
 
@@ -243,8 +287,8 @@ function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText) {
     const percentContextHiroshima = seatsMegajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('seatsImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    const seatsTimeForHiroshima = MJ_PER_HIROSHIMA / seatsMegajoules * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('seatsGreenhouseHeat').innerText = `${getFormattedNumber(seatsTimeForHiroshima)} years`;
+    const greenhouseKaboomText = seatsYearsTo1Hiroshima > 0 ? `${seatsYearsTo1Hiroshima} years` : 'out of range';
+    document.getElementById('seatsGreenhouseHeat').innerText = greenhouseKaboomText;
 }
 
 /**
@@ -253,8 +297,9 @@ function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText) {
  * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or two flights if return trip)
  * @param {number} megajoules - Amount of heat generated from this flight
  * @param {boolean} isReturnFlight - false if one way flight, true if return flight
+ * @param {number} yearsTo1Hiroshima - number of years until the flight generates one Hiroshima's warming
  */
-function writeFlightData(kgFuelBurned, megajoules, isReturnFlight) {
+function writeFlightData(kgFuelBurned, megajoules, isReturnFlight, yearsTo1Hiroshima) {
     const flightText = `this ${isReturnFlight ? 'return' : 'one way'} flight`;
     document.getElementById('flightTitle').innerText = `RUNNING TOTAL FOR ${flightText.toUpperCase()}`;
     document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
@@ -265,140 +310,6 @@ function writeFlightData(kgFuelBurned, megajoules, isReturnFlight) {
     const percentContextHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    const timeForHiroshima = MJ_PER_HIROSHIMA / megajoules * YEARS_TO_DUPLICATE_HEAT;
-    document.getElementById('flightGreenhouseHeat').innerText = `${getFormattedNumber(timeForHiroshima)} years`;
-}
-
-/**
- * Build the charts from the data.
- * 
- * @param {object} modelName - The name of the aircraft model for the selected flight profile
- * @param {object} selectedProfile - The selected flight profile
- * @param {number} megajoules - Amount of heat generated by the flight, derived from the kg of fuel burned
- * @param {number} seatsMegajoules - Amount of heat generated either from the passenger subset or the annual superset
- * @param {string} seatsText - singular or plural description of seats
- */
-function buildCharts(modelName, selectedProfile, megajoules, seatsMegajoules, seatsText) {
-    const options = {
-        plugins: {
-            legend: {
-                labels: {
-                    font: {
-                        size: LABEL_FONT_SIZE
-                    },
-                    color: 'white'
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: 'cyan'
-                }
-            },
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Hiroshima equivalents over time',
-                    font: {
-                        size: LABEL_FONT_SIZE,
-                        weight: 'bold'
-                    },
-                    color: 'red',
-                },
-                ticks: {
-                    font: {
-                        size: LABEL_FONT_SIZE
-                    },
-                    color: 'red',
-                    beginAtZero: true
-                }
-            }
-        }
-    };
-
-    buildSeatsChart(options, modelName, seatsText, seatsMegajoules);
-
-    buildFlightChart(options, modelName, selectedProfile.name, megajoules);
-}
-
-/**
- * 
- * @param {*} initialAnnualHiroshimas 
- * @param {*} yearsToRender 
- */
-function calculateDataArray(initialAnnualHiroshimas, yearsToRender) {
-    let biosphereCO2HeatRemaining = initialAnnualHiroshimas * BIOSPHERE_FRACTION;
-    let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * DEEP_OCEAN_FRACTION;
-    let geologicalCO2HeatRemaining = initialAnnualHiroshimas * GEOLOGICAL_FRACTION;
-
-    // Use the Pulse Response Model to generate a sum of exponentials.
-    const totalAnnualHiroshimas = [];
-    let runningTotal = 0;
-    for (let i = 0; i < yearsToRender; i++) {
-        const totalThisYear = biosphereCO2HeatRemaining + deepOceanCO2HeatRemaining + geologicalCO2HeatRemaining;
-        totalAnnualHiroshimas.push(totalThisYear + runningTotal);
-        runningTotal += totalThisYear;
-        // Reduce the annual total by the annual reduction for each halflife
-        biosphereCO2HeatRemaining *= BIOSPHERE_ANNUAL_REDUCTION;
-        deepOceanCO2HeatRemaining *= DEEP_OCEAN_ANNUAL_REDUCTION;
-        geologicalCO2HeatRemaining *= GEOLOGICAL_ANNUAL_REDUCTION;
-    }
-    return totalAnnualHiroshimas;
-
-}
-
-function buildSeatsChart(options, modelName, seatsText, seatsMegajoules) {
-    const seatsContext = document.getElementById('SeatsChart').getContext('2d');
-    if (seatsChart) {
-        seatsChart.destroy(); // Free the canvas if a previous chart already exists there
-    }
-
-    // Chart is imported in HTML. Ignore the warning about Chart being undefined.
-    seatsChart = new Chart(seatsContext, {
-        type: 'line',
-        data: {
-            labels: Array.from(
-                { length: YEARS_TO_RENDER },
-                (_, index) => new Date().getFullYear() + index
-            ),
-            datasets: [
-                {
-                    label: `${seatsText} on ${modelName}`,
-                    data: calculateDataArray((seatsMegajoules / YEARS_TO_DUPLICATE_HEAT) / MJ_PER_HIROSHIMA, YEARS_TO_RENDER),
-                    borderColor: '#FF0000',
-                    backgroundColor: "#ff6a00"
-                }
-            ]
-        },
-        options: options
-    });
-}
-
-function buildFlightChart(options, modelName, profileName, megajoules) {
-    const flightContext = document.getElementById('FlightChart').getContext('2d');
-    if (flightChart) {
-        flightChart.destroy(); // Free the canvas if a previous chart already exists there
-    }
-
-    // Chart is imported in HTML. Ignore the warning about Chart being undefined.
-    flightChart = new Chart(flightContext, {
-        type: 'line',
-        data: {
-            labels: Array.from(
-                { length: YEARS_TO_RENDER },
-                (_, index) => new Date().getFullYear() + index
-            ),
-            datasets: [
-                {
-                    label: `${modelName} - ${profileName}`,
-                    data: calculateDataArray((megajoules / YEARS_TO_DUPLICATE_HEAT) / MJ_PER_HIROSHIMA, YEARS_TO_RENDER),
-                    borderColor: '#FF0000',
-                    backgroundColor: "#b6c6d5"
-                }
-            ]
-        },
-        options: options
-    });
+    const greenhouseKaboomText = yearsTo1Hiroshima > 0 ? `${yearsTo1Hiroshima} years` : 'out of range';
+    document.getElementById('flightGreenhouseHeat').innerText = greenhouseKaboomText;
 }
