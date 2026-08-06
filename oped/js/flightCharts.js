@@ -57,7 +57,9 @@ const OPTIONS = {
 /**
  * Calculate the annual reduction in greenhouse heat resulting from a matching reduction in CO2
  * due to the action of the three main greenhouse gas sequestration processes, at different time scales,
- * and additionally note the number of years before the runningTotal exceeds 1 Hiroshima's worth of heat.
+ * and additionally note the number of years before the runningTotal exceeds 1 Hiroshima's worth of heat,
+ * or return undefined for the number of years if it is never reached (we can't use 0 to indicate that it's
+ * unset because that's still a valid number of years before the Kaboom).
  * 
  * @param {number} megajoules - Amount of heat generated from the initial burning of fossil fuel
  * @param {number} yearsToRender - Integer between about 10 and 10000
@@ -71,13 +73,13 @@ export function calculateDataSet(megajoules, yearsToRender) {
     // Use the Pulse Response Model to generate a sum of exponentials.
     const data = [];
     let runningTotal = 0;
-    let yearsTo1Hiroshima = 0;
+    let yearsTo1Hiroshima = undefined;
     for (let i = 0; i < yearsToRender; i++) {
         // At i==0, the total will equal the initial megajoules translated into annual Hiroshima equivalents
         const totalThisYear = biosphereCO2HeatRemaining + deepOceanCO2HeatRemaining + geologicalCO2HeatRemaining;
         data.push(totalThisYear + runningTotal);
         runningTotal += totalThisYear;
-        if (!yearsTo1Hiroshima && runningTotal >= 1) {
+        if (yearsTo1Hiroshima === undefined && runningTotal >= 1) {
             yearsTo1Hiroshima = i;
         }
         // For every subsequent year, reduce the total by the annual reduction for each halflife

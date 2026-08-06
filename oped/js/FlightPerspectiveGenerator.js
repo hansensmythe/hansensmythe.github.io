@@ -10,13 +10,11 @@ const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
 const AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2;
 const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat
 
-// Cap the number of passengers for which to calculate a subset
-const MAXIMUM_PASSENGERS = 10;
-
 // Control constants
 const MODEL_BUTTON_NAME = 'model';
 const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
 const SLIDER_KM_RANGE = 0.25; // Percent higher or lower for kilometre range
+const MAXIMUM_PASSENGERS = 10;
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let seatsChart = null;
@@ -224,11 +222,11 @@ function writeData() {
  * 
  * @param {number} kgContextFuelBurned - kilograms of fuel burned either by the subset of passengers or the annual superset of flights
  * @param {number} seatsMegajoules - Amount of heat generated either from the passenger subset or the annual superset
- * @param {string} seatsText - singular or plural description of seats
- * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight generates one Hiroshima's warming
+ * @param {string} title - singular or plural description of seats
+ * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight generates one Hiroshima's warming, or undefined if out of range
  */
-function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText, seatsYearsTo1Hiroshima) {
-    document.getElementById('seatsTitle').innerText = `RUNNING TOTAL FOR JUST ${seatsText.toUpperCase()}`;
+function writeSeatsData(kgContextFuelBurned, seatsMegajoules, title, seatsYearsTo1Hiroshima) {
+    document.getElementById('seatsTitle').innerText = `RUNNING TOTAL FOR JUST ${title.toUpperCase()}`;
     document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg`;
 
     const seatsTotalCO2 = seatsMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
@@ -237,7 +235,7 @@ function writeSeatsData(kgContextFuelBurned, seatsMegajoules, seatsText, seatsYe
     const percentContextHiroshima = seatsMegajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('seatsImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    const greenhouseKaboomText = seatsYearsTo1Hiroshima > 0 ? `${seatsYearsTo1Hiroshima} years` : 'out of range';
+    const greenhouseKaboomText = seatsYearsTo1Hiroshima === undefined ? 'out of range' : `${seatsYearsTo1Hiroshima} years`;
     document.getElementById('seatsGreenhouseHeat').innerText = greenhouseKaboomText;
 }
 
@@ -260,6 +258,6 @@ function writeFlightData(kgFuelBurned, megajoules, isReturnFlight, yearsTo1Hiros
     const percentContextHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    const greenhouseKaboomText = yearsTo1Hiroshima > 0 ? `${yearsTo1Hiroshima} years` : 'out of range';
+    const greenhouseKaboomText = yearsTo1Hiroshima === undefined ? 'out of range' : `${yearsTo1Hiroshima} years`;
     document.getElementById('flightGreenhouseHeat').innerText = greenhouseKaboomText;
 }
