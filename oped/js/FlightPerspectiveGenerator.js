@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', initialize);
 import { MODELS } from './publicFlightsData.js';
-import { buildChart, calculateDataSet } from './flightCharts.js';
+import { buildLineChart, buildScatterChart, calculateDataSet } from './flightCharts.js';
 
 // From https://www.bts.gov/content/energy-consumption-mode-transportation-0
 const MJ_PER_KG_JET_FUEL = 43.1;
@@ -32,6 +32,60 @@ function initialize() {
     document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('maxCO2ePerMJ').textContent = MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('mjPerKg').textContent = MJ_PER_KG_JET_FUEL;
+
+    // Initially disable all optional controls and charts. They're reenabled once the user has chosen a model.
+    hideChartElements(true);
+
+    // Populate the AircraftScatter chart with clickable links to models and profiles
+    buildScatterChart('AircraftScatter', 'Range of aircraft test flights by seats and kilometres travelled', handleClickEvent);
+}
+
+/**
+ * Toggle visibility of various page elements depending on whether they're usable.
+ * 
+ * @param {boolean} isHidden - true to hide elements, false to show them
+ */
+function hideChartElements(isHidden) {
+    const hidableElements = [
+        document.getElementById('optionalControls'),
+        document.getElementById('seatsDiv'),
+        document.getElementById('flightDiv')
+    ];
+    hidableElements.forEach((hidableElement) => {
+        hidableElement.style.display = isHidden ? 'none' : 'block';
+    });
+}
+
+/**
+ * Translate a click on the scatter chart into setting the model.
+ * @param {object} event - Unused because the scatter chart is the only clickable thing.
+ * @param {object[]} activeElements - Chart data points that were clicked
+ * @param {object} chart - Unused
+ */
+function handleClickEvent(event, activeElements, chart) {
+    // For each available aircraft to test, populate the model buttons
+    const filteredModelKeys = [];
+    activeElements.forEach((activeElement) => {
+        const index = activeElement.index;
+        const datasetIndex = activeElement.datasetIndex;
+        const clickedPoint = chart.data.datasets[datasetIndex].data[index];
+        filteredModelKeys.push(clickedPoint.modelName);
+    });
+
+    replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelKeys, false);
+    if (filteredModelKeys.length == 1) {
+        // We don't need the user to perform any further choice
+        const selectedModelProfiles = MODELS[filteredModelKeys[0]];
+        const flightProfileNames = selectedModelProfiles.map(flightProfile => flightProfile.name);
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, flightProfileNames, true);
+        // Recalculate using the default first flight profile
+        recalculateProfile(selectedModelProfiles[0]);
+    } else {
+        // Whether 0 or >1 models, no model is selected so clear the flight profiles
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
+        // Hide the chart and optional controls until a model is once again selected
+        hideChartElements(true);
+    }
 }
 
 /**
@@ -56,13 +110,11 @@ function handleChangeEvent(event) {
             recalculateProfile(selectedModel[event.target.value]);
         }
     } else if (event.target.id == 'distanceSlider' ||
-               event.target.id == 'yearsSlider' || 
-               event.target.id == 'passengerSelector' ||
-               event.target.name == 'isReturn') {
+        event.target.id == 'yearsSlider' ||
+        event.target.id == 'passengerSelector' ||
+        event.target.name == 'isReturn') {
         writeData();
     }
-
-    // We don't need to listen for 'change' events from modelSearch, so no 'else' is needed here.
 }
 
 /**
@@ -71,17 +123,7 @@ function handleChangeEvent(event) {
  * @param {object} event - The object describing the input element on the page
  */
 function handleInputEvent(event) {
-    // The only control that we care about for 'input' events is typing into the modelSearch box
-    if (event.target.name == 'modelSearch') {
-        const filteredModelKeys = Object.keys(MODELS).filter((modelKey) => {
-            // Using a safe, case-insensitive search, return only the models with names matching the search term
-            const escapedValue = event.target.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return new RegExp(escapedValue, 'i').test(modelKey);
-        });
-        replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelKeys, false);
-        // And now that no model is selected, clear the flight profiles
-        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
-    } else if (event.target.id == 'distanceSlider') {
+    if (event.target.id == 'distanceSlider') {
         const distanceDisplay = document.getElementById('distanceDisplay');
         distanceDisplay.textContent = event.target.value;
     } else if (event.target.id == 'yearsSlider') {
@@ -110,7 +152,7 @@ function replaceButtons(divId, buttonName, optionStrings, isIndexed) {
         radio.name = buttonName;
         radio.value = isIndexed ? index : optionString;
         radio.id = id;
-        if (isIndexed && index == 0) {
+        if (optionStrings.length == 1 || (isIndexed && index == 0)) {
             // Select the first item by default - this is the first and possibly only Flight Profile
             radio.checked = true;
         }
@@ -147,6 +189,8 @@ function getSelectedButtonValue(buttonName) {
  * @param {FlightProfile} selectedProfile - A single flight profile object
  */
 function recalculateProfile(selectedProfile) {
+    // Reenable optional controls
+    hideChartElements(false);
     // Populate data for this profile
     document.getElementById('seats').innerText = `${selectedProfile.seats} seats`;
     document.getElementById('burn').innerText = selectedProfile.burn;
@@ -208,12 +252,12 @@ function writeData() {
         const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
         const { data: seatsData, yearsTo1Hiroshima: seatsYearsTo1Hiroshima } = calculateDataSet(seatsMegajoules, yearsToRender);
         writeSeatsData(kgSeatFuelBurned, seatsMegajoules, seatsText, seatsYearsTo1Hiroshima);
-        // Set the global seatsChart to the new value returned from buildChart
-        seatsChart = buildChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText, 'red');
+        // Set the global seatsChart to the new value returned from buildLineChart
+        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText, 'red');
 
         const { data, yearsTo1Hiroshima } = calculateDataSet(megajoules, yearsToRender);
         writeFlightData(kgFuelBurned, megajoules, returnButton.checked, yearsTo1Hiroshima);
-        flightChart = buildChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`, 'yellow');
+        flightChart = buildLineChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`, 'yellow');
     }
 }
 
@@ -226,7 +270,7 @@ function writeData() {
  * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight generates one Hiroshima's warming, or undefined if out of range
  */
 function writeSeatsData(kgContextFuelBurned, seatsMegajoules, title, seatsYearsTo1Hiroshima) {
-    document.getElementById('seatsTitle').innerText = `RUNNING TOTAL FOR JUST ${title.toUpperCase()}`;
+    document.getElementById('seatsTitle').innerText = `CUMULATIVE TOTAL FOR JUST ${title.toUpperCase()}`;
     document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg`;
 
     const seatsTotalCO2 = seatsMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
@@ -249,7 +293,7 @@ function writeSeatsData(kgContextFuelBurned, seatsMegajoules, title, seatsYearsT
  */
 function writeFlightData(kgFuelBurned, megajoules, isReturnFlight, yearsTo1Hiroshima) {
     const flightText = `this ${isReturnFlight ? 'return' : 'one way'} flight`;
-    document.getElementById('flightTitle').innerText = `RUNNING TOTAL FOR ${flightText.toUpperCase()}`;
+    document.getElementById('flightTitle').innerText = `CUMULATIVE TOTAL FOR ${flightText.toUpperCase()}`;
     document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
 
     const totalCO2 = megajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;

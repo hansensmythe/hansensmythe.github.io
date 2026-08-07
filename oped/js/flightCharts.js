@@ -1,3 +1,5 @@
+import { MODELS } from './publicFlightsData.js';
+
 const LABEL_FONT_SIZE = 16;
 const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima blast
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
@@ -7,15 +9,15 @@ const BIOSPHERE_FRACTION = 0.3;
 const DEEP_OCEAN_FRACTION = 0.3;
 const GEOLOGICAL_FRACTION = 0.4;
 // Years before half of the CO2 is absorbed
-const BIOSPHERE_HALFLIFE = 1/50;
-const DEEP_OCEAN_HALFLIFE = 1/500;
-const GEOLOGICAL_HALFLIFE = 1/10000;
+const BIOSPHERE_HALFLIFE = 1 / 50;
+const DEEP_OCEAN_HALFLIFE = 1 / 500;
+const GEOLOGICAL_HALFLIFE = 1 / 10000;
 // Annual reduction from each source of CO2 sequestration
 const BIOSPHERE_ANNUAL_REDUCTION = 0.5 ** BIOSPHERE_HALFLIFE; // 50 years until half is taken up by plants and upper ocean
 const DEEP_OCEAN_ANNUAL_REDUCTION = 0.5 ** DEEP_OCEAN_HALFLIFE; // 500 years until half is taken up by the deep ocean
 const GEOLOGICAL_ANNUAL_REDUCTION = 0.5 ** GEOLOGICAL_HALFLIFE; // 10000 years until rock weathering sequesters half the CO2
 
-const OPTIONS = {
+const LINE_CHART_OPTIONS = {
     plugins: {
         legend: {
             labels: {
@@ -28,6 +30,15 @@ const OPTIONS = {
     },
     scales: {
         x: {
+            title: {
+                display: true,
+                text: 'Cumulative greenhouse gas heating year by year',
+                font: {
+                    size: LABEL_FONT_SIZE,
+                    weight: 'bold'
+                },
+                color: 'cyan',
+            },
             ticks: {
                 color: 'cyan'
             }
@@ -36,7 +47,7 @@ const OPTIONS = {
             beginAtZero: true,
             title: {
                 display: true,
-                text: 'Hiroshima equivalents over time',
+                text: 'Heat in Hiroshima equivalents',
                 font: {
                     size: LABEL_FONT_SIZE,
                     weight: 'bold'
@@ -88,14 +99,14 @@ export function calculateDataSet(megajoules, yearsToRender) {
         geologicalCO2HeatRemaining *= GEOLOGICAL_ANNUAL_REDUCTION;
     }
 
-    return { 
+    return {
         data,
         yearsTo1Hiroshima
-     };
+    };
 }
 
 /**
- * Build a chart for the given number of years, containing the running total heat generated from the initial 
+ * Build a line chart for the given number of years, containing the running total heat generated from the initial 
  * burning of fossil fuels that released the given number of megajoules of heat.
  * 
  * @param {object} oldChart - Reference to the previous global Chart object
@@ -104,9 +115,9 @@ export function calculateDataSet(megajoules, yearsToRender) {
  * @param {number} yearsToRender - Number of years for which to generate labels
  * @param {string} labelText - Dataset label
  * @param {string} borderColour - Colour of line on the graph
- * @returns reference to new chartObject
+ * @returns reference to new line chart
  */
-export function buildChart(oldChart, chartId, data, yearsToRender, labelText, borderColour) {
+export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText, borderColour) {
     const context = document.getElementById(chartId).getContext('2d');
     if (oldChart) {
         oldChart.destroy(); // Free the canvas if a previous chart already exists there
@@ -128,8 +139,69 @@ export function buildChart(oldChart, chartId, data, yearsToRender, labelText, bo
                 }
             ]
         },
-        options: OPTIONS
+        options: LINE_CHART_OPTIONS
     });
 
     return newChart;
+}
+
+/**
+ * Once at initialization, build a scatter chart of seats and kilometres.
+ * 
+ * @param {string} chartId - Identifier for the HTML element into which the chart is written
+ * @param {string} label - Dataset label
+ * @param {function} onClick - Fired when one of the data points is clicked
+ */
+export function buildScatterChart(chartId, label, onClick) {
+    const scatterData = [];
+    Object.entries(MODELS).forEach(([modelName, profiles]) => {
+        // One plane may have multiple profiles with different numbers of seats and distances,
+        // but when clicked we only need the modelName so that we can populate the model selector buttons.
+        profiles.forEach((profile) => {
+            scatterData.push({ x: profile.kilometres, y: profile.seats, modelName });
+        });
+    });
+
+    const context = document.getElementById(chartId).getContext('2d');
+    new Chart(context, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label,
+                data: scatterData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            onClick,
+            scales: {
+                x: {
+                    type: 'linear', // Scatter charts support only 'linear' scale type for x-axis
+                    position: 'bottom',
+                    title: {
+                        display: true,
+                        text: 'Approximate kilometres to travel',
+                        font: {
+                            size: LABEL_FONT_SIZE,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    type: 'linear', // Scatter charts support only 'linear' scale type for y-axis
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Number of seats on aircraft',
+                        font: {
+                            size: LABEL_FONT_SIZE,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
 }

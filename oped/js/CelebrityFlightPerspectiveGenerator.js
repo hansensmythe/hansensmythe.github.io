@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', initialize);
 
 import { CELEBRITIES } from './celebrityFlightsData.js';
-import { buildChart, calculateDataSet } from './flightCharts.js';
+import { buildLineChart, calculateDataSet } from './flightCharts.js';
 
 // From https://www.bts.gov/content/energy-consumption-mode-transportation-0
 const MJ_PER_KG_JET_FUEL = 43.1;
@@ -131,14 +131,14 @@ function recalculateProfile(index) {
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
     const { data, yearsTo1Hiroshima } = calculateDataSet(megajoules, YEARS_TO_RENDER);
     writeFlightData(kgFuelBurned, megajoules, 'ONE FLIGHT', yearsTo1Hiroshima);
-    flightChart = buildChart(flightChart, 'FlightChart', data, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`, 'yellow');
+    flightChart = buildLineChart(flightChart, 'FlightChart', data, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`, 'yellow');
 
     // Calculate the annual amount of heating from all the flights
     const annualKgFuelBurned = kgFuelBurned * selectedProfile.flightsPerYear;
     const annualMegajoules = annualKgFuelBurned * MJ_PER_KG_JET_FUEL;
     const { data: annualData, yearsTo1Hiroshima: annualYearsTo1Hiroshima } = calculateDataSet(annualMegajoules, YEARS_TO_RENDER);
     writeAnnualData(annualKgFuelBurned, annualMegajoules, `${selectedProfile.flightsPerYear} ANNUAL FLIGHTS`, annualYearsTo1Hiroshima);
-    annualChart = buildChart(annualChart, 'AnnualChart', annualData, YEARS_TO_RENDER, `${selectedProfile.flightsPerYear} annual flights in ${selectedProfile.model}`, 'red');
+    annualChart = buildLineChart(annualChart, 'AnnualChart', annualData, YEARS_TO_RENDER, `${selectedProfile.flightsPerYear} annual flights in ${selectedProfile.model}`, 'red');
 }
 
 /**

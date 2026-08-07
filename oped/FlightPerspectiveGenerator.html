@@ -16,6 +16,7 @@
         h1 { text-align: center; }
         dt { padding-top: 10px; }
         dd { font-size: 1.5rem; }
+        .chartDiv { border: 1px solid white; }
     </style>
     <div id="header"></div>
 </head>
@@ -58,17 +59,18 @@
             in the summer of 2026, people wouldn't be wondering why it was getting so effing hot, but we're doing the
             equivalent by continuing to abuse fossil fuels for trivial pursuits such as driving and flying for pleasure.
         </p>
-        <p>Here's a calculator so you can try this out for yourself. Select the approximate range (from Commuter to
-            Long-Haul, or select "All" for all the data), select the aircraft that will get you when
-            you want to go, and see the result. I used flight test data from <a
-                href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In Aircraft</a>.
-            If you want to compare yourself with a celebrity, check out my related page <a
-                href="CelebrityFlightPerspectiveGenerator.html">Celebrity Flight Perspective Generator</a>.
-        <p>Search for an aircraft model (e.g. 'Boe' to show all aircraft made by Boeing, or '8' to find Bombardier
-            Dash 8, etc.), then choose a flight configuration (if there is more than one) to see what the impact is of
-            taking that flight.</p>
+        <p>This graph displays the aircraft test data on two axes: number of seats (more seats means bigger aircraft)
+            and kilometres travelled. Click any dot to find aircraft models and flight profiles that match, or click
+            on an empty space to clear the data. For example, if you want to see the impact a short commuter flight,
+            click a dot in the lower left corner, but to see the impact of a long-haul flight in a large aircraft,
+            click a dot in the upper right corner. If more than one matching aircraft is displayed, choose one to
+            populate the graphs showing greenhouse heating over time.
+        </p>
 
-        <input type="text" name="modelSearch" placeholder="Enter aircraft search text">
+        <canvas id="AircraftScatter">
+            <p>It appears that your browser does not support the Canvas element. A graph of aircraft by range and seats
+                would have appeared here.</p>
+        </canvas>
         <fieldset>
             <legend>Matching aircraft models:</legend>
             <div id="modelButtonDiv"></div>
@@ -77,28 +79,33 @@
             <legend>Flight profiles:</legend>
             <div id="flightButtonDiv"></div>
         </fieldset>
-        <div>
-            <label for="distanceSlider">Kilometres flown:</label>
-            <input type="range" id="distanceSlider" step="10"></input>
-            <span id="distanceDisplay">0</span>
-        </div>
-        <div>
-            <input type="radio" id="oneWayFlight" name="isReturn" checked /><label for="oneway">One way</label>
-            <input type="radio" id="returnFlight" name="isReturn" /><label for="return">Return</label>
-        </div>
-        <div>
-            <label for="passengerSelector">How many people are flying?</label>
-            <select id="passengerSelector"></select>
-        </div>
-        <div>
-            <label for="yearsSlider">How many years of impact would you like to see?</label>
-            <input type="range" id="yearsSlider" step="10" min="10" max="10000" value="1000"></input>
-            <span id="yearsDisplay">1000</span>
-        </div>
 
-        <p>Assuming <span id="seats">0</span> consuming fuel at a rate of <span id="burn">0</span> kg/km:</p>
+        <fieldset id="optionalControls">
+            <legend>Optional controls</legend>
+            <p>After choosing an aircraft model and flight profile, you may fine-tune the data to match your intended
+                trip more closely.</p>
+            <div>
+                <label for="distanceSlider">Kilometres flown:</label>
+                <input type="range" id="distanceSlider" step="10"></input>
+                <span id="distanceDisplay">0</span>
+            </div>
+            <div>
+                <input type="radio" id="oneWayFlight" name="isReturn" checked /><label for="oneway">One way</label>
+                <input type="radio" id="returnFlight" name="isReturn" /><label for="return">Return</label>
+            </div>
+            <div>
+                <label for="passengerSelector">How many people are flying?</label>
+                <select id="passengerSelector"></select>
+            </div>
+            <div>
+                <label for="yearsSlider">How many years of impact would you like to see?</label>
+                <input type="range" id="yearsSlider" step="10" min="10" max="10000" value="1000"></input>
+                <span id="yearsDisplay">1000</span>
+            </div>
+        </fieldset>
 
-        <div style="border:1px solid white;">
+        <div id="seatsDiv" class="chartDiv">
+            <p>Assuming <span id="seats">0</span> consuming fuel at a rate of <span id="burn">0</span> kg/km:</p>
             <h1 id="seatsTitle"></h1>
             <dl>
                 <dt>Fuel burned:</dt>
@@ -120,7 +127,7 @@
             </canvas>
         </div>
 
-        <div style="border:1px solid white;">
+        <div id="flightDiv" class="chartDiv">
             <h1 id="flightTitle"></h1>
             <dl>
                 <dt>Fuel burned:</dt>
@@ -141,11 +148,18 @@
                 <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have
                     appeared here.</p>
             </canvas>
-            <p>Although in 30-50 years, plants and the upper ocean may absorb some of the CO2 (so long as those sinks are not already full), but deep ocean absorption takes centuries, and rock weathering takes millenia. Up to 40% of the CO2 remains in the atmosphere for tens of thousands of years.
+            <p>Although in 30-50 years, plants and the upper ocean may absorb some of the CO2 (so long as those sinks
+                are not already full), but deep ocean absorption takes centuries, and rock weathering takes millenia. Up
+                to 40% of the CO2 remains in the atmosphere for tens of thousands of years.
             <p>Multiply that single flight by all the world's air traffic. Is it really necessary that you take that
                 flight?</p>
         </div>
 
+        <p>I used flight test data from <a href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft">Fuel Economy In
+                Aircraft</a>.
+            If you want to compare yourself with a celebrity, check out my related page <a
+                href="CelebrityFlightPerspectiveGenerator.html">Celebrity Flight Perspective Generator</a>.
+        </p>
         <p>* I found in <a
                 href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub">"Life cycle
                 assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels"</a> (a
