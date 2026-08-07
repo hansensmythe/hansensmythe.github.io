@@ -158,7 +158,7 @@ export function buildScatterChart(chartId, label, onClick) {
         // One plane may have multiple profiles with different numbers of seats and distances,
         // but when clicked we only need the modelName so that we can populate the model selector buttons.
         profiles.forEach((profile) => {
-            scatterData.push({ x: profile.kilometres, y: profile.seats, modelName });
+            scatterData.push({ x: profile.kilometres, y: profile.seats, modelName, profileName: profile.name });
         });
     });
 
@@ -176,6 +176,16 @@ export function buildScatterChart(chartId, label, onClick) {
         },
         options: {
             onClick,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            const value = context.dataset.data[context.dataIndex];
+                            return `${value.modelName} ${value.profileName}`;
+                        }
+                    }
+                }
+            },
             scales: {
                 x: {
                     type: 'linear', // Scatter charts support only 'linear' scale type for x-axis

@@ -15,6 +15,10 @@ const MODEL_BUTTON_NAME = 'model';
 const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
 const SLIDER_KM_RANGE = 0.25; // Percent higher or lower for kilometre range
 const MAXIMUM_PASSENGERS = 10;
+// Rough estimate of every two months. Good on human scales, but does not include the long tail
+const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+const MONTHS_PER_YEAR = 12;
+const AVG_DAYS_PER_MONTH = 30.4375;
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let seatsChart = null;
@@ -37,7 +41,7 @@ function initialize() {
     hideChartElements(true);
 
     // Populate the AircraftScatter chart with clickable links to models and profiles
-    buildScatterChart('AircraftScatter', 'Range of aircraft test flights by seats and kilometres travelled', handleClickEvent);
+    buildScatterChart('AircraftScatter', 'Seats vs kilometres travelled', handleClickEvent);
 }
 
 /**
@@ -71,11 +75,14 @@ function handleClickEvent(event, activeElements, chart) {
         const clickedPoint = chart.data.datasets[datasetIndex].data[index];
         filteredModelKeys.push(clickedPoint.modelName);
     });
+    // On occasion, a single scatter plot point will contain multiple profiles
+    // for the same aircraft model, so filter out duplicates
+    const uniqueModelKeys = [...new Set(filteredModelKeys)];
 
-    replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelKeys, false);
+    replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, uniqueModelKeys, false);
     if (filteredModelKeys.length == 1) {
         // We don't need the user to perform any further choice
-        const selectedModelProfiles = MODELS[filteredModelKeys[0]];
+        const selectedModelProfiles = MODELS[uniqueModelKeys[0]];
         const flightProfileNames = selectedModelProfiles.map(flightProfile => flightProfile.name);
         replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, flightProfileNames, true);
         // Recalculate using the default first flight profile
@@ -217,8 +224,7 @@ function recalculateProfile(selectedProfile) {
         passengerSelector.appendChild(option);
     }
 
-    // We have just repopulated the passenger count, so by default it's 1
-    writeData(selectedProfile.kilometres, 1);
+    writeData();
 }
 
 // Use a standard formatter to add commas to numbers for readability
@@ -302,6 +308,25 @@ function writeFlightData(kgFuelBurned, megajoules, isReturnFlight, yearsTo1Hiros
     const percentContextHiroshima = megajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    const greenhouseKaboomText = yearsTo1Hiroshima === undefined ? 'out of range' : `${yearsTo1Hiroshima} years`;
+    let greenhouseKaboomText;
+    if (yearsTo1Hiroshima === undefined) {
+        greenhouseKaboomText = 'out of range';
+    } else if (yearsTo1Hiroshima == 0) {
+        // Calculate months or days rather than displaying 0 years
+        const mjAnnualToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
+        // Try months
+        let timeForHiroshima = mjAnnualToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT * MONTHS_PER_YEAR;
+        let timeLabel = 'months';
+        if (timeForHiroshima < 1) {
+            // Try days
+            timeForHiroshima *= AVG_DAYS_PER_MONTH;
+            timeLabel = 'days'
+        }
+        greenhouseKaboomText = `${getFormattedNumber(timeForHiroshima)} ${timeLabel}`
+    } else {
+        // Use the given value
+        greenhouseKaboomText = `${yearsTo1Hiroshima} year${yearsTo1Hiroshima > 1 ? 's' : ''}`
+    }
+
     document.getElementById('flightGreenhouseHeat').innerText = greenhouseKaboomText;
 }
