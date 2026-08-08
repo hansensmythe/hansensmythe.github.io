@@ -259,11 +259,11 @@ function writeData() {
         const { data: seatsData, yearsTo1Hiroshima: seatsYearsTo1Hiroshima } = calculateDataSet(seatsMegajoules, yearsToRender);
         writeSeatsData(kgSeatFuelBurned, seatsMegajoules, seatsText, seatsYearsTo1Hiroshima);
         // Set the global seatsChart to the new value returned from buildLineChart
-        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText, 'red');
+        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText);
 
         const { data, yearsTo1Hiroshima } = calculateDataSet(megajoules, yearsToRender);
         writeFlightData(kgFuelBurned, megajoules, returnButton.checked, yearsTo1Hiroshima);
-        flightChart = buildLineChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`, 'yellow');
+        flightChart = buildLineChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`);
     }
 }
 

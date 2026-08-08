@@ -114,10 +114,9 @@ export function calculateDataSet(megajoules, yearsToRender) {
  * @param {number[]} data - Yearly running total amount of reflected heat absorbed by greenhouse gases released from initial burning
  * @param {number} yearsToRender - Number of years for which to generate labels
  * @param {string} labelText - Dataset label
- * @param {string} borderColour - Colour of line on the graph
  * @returns reference to new line chart
  */
-export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText, borderColour) {
+export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText) {
     const context = document.getElementById(chartId).getContext('2d');
     if (oldChart) {
         oldChart.destroy(); // Free the canvas if a previous chart already exists there
@@ -135,7 +134,7 @@ export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText
                 {
                     label: labelText,
                     data: data,
-                    borderColor: borderColour,
+                    borderColor: 'red',
                     fill: true, // Required to fill the area under the line
                     // Scriptable option for dynamic gradient based on chart area
                     backgroundColor: (context) => {

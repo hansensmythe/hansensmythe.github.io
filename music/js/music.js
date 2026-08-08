@@ -115,11 +115,11 @@ function getMediaAnchor(filepath, imagename, imagealt) {
 function getMediaCell(piece) {
     const mediaCell = document.createElement("td");
     if (piece.score) {
-        const anchor = getMediaAnchor(piece.score, 'score.gif', 'Score');
+        const anchor = getMediaAnchor(piece.score, './images/score.gif', 'Score');
         mediaCell.appendChild(anchor);
     }
     if (piece.recording) {
-        const anchor = getMediaAnchor(piece.recording, "mp3.gif", "Recording");
+        const anchor = getMediaAnchor(piece.recording, "./images/mp3.gif", "Recording");
         mediaCell.appendChild(anchor);
     }
     mediaCell.className = "media";

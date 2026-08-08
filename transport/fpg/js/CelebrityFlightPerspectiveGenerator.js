@@ -130,15 +130,15 @@ function recalculateProfile(index) {
     const kgFuelBurned = selectedProfile.burn * selectedProfile.kilometres;
     const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
     const { data, yearsTo1Hiroshima } = calculateDataSet(megajoules, YEARS_TO_RENDER);
-    writeFlightData(kgFuelBurned, megajoules, 'ONE FLIGHT', yearsTo1Hiroshima);
-    flightChart = buildLineChart(flightChart, 'FlightChart', data, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`, 'yellow');
+    writeFlightData(kgFuelBurned, megajoules, `${celebritySelector.value.toUpperCase()} - ONE FLIGHT`, yearsTo1Hiroshima);
+    flightChart = buildLineChart(flightChart, 'FlightChart', data, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`);
 
     // Calculate the annual amount of heating from all the flights
     const annualKgFuelBurned = kgFuelBurned * selectedProfile.flightsPerYear;
     const annualMegajoules = annualKgFuelBurned * MJ_PER_KG_JET_FUEL;
     const { data: annualData, yearsTo1Hiroshima: annualYearsTo1Hiroshima } = calculateDataSet(annualMegajoules, YEARS_TO_RENDER);
-    writeAnnualData(annualKgFuelBurned, annualMegajoules, `${selectedProfile.flightsPerYear} ANNUAL FLIGHTS`, annualYearsTo1Hiroshima);
-    annualChart = buildLineChart(annualChart, 'AnnualChart', annualData, YEARS_TO_RENDER, `${selectedProfile.flightsPerYear} annual flights in ${selectedProfile.model}`, 'red');
+    writeAnnualData(annualKgFuelBurned, annualMegajoules, `${celebritySelector.value.toUpperCase()} - ${selectedProfile.flightsPerYear} ANNUAL FLIGHTS`, annualYearsTo1Hiroshima);
+    annualChart = buildLineChart(annualChart, 'AnnualChart', annualData, YEARS_TO_RENDER, `${selectedProfile.flightsPerYear} annual flights in ${selectedProfile.model}`);
 }
 
 /**
@@ -195,7 +195,7 @@ function writeAnnualData(annualKgFuelBurned, annualMegajoules, title, annualYear
         greenhouseKaboomText = `${getFormattedNumber(timeForHiroshima)} ${timeLabel}`
     } else {
         // Use the given value
-        greenhouseKaboomText = `${annualYearsTo1Hiroshima} years`
+        greenhouseKaboomText = `${annualYearsTo1Hiroshima} year${annualYearsTo1Hiroshima > 1 ? 's' : ''}`
     }
     document.getElementById('annualGreenhouseHeat').innerText = `${greenhouseKaboomText} at the current rate`;
 }

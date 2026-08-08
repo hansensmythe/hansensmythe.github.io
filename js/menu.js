@@ -43,8 +43,8 @@ export function init(prefix) {
     navUL.appendChild(environmentLI);
     const environmentUL = document.createElement('ul');
     environmentLI.appendChild(environmentUL);
-    environmentUL.appendChild(createMenuItem(prefix, 'environment/DearFinancial.html', 'Dear Financial Advisor:'));
     environmentUL.appendChild(createMenuItem(prefix, 'environment/VotingForChange.html', 'Voting for Change'));
+    environmentUL.appendChild(createMenuItem(prefix, 'environment/DearFinancial.html', 'Dear Financial Advisor:'));
 
     // Games
     const gamesLI = createMenuItem(prefix, '#', 'Games');
@@ -60,7 +60,7 @@ export function init(prefix) {
     navUL.appendChild(musicLI);
     const musicUL = document.createElement('ul');
     musicLI.appendChild(musicUL);
-    musicUL.appendChild(createMenuItem(prefix, 'music/music.html', 'Music'));
+    musicUL.appendChild(createMenuItem(prefix, 'music/music.html', 'Recordings and Scores'));
     musicUL.appendChild(createMenuItem(prefix, 'music/PlaceNotation.html', 'Intro to Dot Place Notation'));
 
     // Philosophy
