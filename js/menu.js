@@ -36,39 +36,55 @@ export function init(prefix) {
     headerDiv.appendChild(hdrRight);
 
     // Home
-    navUL.appendChild(getMenuItem(prefix, 'index.html', 'Home'));
+    navUL.appendChild(createMenuItem(prefix, 'index.html', 'Home'));
+
+    // Environment-related essays
+    const environmentLI = createMenuItem(prefix, '#', 'Environment');
+    navUL.appendChild(environmentLI);
+    const environmentUL = document.createElement('ul');
+    environmentLI.appendChild(environmentUL);
+    environmentUL.appendChild(createMenuItem(prefix, 'environment/DearFinancial.html', 'Dear Financial Advisor:'));
+    environmentUL.appendChild(createMenuItem(prefix, 'environment/VotingForChange.html', 'Voting for Change'));
 
     // Games
-    const gamesLI = getMenuItem(prefix, '#', 'Games');
+    const gamesLI = createMenuItem(prefix, '#', 'Games');
     navUL.appendChild(gamesLI);
     const gamesUL = document.createElement('ul');
     gamesLI.appendChild(gamesUL);
-    gamesUL.appendChild(getMenuItem(prefix, 'crazyFactor.html', 'Crazy Factor'));
-    gamesUL.appendChild(getMenuItem(prefix, 'qwirkle/setup.html', 'Qwirkle'));
-    gamesUL.appendChild(getMenuItem(prefix, 'sheriff/scorer.html', 'Sheriff of Nottingham'));
+    gamesUL.appendChild(createMenuItem(prefix, 'games/crazyFactor.html', 'Crazy Factor'));
+    gamesUL.appendChild(createMenuItem(prefix, 'games/qwirkle/setup.html', 'Qwirkle'));
+    gamesUL.appendChild(createMenuItem(prefix, 'games/sheriff/scorer.html', 'Sheriff of Nottingham'));
 
     // Music
-    navUL.appendChild(getMenuItem(prefix, 'music.html', 'Music'));
+    const musicLI = createMenuItem(prefix, '#', 'Music');
+    navUL.appendChild(musicLI);
+    const musicUL = document.createElement('ul');
+    musicLI.appendChild(musicUL);
+    musicUL.appendChild(createMenuItem(prefix, 'music/music.html', 'Music'));
+    musicUL.appendChild(createMenuItem(prefix, 'music/PlaceNotation.html', 'Intro to Dot Place Notation'));
 
-    // Opinion pieces
-    const opedLI = getMenuItem(prefix, '#', 'Op-Ed');
-    navUL.appendChild(opedLI);
-    const opedUL = document.createElement('ul');
-    opedLI.appendChild(opedUL);
-    opedUL.appendChild(getMenuItem(prefix, 'oped/FlightPerspectiveGenerator.html', 'Flight Perspective Generator'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/CelebrityFlightPerspectiveGenerator.html', 'Celebrity Flight Perspective Generator'));
-    opedUL.appendChild(getMenuItem(prefix, 'velomobile.html', 'My Velomobile'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/LandAcknowledgement.html', 'Land Acknowledgement'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/TrafficVsWar.html', 'Remembrance Day for Traffic Dead'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/placenotation.html', 'Intro to Dot Place Notation'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/VotingForChange.html', 'Voting for Change'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/DearFinancial.html', 'Dear Financial Advisor:'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/NOMA.html', 'Do the Magisteria of Science and Religion Overlap?'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/framework.html', 'In Search of a Deeper Framework'));
-    opedUL.appendChild(getMenuItem(prefix, 'oped/MAD.html', 'MADD, or just MAD?'));
+    // Philosophy
+    const philosophyLI = createMenuItem(prefix, '#', 'Philosophy');
+    navUL.appendChild(philosophyLI);
+    const philosophyUL = document.createElement('ul');
+    philosophyLI.appendChild(philosophyUL);
+    philosophyUL.appendChild(createMenuItem(prefix, 'philosophy/LandAcknowledgement.html', 'Land Acknowledgement'));
+    philosophyUL.appendChild(createMenuItem(prefix, 'philosophy/NOMA.html', 'Do the Magisteria of Science and Religion Overlap?'));
+    philosophyUL.appendChild(createMenuItem(prefix, 'philosophy/DeeperFramework.html', 'In Search of a Deeper Framework'));
+
+    // Transport
+    const transportLI = createMenuItem(prefix, '#', 'Transport');
+    navUL.appendChild(transportLI);
+    const transportUL = document.createElement('ul');
+    transportLI.appendChild(transportUL);
+    transportUL.appendChild(createMenuItem(prefix, 'transport/fpg/FlightPerspectiveGenerator.html', 'Flight Perspective Generator'));
+    transportUL.appendChild(createMenuItem(prefix, 'transport/fpg/CelebrityFlightPerspectiveGenerator.html', 'Celebrity Flight Perspective Generator'));
+    transportUL.appendChild(createMenuItem(prefix, 'transport/TrafficVsWar.html', 'Remembrance Day for Traffic Dead'));
+    transportUL.appendChild(createMenuItem(prefix, 'transport/Velomobile.html', 'My Velomobile'));
+    transportUL.appendChild(createMenuItem(prefix, 'transport/MAD.html', 'MADD, or just MAD?'));
 }
 
-function getMenuItem(prefix, target, text) {
+function createMenuItem(prefix, target, text) {
     // If the href ends with #, treat it the same as a home page hit
     let href = window.location.href;
     if (href.charAt(href.length - 1) === '#') {

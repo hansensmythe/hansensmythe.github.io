@@ -182,7 +182,6 @@ export function loadPage() {
     
     // Adjust Good maximum for 3 players if necessary
     if (players.length === 3) {
-      setThreePlayerMaxima();
       removeUnusedGoods();
     }
 

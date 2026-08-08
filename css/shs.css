@@ -29,8 +29,8 @@ body
   text-align: center;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 95%;
-  background: #212128 url(../images/bgd.png);
-  color: #EEEEEE;
+  background: white;
+  color: black;
 }
 #header
 {
@@ -174,20 +174,3 @@ body
   text-align: left;
   padding: 5px 20px;
 }
-
-a:link
-{
-  color: #8888FF;
-}
-a:visited
-{
-  color: #88BBFF;
-}/* visited link */
-a:hover
-{
-  color: #88FFFF;
-}/* mouse over link */
-a:active
-{
-  color: #FF0000;
-}/* selected link */

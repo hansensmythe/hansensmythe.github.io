@@ -96,7 +96,7 @@ function setSort(sorter) {
  */
 function getMediaAnchor(filepath, imagename, imagealt) {
     const mediaImage = document.createElement("img");
-    mediaImage.src = `images/${imagename}`;
+    mediaImage.src = imagename;
     mediaImage.width = 24;
     mediaImage.height = 24;
     mediaImage.alt = imagealt;

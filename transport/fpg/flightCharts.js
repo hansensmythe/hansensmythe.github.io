@@ -24,7 +24,7 @@ const LINE_CHART_OPTIONS = {
                 font: {
                     size: LABEL_FONT_SIZE
                 },
-                color: 'white'
+                color: 'black'
             }
         }
     },
@@ -37,10 +37,10 @@ const LINE_CHART_OPTIONS = {
                     size: LABEL_FONT_SIZE,
                     weight: 'bold'
                 },
-                color: 'cyan',
+                color: 'blue',
             },
             ticks: {
-                color: 'cyan'
+                color: 'blue'
             }
         },
         y: {
@@ -135,7 +135,19 @@ export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText
                 {
                     label: labelText,
                     data: data,
-                    borderColor: borderColour
+                    borderColor: borderColour,
+                    fill: true, // Required to fill the area under the line
+                    // Scriptable option for dynamic gradient based on chart area
+                    backgroundColor: (context) => {
+                        const chart = context.chart;
+                        const { ctx, chartArea } = chart;
+                        if (!chartArea) return null; // Handle initial render
+                        // Create vertical gradient
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(210, 207, 17, 0.3)');
+                        gradient.addColorStop(1, 'rgba(250, 46, 0, 0.8)');
+                        return gradient;
+                    }
                 }
             ]
         },

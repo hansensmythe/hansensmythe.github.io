@@ -1,3 +1,9 @@
+body
+{
+  background: black;
+  color: white;
+}
+
 th, td {
   text-align: center;
 }
