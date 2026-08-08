@@ -84,7 +84,7 @@ export function init(prefix) {
     transportUL.appendChild(createMenuItem(prefix, 'transport/MAD.html', 'MADD, or just MAD?'));
 }
 
-function createMenuItem(prefix, target, text) {
+export function createMenuItem(prefix, target, text) {
     // If the href ends with #, treat it the same as a home page hit
     let href = window.location.href;
     if (href.charAt(href.length - 1) === '#') {
