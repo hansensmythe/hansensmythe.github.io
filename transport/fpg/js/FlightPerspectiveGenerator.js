@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', initialize);
 import { MODELS } from './publicFlightsData.js';
-import { buildLineChart, buildScatterChart, calculateDataSet } from './flightCharts.js';
+import { buildLineChart, calculateDataSet } from './flightCharts.js';
 
 // From https://www.bts.gov/content/energy-consumption-mode-transportation-0
 const MJ_PER_KG_JET_FUEL = 43.1;
@@ -40,8 +40,31 @@ function initialize() {
     // Initially disable all optional controls and charts. They're reenabled once the user has chosen a model.
     hideChartElements(true);
 
-    // Populate the AircraftScatter chart with clickable links to models and profiles
-    buildScatterChart('AircraftScatter', 'Seats vs kilometres travelled', handleClickEvent);
+    // Set minimum and maximum slider settings based on MODELS values
+    const minSeats = Math.min(...MODELS.map(model => model.getMinimumSeats()));
+    const maxSeats = Math.max(...MODELS.map(model => model.getMaximumSeats()));
+    const defaultSeats = Math.round((minSeats + maxSeats) / 2);
+    const seatsSlider = document.getElementById('seatsSlider');
+    seatsSlider.min = minSeats;
+    seatsSlider.max = maxSeats;
+    seatsSlider.value = defaultSeats;
+    const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
+    aircraftSizeDisplay.textContent = `${defaultSeats} seats`;
+
+    const minKilometres = Math.min(...MODELS.map(model => model.getMinimumKilometres()));
+    const maxKilometres = Math.max(...MODELS.map(model => model.getMaximumKilometres()));
+    const defaultKilometres = Math.round((minKilometres + maxKilometres) / 2);
+    const sectorSlider = document.getElementById('sectorSlider');
+    sectorSlider.min = minKilometres;
+    sectorSlider.max = maxKilometres;
+    sectorSlider.defaultValue = defaultKilometres;
+    const sectorDisplay = document.getElementById('sectorDisplay');
+    sectorDisplay.textContent = `${defaultKilometres} km`;
+
+    // Load the aircraft models that match the defaults above so that the user sees something from the outset
+    const filteredModels = MODELS.filter((model) => model.hasMatchingSeats(defaultSeats) && model.hasMatchingDistance(defaultKilometres));
+    const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
+    replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelNames, false);
 }
 
 /**
@@ -61,41 +84,6 @@ function hideChartElements(isHidden) {
 }
 
 /**
- * Translate a click on the scatter chart into setting the model.
- * @param {object} event - Unused because the scatter chart is the only clickable thing.
- * @param {object[]} activeElements - Chart data points that were clicked
- * @param {object} chart - Unused
- */
-function handleClickEvent(event, activeElements, chart) {
-    // For each available aircraft to test, populate the model buttons
-    const filteredModelKeys = [];
-    activeElements.forEach((activeElement) => {
-        const index = activeElement.index;
-        const datasetIndex = activeElement.datasetIndex;
-        const clickedPoint = chart.data.datasets[datasetIndex].data[index];
-        filteredModelKeys.push(clickedPoint.modelName);
-    });
-    // On occasion, a single scatter plot point will contain multiple profiles
-    // for the same aircraft model, so filter out duplicates
-    const uniqueModelKeys = [...new Set(filteredModelKeys)];
-
-    replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, uniqueModelKeys, false);
-    if (filteredModelKeys.length == 1) {
-        // We don't need the user to perform any further choice
-        const selectedModelProfiles = MODELS[uniqueModelKeys[0]];
-        const flightProfileNames = selectedModelProfiles.map(flightProfile => flightProfile.name);
-        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, flightProfileNames, true);
-        // Recalculate using the default first flight profile
-        recalculateProfile(selectedModelProfiles[0]);
-    } else {
-        // Whether 0 or >1 models, no model is selected so clear the flight profiles
-        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
-        // Hide the chart and optional controls until a model is once again selected
-        hideChartElements(true);
-    }
-}
-
-/**
  * For every control, listen for a 'change' event and fire the appropriate function to update values.
  * 
  * @param {object} event - The object describing the changed element on the page
@@ -103,23 +91,50 @@ function handleClickEvent(event, activeElements, chart) {
 function handleChangeEvent(event) {
     // For radio buttons we can use the 'name' attribute to recognize the event, because each button has a different ID.
     // However, dropdowns and sliders don't have or need a 'name' because their 'id' works to identify them.
-    if (event.target.name == MODEL_BUTTON_NAME) {
+    if (event.target.id == 'seatsSlider') {
+        // Clear the aircraft model search
+        document.getElementById('modelSearch').value = '';
+        // Generate a filtered subset of model profiles that match the number of seats and the kilometres.
+        // Take care to ensure that the value is numeric, otherwise we may get concatenation instead of arithmetic!
+        const targetSeats = document.getElementById('seatsSlider').value;
+        const filteredModels = MODELS.filter((model) => model.hasMatchingSeats(targetSeats));
+        const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
+        replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelNames, false);
+        // And now that no model is selected, clear the flight profiles
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
+        const sectorDisplay = document.getElementById('sectorDisplay');
+        sectorDisplay.textContent = '';
+    } else if (event.target.id == 'sectorSlider') {
+        // Clear the aircraft model search
+        document.getElementById('modelSearch').value = '';
+        // Generate a filtered subset of model profiles that match the number of seats and the kilometres.
+        // Take care to ensure that the value is numeric, otherwise we may get concatenation instead of arithmetic!
+        const targetKilometres = document.getElementById('sectorSlider').value;
+        const filteredModels = MODELS.filter((model) => model.hasMatchingDistance(targetKilometres));
+        const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
+        replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelNames, false);
+        // And now that no model is selected, clear the flight profiles
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
+        const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
+        aircraftSizeDisplay.textContent = '';
+    } else if (event.target.name == MODEL_BUTTON_NAME) {
         // A specific model has been chosen from the model radio buttons, so update the flight profile buttons
-        const selectedModelProfiles = MODELS[event.target.value];
-        const flightProfileNames = selectedModelProfiles.map(flightProfile => flightProfile.name);
+        const selectedModel = MODELS.find(model => model.name == event.target.value);
+        const flightProfileNames = selectedModel.flightProfiles.map(flightProfile => flightProfile.name);
         replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, flightProfileNames, true);
         // Recalculate using the default first flight profile
-        recalculateProfile(selectedModelProfiles[0]);
+        recalculateProfile(selectedModel.flightProfiles[0]);
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
         // A flight profile other than the default first profile has been selected.
-        const selectedModel = MODELS[getSelectedButtonValue(MODEL_BUTTON_NAME)];
+        // From the currently selected model, load the indexed flight profile
+        const selectedModel = MODELS.find(model => model.name == getSelectedButtonValue(MODEL_BUTTON_NAME));
         if (selectedModel) {
-            recalculateProfile(selectedModel[event.target.value]);
+            recalculateProfile(selectedModel.flightProfiles[event.target.value]);
         }
     } else if (event.target.id == 'distanceSlider' ||
+        event.target.id == 'flightCountSlider' ||
         event.target.id == 'yearsSlider' ||
-        event.target.id == 'passengerSelector' ||
-        event.target.name == 'isReturn') {
+        event.target.id == 'passengerCountSelector') {
         writeData();
     }
 }
@@ -130,9 +145,33 @@ function handleChangeEvent(event) {
  * @param {object} event - The object describing the input element on the page
  */
 function handleInputEvent(event) {
-    if (event.target.id == 'distanceSlider') {
+    if (event.target.name == 'modelSearch') {
+        const filteredModelNames = MODELS.map(model => model.name).filter((modelName) => {
+            // Using a safe, case-insensitive search, return only the models with names matching the search term
+            const escapedValue = event.target.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (escapedValue.trim().length > 0) {
+                return new RegExp(escapedValue, 'i').test(modelName);
+            } else {
+                // If the user has deleted the last character, there are no matches, not all matches!
+                return false;
+            }
+        });
+        replaceButtons('modelButtonDiv', MODEL_BUTTON_NAME, filteredModelNames, false);
+        // Hide or clear the elements that are irrelevant when no model is selected
+        replaceButtons('flightButtonDiv', FLIGHT_PROFILE_BUTTON_NAME, [], true);
+        hideChartElements(true);
+    } else if (event.target.id == 'sectorSlider') {
+        const sectorDisplay = document.getElementById('sectorDisplay');
+        sectorDisplay.textContent = `${event.target.value} km`;
+    } else if (event.target.id == 'seatsSlider') {
+        const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
+        aircraftSizeDisplay.textContent = `${event.target.value} seats`;
+    } else if (event.target.id == 'distanceSlider') {
         const distanceDisplay = document.getElementById('distanceDisplay');
         distanceDisplay.textContent = event.target.value;
+    } else if (event.target.id == 'flightCountSlider') {
+        const flightCountDisplay = document.getElementById('flightCountDisplay');
+        flightCountDisplay.textContent = event.target.value;
     } else if (event.target.id == 'yearsSlider') {
         const yearsDisplay = document.getElementById('yearsDisplay');
         yearsDisplay.textContent = event.target.value;
@@ -213,15 +252,15 @@ function recalculateProfile(selectedProfile) {
     const distanceDisplay = document.getElementById('distanceDisplay');
     distanceDisplay.innerText = selectedProfile.kilometres;
 
-    const passengerSelector = document.getElementById('passengerSelector');
-    passengerSelector.options.length = 0;
+    const passengerCountSelector = document.getElementById('passengerCountSelector');
+    passengerCountSelector.options.length = 0;
     // Deal with celebrities where the entire plane counts as one seat, no matter how many people are in it
     const maximumPassengers = MAXIMUM_PASSENGERS;
     for (let i = 1; i <= maximumPassengers; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.text = i;
-        passengerSelector.appendChild(option);
+        passengerCountSelector.appendChild(option);
     }
 
     writeData();
@@ -244,25 +283,24 @@ function writeData() {
     } else {
         const yearsToRender = document.getElementById('yearsSlider').value;
         const kilometres = document.getElementById('distanceSlider').value;
-        const passengerCount = document.getElementById('passengerSelector').value;
-        const returnButton = document.getElementById('returnFlight');
-        const selectedModel = MODELS[modelName];
-        const selectedProfile = selectedModel[getSelectedButtonValue(FLIGHT_PROFILE_BUTTON_NAME)];
-        // Double the distance if it's a return flight
-        const kmMultiplier = returnButton.checked ? 2 : 1;
-        const kgFuelBurned = selectedProfile.burn * kilometres * kmMultiplier;
+        const flightCount = document.getElementById('flightCountSlider').value;
+        const passengerCount = document.getElementById('passengerCountSelector').value;
+        const selectedModel = MODELS.find(model => model.name == modelName);
+        const selectedProfile = selectedModel.flightProfiles[getSelectedButtonValue(FLIGHT_PROFILE_BUTTON_NAME)];
+        // Multiply the distance if there's more than one flight to model
+        const kgFuelBurned = selectedProfile.burn * kilometres * flightCount;
         const megajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
         const kgSeatFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
         const seatsMegajoules = kgSeatFuelBurned * MJ_PER_KG_JET_FUEL;
 
         const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
         const { data: seatsData, yearsTo1Hiroshima: seatsYearsTo1Hiroshima } = calculateDataSet(seatsMegajoules, yearsToRender);
-        writeSeatsData(kgSeatFuelBurned, seatsMegajoules, seatsText, seatsYearsTo1Hiroshima);
+        writeSeatsData(kgSeatFuelBurned, seatsMegajoules, seatsText, flightCount, seatsYearsTo1Hiroshima);
         // Set the global seatsChart to the new value returned from buildLineChart
         seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText);
 
         const { data, yearsTo1Hiroshima } = calculateDataSet(megajoules, yearsToRender);
-        writeFlightData(kgFuelBurned, megajoules, returnButton.checked, yearsTo1Hiroshima);
+        writeFlightData(kgFuelBurned, megajoules, flightCount, yearsTo1Hiroshima);
         flightChart = buildLineChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`);
     }
 }
@@ -273,10 +311,11 @@ function writeData() {
  * @param {number} kgContextFuelBurned - kilograms of fuel burned either by the subset of passengers or the annual superset of flights
  * @param {number} seatsMegajoules - Amount of heat generated either from the passenger subset or the annual superset
  * @param {string} title - singular or plural description of seats
- * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight generates one Hiroshima's warming, or undefined if out of range
+ * @param {number} flightCount - Number of flights to model (default 1)
+ * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight(s) generates one Hiroshima's warming, or undefined if out of range
  */
-function writeSeatsData(kgContextFuelBurned, seatsMegajoules, title, seatsYearsTo1Hiroshima) {
-    document.getElementById('seatsTitle').innerText = `CUMULATIVE TOTAL FOR JUST ${title.toUpperCase()}`;
+function writeSeatsData(kgContextFuelBurned, seatsMegajoules, title, flightCount, seatsYearsTo1Hiroshima) {
+    document.getElementById('seatsTitle').innerText = `CUMULATIVE TOTAL ${flightCount > 1 ? 'FOR ' + flightCount + ' FLIGHTS' : ''} IN JUST ${title.toUpperCase()}`;
     document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgContextFuelBurned)} kg`;
 
     const seatsTotalCO2 = seatsMegajoules * AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ / 1000;
@@ -292,13 +331,13 @@ function writeSeatsData(kgContextFuelBurned, seatsMegajoules, title, seatsYearsT
 /**
  * Populate the flight-specific values on the page
  * 
- * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or two flights if return trip)
+ * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or multiple flights)
  * @param {number} megajoules - Amount of heat generated from this flight
- * @param {boolean} isReturnFlight - false if one way flight, true if return flight
+ * @param {number} flightCount - Number of flights to model (default 1)
  * @param {number} yearsTo1Hiroshima - number of years until the flight generates one Hiroshima's warming
  */
-function writeFlightData(kgFuelBurned, megajoules, isReturnFlight, yearsTo1Hiroshima) {
-    const flightText = `this ${isReturnFlight ? 'return' : 'one way'} flight`;
+function writeFlightData(kgFuelBurned, megajoules, flightCount, yearsTo1Hiroshima) {
+    const flightText = `${flightCount > 1 ? 'these ' + flightCount + ' flights' : 'this flight'}`;
     document.getElementById('flightTitle').innerText = `CUMULATIVE TOTAL FOR ${flightText.toUpperCase()}`;
     document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
 

@@ -63,18 +63,24 @@
             in the summer of 2026, people wouldn't be wondering why it was getting so effing hot, but we're doing the
             equivalent by continuing to abuse fossil fuels for trivial pursuits such as driving and flying for pleasure.
         </p>
-        <p>This graph displays the aircraft test data on two axes: number of seats (more seats means bigger aircraft)
-            and kilometres travelled. Click any dot to find aircraft models and flight profiles that match, or click
-            on an empty space to clear the data. For example, if you want to see the impact of a short commuter flight
-            on a relatively small aircraft, click a dot in the lower left corner, but to see the impact of a long-haul
-            flight in a large aircraft, click a dot in the upper right corner. If more than one matching aircraft is
-            displayed, click one of them to populate the graphs showing greenhouse heating over time.
+        <p>Search for an aircraft model (e.g. 'Boe' to show all aircraft made by Boeing, or '8' for a list that will include the Bombardier
+            Dash 8, etc.), then choose a flight configuration (if there is more than one) to see what the impact is of
+            taking that flight: <input type="text" id="modelSearch" name="modelSearch" placeholder="Enter aircraft search text">
         </p>
-
-        <canvas id="AircraftScatter">
-            <p>It appears that your browser does not support the Canvas element. A graph of aircraft by range and seats
-                would have appeared here.</p>
-        </canvas>
+        <p>Alternatively, if you do not know or care about the exact aircraft model, select from a range of matching models
+            based on number of seats (smaller or bigger aircraft) or distance travelled (from commuter to long-haul).
+        </p>
+        <div>
+            <label for="seatsSlider">Size of aircraft:</label>
+            <input type="range" id="seatsSlider" step="10"></input>
+            <span id="aircraftSizeDisplay">? seats</span>
+        </div>
+        <div>
+            <label for="sectorSlider">Sector (from commuter to long-haul):</label>
+            <input type="range" id="sectorSlider" step="10"></input>
+            <span id="sectorDisplay">? km</span>
+        </div>
+        <p>If more than one matching aircraft is displayed, click one of them to populate the graphs showing greenhouse heating over time.</p>
         <fieldset>
             <legend>Matching aircraft models:</legend>
             <div id="modelButtonDiv"></div>
@@ -86,20 +92,20 @@
 
         <fieldset id="optionalControls">
             <legend>Optional controls</legend>
-            <p>After choosing an aircraft model and flight profile, you may fine-tune the data to match your intended
-                trip more closely.</p>
+            <p>After choosing an aircraft model and flight profile, you may fine-tune the data to match your intended trips more closely.</p>
             <div>
                 <label for="distanceSlider">Kilometres flown:</label>
                 <input type="range" id="distanceSlider" step="10"></input>
                 <span id="distanceDisplay">0</span>
             </div>
             <div>
-                <input type="radio" id="oneWayFlight" name="isReturn" checked /><label for="oneway">One way</label>
-                <input type="radio" id="returnFlight" name="isReturn" /><label for="return">Return</label>
+                <label for="flightCountSlider">How many flights would you like to model?</label>
+                <input type="range" id="flightCountSlider" step="1" min="1" max="100" value="1"></input>
+                <span id="flightCountDisplay">1</span>
             </div>
             <div>
-                <label for="passengerSelector">How many people are flying?</label>
-                <select id="passengerSelector"></select>
+                <label for="passengerCountSelector">How many people are flying?</label>
+                <select id="passengerCountSelector"></select>
             </div>
             <div>
                 <label for="yearsSlider">How many years of impact would you like to see?</label>
@@ -109,7 +115,7 @@
         </fieldset>
 
         <div id="seatsDiv" class="chartDiv">
-            <p>Assuming <span id="seats">0</span> consuming fuel at a rate of <span id="burn">0</span> kg/km:</p>
+            <p>Assuming each flight has <span id="seats">0</span> and consumes fuel at a rate of <span id="burn">0</span> kg/km:</p>
             <h1 id="seatsTitle"></h1>
             <dl>
                 <dt>Fuel burned:</dt>

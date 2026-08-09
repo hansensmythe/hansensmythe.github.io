@@ -1,6 +1,3 @@
-import { MODELS } from './publicFlightsData.js';
-
-const LABEL_FONT_SIZE = 16;
 const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima blast
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
@@ -21,9 +18,6 @@ const LINE_CHART_OPTIONS = {
     plugins: {
         legend: {
             labels: {
-                font: {
-                    size: LABEL_FONT_SIZE
-                },
                 color: 'black'
             }
         }
@@ -34,7 +28,6 @@ const LINE_CHART_OPTIONS = {
                 display: true,
                 text: 'Cumulative greenhouse gas heating year by year',
                 font: {
-                    size: LABEL_FONT_SIZE,
                     weight: 'bold'
                 },
                 color: 'blue',
@@ -49,15 +42,11 @@ const LINE_CHART_OPTIONS = {
                 display: true,
                 text: 'Heat in Hiroshima equivalents',
                 font: {
-                    size: LABEL_FONT_SIZE,
                     weight: 'bold'
                 },
                 color: 'red',
             },
             ticks: {
-                font: {
-                    size: LABEL_FONT_SIZE
-                },
                 color: 'red',
                 beginAtZero: true
             }
@@ -154,75 +143,4 @@ export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText
     });
 
     return newChart;
-}
-
-/**
- * Once at initialization, build a scatter chart of seats and kilometres.
- * 
- * @param {string} chartId - Identifier for the HTML element into which the chart is written
- * @param {string} label - Dataset label
- * @param {function} onClick - Fired when one of the data points is clicked
- */
-export function buildScatterChart(chartId, label, onClick) {
-    const scatterData = [];
-    Object.entries(MODELS).forEach(([modelName, profiles]) => {
-        // One plane may have multiple profiles with different numbers of seats and distances,
-        // but when clicked we only need the modelName so that we can populate the model selector buttons.
-        profiles.forEach((profile) => {
-            scatterData.push({ x: profile.kilometres, y: profile.seats, modelName, profileName: profile.name });
-        });
-    });
-
-    const context = document.getElementById(chartId).getContext('2d');
-    new Chart(context, {
-        type: 'scatter',
-        data: {
-            datasets: [{
-                label,
-                data: scatterData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            onClick,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: (context) => {
-                            const value = context.dataset.data[context.dataIndex];
-                            return `${value.modelName} ${value.profileName}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    type: 'linear', // Scatter charts support only 'linear' scale type for x-axis
-                    position: 'bottom',
-                    title: {
-                        display: true,
-                        text: 'Approximate kilometres to travel',
-                        font: {
-                            size: LABEL_FONT_SIZE,
-                            weight: 'bold'
-                        }
-                    }
-                },
-                y: {
-                    type: 'linear', // Scatter charts support only 'linear' scale type for y-axis
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Number of seats on aircraft',
-                        font: {
-                            size: LABEL_FONT_SIZE,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
-        }
-    });
 }
