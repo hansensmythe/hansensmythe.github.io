@@ -35,8 +35,7 @@
 }
 #lr
 {
-  position: relative;
-  width: 225px;
+  display: none
 }
 
 @media only screen and (min-width: 900px) {
@@ -95,6 +94,7 @@
   #lr
   {
     position: absolute;
+    display: inline-block;
     left: 675px;
     top: 370px;
     width: 225px;
