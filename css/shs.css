@@ -89,8 +89,8 @@ body
 }
 #nav li
 {
-  float: left;
-  position: relative;
+  display: block; /* Ensures each item takes a full line */
+  width: 100%;    /* Optional: ensures full width */
 }
 #nav li > p
 {
@@ -112,48 +112,6 @@ body
   text-decoration: underline;
 }
 
-/*--- DROPDOWN ---*/
-#nav ul
-{
-  margin: 0;
-  padding: 0;
-  /*Colour of lines between LI items, and background colour of unselectable item*/
-  background: #444444;
-  list-style: none;
-  position: absolute;
-  left: -9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
-}
-#nav ul li
-{
-  padding-top: 1px; /* Introducing a padding between the li and the a gives the illusion of spaced items */
-  float: none;
-}
-#nav ul a
-{
-  white-space: nowrap; /* Stop text wrapping and creating multi-line dropdown items */
-}
-#nav li:hover ul
-{
-  /* Display the dropdown on hover */
-  left: 0; /* Bring back on-screen when needed */
-}
-#nav li:hover a
-{
-  /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
-  /*background: #FF4444;*/
-  text-decoration: underline;
-}
-#nav li:hover ul a
-{
-  /* The persistent hover state does however create a global style for links even before they're hovered. Here we undo these effects. */
-  text-decoration: none;
-}
-#nav li:hover ul li a:hover
-{
-  /* Here we define the most explicit hover states--what happens when you hover each individual link. */
-  background: #212128;
-}
-
 #contents
 {
   position: relative;
@@ -162,4 +120,37 @@ body
   margin: 0 auto;
   text-align: left;
   padding: 5px 20px;
+}
+
+/*--- HAMBURGER ---*/
+.hamburger {
+  position: fixed;
+  z-index: 100;
+  top: 1rem;
+  right: 1rem;
+  padding: 4px;
+  border: black solid 1px;
+  background: white;
+  cursor: pointer;
+}
+
+.closeIcon {
+  display: none;
+}
+
+.menu {
+  position: fixed;
+  transform: translateY(-100%);
+  transition: transform 0.2s;
+  top: 0;
+  right: 0;
+  z-index: 99;
+  background: mediumBlue;
+  color: white;
+  list-style: none;
+  padding-top: 4rem;
+}
+
+.showMenu {
+  transform: translateY(0);
 }

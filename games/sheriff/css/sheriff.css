@@ -28,7 +28,7 @@ td.royal {
   color: #880000;
 }
 
-button {
+.calculateButton {
    background-color: blue;
    color: white;
    text-align: center;

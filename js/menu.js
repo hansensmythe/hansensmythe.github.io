@@ -1,7 +1,7 @@
 // Global site tag (gtag.js) - Google Analytics
 let gaId = 'G-RQ9ZHH8RCE';
 let script = document.createElement('script');
-script.onload = function() {
+script.onload = function () {
     // This occurs asynchronously once the gtag script is loaded
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
@@ -11,7 +11,49 @@ script.onload = function() {
 script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
 document.head.appendChild(script);
 
+// Used to support hamburger menu
+function addStylesheet(href) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    // Append to the first head element found
+    document.getElementsByTagName('head')[0].appendChild(link);
+}
+
+function createItalicClassElement(className, text) {
+    const italicElement = document.createElement('i');
+    italicElement.className = className;
+    italicElement.textContent = text;
+    return italicElement;
+}
+
+function initMenu() {
+    const menu = document.querySelector('.menu');
+    const closeIcon = document.querySelector('.closeIcon');
+    const menuIcon = document.querySelector('.menuIcon');
+    menu.classList.remove('showMenu');
+    closeIcon.style.display = 'none';
+    menuIcon.style.display = 'block';
+}
+
+function toggleMenu() {
+    const menu = document.querySelector('.menu');
+    const closeIcon = document.querySelector('.closeIcon');
+    const menuIcon = document.querySelector('.menuIcon');
+
+    if (menu.classList.contains('showMenu')) {
+        menu.classList.remove('showMenu');
+        closeIcon.style.display = 'none';
+        menuIcon.style.display = 'block';
+    } else {
+        menu.classList.add('showMenu');
+        closeIcon.style.display = 'block';
+        menuIcon.style.display = 'none';
+    }
+}
+
 export function init(prefix) {
+    addStylesheet('https://fonts.googleapis.com/icon?family=Material+Icons');
     const headerDiv = document.getElementById('header');
     // Add standard stuff prior to menu
     const hdrLeft = document.createElement('div');
@@ -37,16 +79,63 @@ export function init(prefix) {
 
     // Home
     navUL.appendChild(createMenuItem(prefix, 'index.html', 'Home'));
-    // Everything else
-    const essaysLI = createMenuItem(prefix, '#', 'Topics');
-    navUL.appendChild(essaysLI);
-    const essaysUL = document.createElement('ul');
-    essaysLI.appendChild(essaysUL);
-    essaysUL.appendChild(createMenuItem(prefix, './environment/index.html', 'Environment'));
-    essaysUL.appendChild(createMenuItem(prefix, './games/index.html', 'Games'));
-    essaysUL.appendChild(createMenuItem(prefix, './music/index.html', 'Music'));
-    essaysUL.appendChild(createMenuItem(prefix, './philosophy/index.html', 'Philosophy'));
-    essaysUL.appendChild(createMenuItem(prefix, './transport/index.html', 'Transport'));
+
+    // Hamburger menu
+    const menuUL = document.createElement('ul');
+    menuUL.className = 'menu';
+    menuUL.appendChild(createListItemWithChildren(prefix, 'Environment', [
+        { href: 'environment/VotingForChange.html', text: 'Voting for Change' },
+        { href: 'environment/DearFinancial.html', text: 'Dear Financial Advisor' }
+    ]));
+    menuUL.appendChild(createListItemWithChildren(prefix, 'Games', [
+        { href: 'games/crazyFactor.html', text: 'Crazy Factor card game' },
+        { href: 'games/sheriff/scorer.html', text: 'Sheriff of Nottingham scorer' },
+        { href: 'games/qwirkle/setup.html', text: 'Qwirkle Connect setup tool' }
+    ]));
+    menuUL.appendChild(createListItemWithChildren(prefix, 'Music', [
+        { href: 'music/music.html', text: 'Scores and Recordings' },
+        { href: 'music/PlaceNotation.html', text: 'Introduction to Dot Place Notation' }
+    ]));
+    menuUL.appendChild(createListItemWithChildren(prefix, 'Philosophy', [
+        { href: 'philosophy/LandAcknowledgement.html', text: 'Land Acknowledgement' },
+        { href: 'philosophy/NOMA.html', text: 'Do the magisteria of science and religion overlap?' },
+        { href: 'philosophy/DeeperFramework.html', text: 'In search of a deeper framework' }
+    ]));
+    menuUL.appendChild(createListItemWithChildren(prefix, 'Transport', [
+        { href: 'transport/fpg/FlightPerspectiveGenerator.html', text: 'Flight Perspective Generator' },
+        { href: 'transport/fpg/CelebrityFlightPerspectiveGenerator.html', text: 'Celebrity Flight Perspective Generator' },
+        { href: 'transport/TrafficVsWar.html', text: 'Traffic vs War: which is more deadly?' },
+        { href: 'transport/Velomobile.html', text: 'My Velomobile' },
+        { href: 'transport/MAD.html', text: 'MADD, or just MAD?' }
+    ]));
+    menuUL.appendChild(createMenuItem(prefix, 'resume.html', 'Resume'));
+    navUL.appendChild(menuUL);
+
+    const hamburger = document.createElement('button');
+    hamburger.className = 'hamburger';
+    hamburger.appendChild(createItalicClassElement('menuIcon material-icons', 'menu'));
+    hamburger.appendChild(createItalicClassElement('closeIcon material-icons', 'close'));
+    navUL.appendChild(hamburger);
+    hamburger.addEventListener('click', toggleMenu);
+    // Initialize the menu to force it to show only the hamburger and not the X
+    initMenu();
+}
+
+/**
+ * 
+ * @param {string} prefix - Navigation prefix for links to find their way e.g. '../'
+ * @param {string} categoryName - Display text for category 
+ * @param {object[]} menuItems - Array of menu items containing href and display text
+ * @returns 
+ */
+function createListItemWithChildren(prefix, categoryName, menuItems) {
+    const newLI = createMenuItem(prefix, '#', categoryName);
+    const newUL = document.createElement('ul');
+    newLI.appendChild(newUL);
+    menuItems.forEach((menuItem) => {
+        newUL.appendChild(createMenuItem(prefix, menuItem.href, menuItem.text));
+    });
+    return newLI;
 }
 
 export function createMenuItem(prefix, target, text) {
@@ -60,18 +149,18 @@ export function createMenuItem(prefix, target, text) {
     // Although it'd be simple to create a raw text node and apply it directly to the list item,
     // such text nodes cannot be padded etc. Better to create a paragraph, which can be.
     const li = document.createElement('li');
-    if (href.indexOf(target, href.length - target.length) !== -1)
-    {
+    if (href.indexOf(target, href.length - target.length) !== -1) {
         const p = document.createElement('p');
         p.innerHTML = text;
         li.appendChild(p);
-    }
-    else
-    {
+    } else {
         const a = document.createElement('a');
         a.href = prefix + target;
         a.innerHTML = text;
+        a.className = 'menuItem';
         li.appendChild(a);
     }
+    li.addEventListener('click', toggleMenu);
+
     return li;
 }
