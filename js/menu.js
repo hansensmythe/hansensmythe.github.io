@@ -102,8 +102,8 @@ export function init(prefix) {
         { href: 'philosophy/DeeperFramework.html', text: 'In search of a deeper framework' }
     ]));
     menuUL.appendChild(createListItemWithChildren(prefix, 'Transport', [
-        { href: 'transport/fpg/FlightPerspectiveGenerator.html', text: 'Flight Perspective Generator' },
-        { href: 'transport/fpg/CelebrityFlightPerspectiveGenerator.html', text: 'Celebrity Flight Perspective Generator' },
+        { href: 'transport/FlightPerspectiveGenerator.html', text: 'Flight Perspective Generator' },
+        { href: 'transport/CelebrityFlightPerspectiveGenerator.html', text: 'Celebrity Flight Perspective Generator' },
         { href: 'transport/TrafficVsWar.html', text: 'Traffic vs War: which is more deadly?' },
         { href: 'transport/Velomobile.html', text: 'My Velomobile' },
         { href: 'transport/MAD.html', text: 'MADD, or just MAD?' }

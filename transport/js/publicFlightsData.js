@@ -28,8 +28,11 @@ class Model {
         // Used when getting the flight profile from the name in the button
         return this.flightProfiles.find(profile => profile.name == profileName);
     }
+    hasMatchingSectorAndSeats(targetKilometres, targetSeats) {
+        return this.flightProfiles.some(profile => profile.hasKmAndSeatsInRange(targetKilometres, targetSeats));
+    }
     getMatchingProfileNames(targetKilometres, targetSeats) {
-        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmInRange(targetKilometres) && profile.hasSeatsInRange(targetSeats));
+        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmAndSeatsInRange(targetKilometres, targetSeats));
         return matchingProfiles.map(profile => profile.name);
     }
     hasMatchingSector(targetKilometres) {
@@ -41,8 +44,9 @@ class Model {
         const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmInRange(targetKilometres));
         return matchingProfiles.map(profile => profile.name);
     }
+    // Used by handleAircraftSizeChange
     hasMatchingSeats(targetSeats) {
-        return this.flightProfiles.some(profile => profile.hasSeatsInRange(targetSeats));
+       return this.flightProfiles.some(profile => profile.hasSeatsInRange(targetSeats));;
     }
     getMatchingAircraftSizeProfileNames(targetSeats) {
         // Return only those profile names within range of the targetSeats
@@ -91,6 +95,9 @@ class FlightProfile {
     }
     hasKmInRange(targetKilometres) {
         return this.minKilometres <= targetKilometres && this.maxKilometres >= targetKilometres;
+    }
+    hasKmAndSeatsInRange(targetKilometres, targetSeats) {
+        return this.hasKmInRange(targetKilometres) && this.hasSeatsInRange(targetSeats);
     }
 }
 

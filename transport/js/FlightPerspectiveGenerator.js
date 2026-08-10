@@ -2,13 +2,13 @@ document.addEventListener('DOMContentLoaded', initialize);
 import { MODELS, KM_PLUS_MINUS, SEATS_PLUS_MINUS } from './publicFlightsData.js';
 import { buildLineChart, calculateDataSet } from './flightCharts.js';
 
-// From https://www.bts.gov/content/energy-consumption-mode-transportation-0
-const MJ_PER_KG_JET_FUEL = 43.1;
+// From https://megacalc.org/units/joules-per-kilogram
+const MJ_PER_KG_JET_FUEL = 43.15;
 // From https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub
 const MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 92.5;
 const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
 const AVG_OIL_SANDS_JET_FUEL_gCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2;
-const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat
+const MJ_PER_HIROSHIMA = 62760000; // Megajoules of heat
 
 // Control constants
 const MODEL_BUTTON_NAME = 'model';
@@ -149,8 +149,7 @@ function initialize() {
     seatsSlider.max = maxSeats;
     seatsSlider.value = currentSeatsTarget;
     const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
-    const seatRange = getSeatRange(currentSeatsTarget);
-    aircraftSizeDisplay.textContent = `${seatRange.min} to ${seatRange.max} seats`;
+    aircraftSizeDisplay.textContent = `${minSeats} to ${maxSeats} seats`;
 
     const minKilometres = roundToNearest10(Math.min(...MODELS.map(model => model.getMinimumKilometres())));
     const maxKilometres = roundToNearest10(Math.max(...MODELS.map(model => model.getMaximumKilometres())));
@@ -159,11 +158,10 @@ function initialize() {
     sectorSlider.max = maxKilometres;
     sectorSlider.defaultValue = currentKmTarget;
     const sectorDisplay = document.getElementById('sectorDisplay');
-    const sectorRange = getSectorRange(currentKmTarget);
-    sectorDisplay.textContent = `${sectorRange.min} to ${sectorRange.max} km`;
+    sectorDisplay.textContent = `${minKilometres} to ${maxKilometres} km`;
 
     // Load the aircraft models that match the defaults above so that the user sees something from the outset
-    const filteredModels = MODELS.filter((model) => model.hasMatchingSeats(currentSeatsTarget) && model.hasMatchingSector(currentKmTarget));
+    const filteredModels = MODELS.filter((model) => model.hasMatchingSectorAndSeats(currentKmTarget, currentSeatsTarget));
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
 }

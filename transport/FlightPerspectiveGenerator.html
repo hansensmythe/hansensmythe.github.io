@@ -1,0 +1,174 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Author" content="Steve Hansen Smythe">
+    <meta name="description" content="Calculate the global heat impact of your flight">
+    <meta name="keywords" content="flying, environment, CO<sub>2</sub>">
+    <title>Flight Perspective Generator</title>
+    <link type="text/css" rel="stylesheet" href="../../css/shs.css" />
+    <script src="../../js/deeperInit.js" type="module"></script>
+    <script src="js/FlightPerspectiveGenerator.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            line-height: 1.3;
+        }
+        h1 { text-align: center; }
+        dt { padding-top: 10px; }
+        dd { font-size: 1.5rem; }
+        .chartDiv {
+            border: 2px solid black;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+    <div id="header"></div>
+</head>
+
+<body>
+    <div id="contents">
+        <p>We&rsquo;ve all heard that, due to voluminous CO<sub>2</sub> emissions, flying isn&rsquo;t great for the environment, but the question is, seriously, how bad is it? Especially if it&rsquo;s just one teensy return flight, how bad can it possibly be? I&rsquo;m not a celebrity with a private jet that doubles as a flying mansion. I don&rsquo;t go zipping off to Italy every time I want a pizza. I&rsquo;m not greedy. I think of others and that&rsquo;s why I want to go to my beloved niece&rsquo;s destination wedding in Cancun (I would hate to hurt her feelings), and I also want to treat my partner&mdash;just once&mdash;to that dream vacation in Thailand, or maybe just a little getaway in the south of France. Is that too much to ask? I mean, this is my one wild and precious life, to quote the poet. I don&rsquo;t want to miss out, or look miserly and cold-hearted, or like an uncultured, unworldly, parochial bumpkin. If it&rsquo;s just one trip&mdash;just two little flights&mdash;how much CO<sub>2</sub> am I actually contributing?</p>
+        <p>The following Flight Perspective Generator can help to answer that question. See how it works below.<a href="#calculator">*</a> (You can check out the private aircraft page as well, if you want to see what the flying mansion people are up to.) You&rsquo;ll notice that the answer is given both in Kilograms of CO<sub>2</sub> but primarily in Hiroshima-sized bomb equivalents. That&rsquo;s a colourful, and accurate, way of expressing the amount of heat that&rsquo;s actually generated every time a plane takes to the skies.</p>
+        <p>If you like, you can ignore the following few paragraphs and skip ahead to the Flight Perspective Generator, but the whole thing will generate a whole lot more perspective if you read this first:</p>
+        <p>We&rsquo;re all aware that the planet is heating up, and fast&mdash;but just how fast? It&rsquo;s sometimes hard to wrap our heads around the actual numbers&mdash;they&rsquo;re not only huge but also commonly expressed in units many of us don&rsquo;t use day to day&mdash;so instead the question might be asked by thinking in terms of the aforementioned Hiroshima-sized nuclear bombs and putting it this way: On average, by how many Hiroshima-sized nuclear bombs does the Earth heat up every day? I asked somebody this question recently and their answer was five, which sounds reasonable given just a single bomb&rsquo;s insanely destructive capacity&mdash;but, sadly, five isn&rsquo;t the answer. You may already know the answer but, if you don&rsquo;t, before you read on think about it for a moment and take a wild guess.</p>
+        <p>Did you answer that the earth heats up, on average, by five <i>hundred</i> nuclear bomb-equivalents every single day? Excellent! That is an <i>insanely</i> large number, right? Sadly, it&rsquo;s also totally wrong.</p>
+        <p>Okay, how about five <i>thousand?</i> you might suggest.</p>
+        <p>No.</p>
+        <p><i>Fifty thousand?</i></p>
+        <p>Pfft.</p>
+        <p>Fine. How about a <i>hundred thousand</i>.</p>
+        <p>You&rsquo;re getting warmer. Try half a million.</p>
+        <p><i>Half a million?</i></p>
+        <p>No.</p>
+        <p>OMG you&rsquo;re irritating.</p>
+        <p>Right! So the answer is&mdash;according to the scientists who measure this stuff&mdash;that the Earth heats up, on average, by the equivalent of 1,040,000 Hiroshima-sized nuclear bombs every single day.<a href="#ref1"><sup>1</sup></a> One million, one hundred and forty thousand sounds like an impossibly large number, but it&rsquo;s just what happens when 8.3 billion humans go about their business burning fossil fuel, all of which results in 104 million metric tons of CO<sub>2</sub> being pumped into the atmosphere every day.</p>
+        <p>And what happens to all that CO<sub>2</sub>? Importantly, a significant fraction of it stays put in the atmosphere for thousands, and even tens of thousands, of years, trapping heat and causing havoc. But here&rsquo;s the kicker, and it&rsquo;s a doozy. The heat that was originally released from burning the fossil fuel in the first place<a href="#ref2"><sup>2</sup></a> &ldquo;is ultimately a tiny fraction of the amount of heat trapped by CO<sub>2</sub> that is released by that fuel. It takes roughly two months for the heat trapped by the CO<sub>2</sub> to equal the heat produced by burning the fuel it came from. However, CO<sub>2</sub> remains in the atmosphere for many centuries, and ultimately can trap 100,000 times more heat than was produced by the fire that released it.&rdquo;<a href="#ref3"><sup>3</sup></a>, <a href="#ref4"><sup>4</sup></a></p>
+        <p>Damn. That sounds bad, but how exactly does all this relate, specifically, to flying? I mean, I understand that every time I fly, the planet gets a little hotter, but, surely, my contribution is still bound to be so small it&rsquo;s barely worth measuring.</p>
+        <p>If only. Let&rsquo;s say, for example, that I live in Vancouver, British Columbia, and the lure of my niece&rsquo;s destination wedding in Cancun is just too much to resist. Alrighty. If I&rsquo;m lucky, I can get a direct flight on a Boeing 737 MAX 8 that gets me there in a little over 6 hours&mdash;a distance of about 4500 km. That flight will warm the earth <i>directly</i> by burning the fuel: CO<sub>2</sub> isn&rsquo;t even in the picture yet and already that flight has burned 44,550 kg of jet fuel, releasing 1,922,332 megajoules (MJ) of heat<a href="ref2"><sup>2</sup></a> which is, astonishingly, about 3.048% of a Hiroshima bomb. Naturally I&rsquo;m flying home again, so double that number to over 6% of a Hiroshima bomb&rsquo;s-worth of heating. What can I say? My niece is worth it. She&rsquo;s the bomb. I may want to rephrase that.</p>
+        <p>But wait, there&rsquo;s more! Notwithstanding the direct heating, if we assume that the fuel was distilled from Alberta&rsquo;s oil sands<a href="#ref5"><sup>5</sup></a>, these two flights (there and back) will be responsible for releasing about 420 tonnes of CO<sub>2</sub> in total from mining, drilling, transportation, refining, and burning. And recall what happens to CO<sub>2</sub> when it&rsquo;s released into the atmosphere. Yes, some of it ends up, at least temporarily, in carbon sinks, but much of it stays in the air, overwhelming the ability of the planet to absorb it, as is evident from the continuing and catastrophic rise in atmospheric CO<sub>2</sub> concentrations. Plants and upper ocean absorb some over decades, the deep ocean absorbs more over centuries, but rock weathering only eventually sequesters the rest over tens to hundreds of thousands of years.</p>
+        <p>Recall also that, in only a couple of months, the heat trapped by the CO<sub>2</sub> is equal to the heat produced by burning the fuel it came from. In effect that means that every two months, for as long as the CO<sub>2</sub> is in the atmosphere&mdash;which we know can be many thousands of years&mdash;it&rsquo;s as if those flights are flying all over again. That&rsquo;s the actual upshot. I don&rsquo;t just fly to and from my niece&rsquo;s wedding once. It&rsquo;s as if I do it over and over again, about every two months, effectively in perpetuity. Essentially, these two actual flights have spawned <b>ghost flights</b>, the effect of which will be, in this particular case, to heat the Earth by about a Hiroshima bomb&rsquo;s-worth of energy every two years, over and over again, for thousands and thousands of years. It&rsquo;s a giant kaboom, every two years, but without the mushroom cloud, because thankfully this heat is cumulative, not explosive.</p>
+        <p>Still I might argue in frustration and defiance, as many of us do, it&rsquo;s just me! And because it&rsquo;s just me&mdash;just one person&mdash;it can&rsquo;t possibly make a difference what I do! This is a weirdly childish defence from someone who must know, surely, that they&rsquo;re not alone in the world making unique and original choices. About 12 million people fly every day; that&rsquo;s usually somewhere between 100,000 and 130,000 individual flights (although the global record as of this writing is 153,359 in a single day<a href="#ref6"><sup>6</sup></a>). And, at peak times, there are more than 20,000 planes in the sky at once.<a href="#ref7"><sup>7</sup></a> But, of course, this number accounts for only the 20,000 physical airplanes in the sky today. It doesn&rsquo;t include all those ghost flights&mdash;the phantom planes of every previous flight I&rsquo;ve ever taken&mdash;the ones that are still up there, haunting us all, for generations to come.</p>
+        <p>By &ldquo;haunting&rdquo; what I actually mean is &ldquo;heating&rdquo;&mdash;every flight responsible for more and more heat over the centuries to come, with all the misery it brings&mdash;the scorched earth, the flooding, the death and disease&mdash;gradually making life impossible for my niece, and for everyone else&rsquo;s nieces besides. I&rsquo;d have done just as well to ride to the wedding on one of the four horses of the apocalypse. How long does it take for my single seat on my holiday to Cancun to generate a Hiroshima? 2874 years. For millennia, the future people, animals, and plants that you can never know are going to be suffering from the heat that you personally caused by taking that vacation.</p>
+        <p>So the question posed previously, about flying to my niece&rsquo;s wedding&mdash;</p>
+        <p style="text-align: center;">&ldquo;Is it too much to ask?&rdquo;</p>
+        <p>&mdash;should be rephrased as, &ldquo;Is it too much to ask of the planet? Is it too much to ask of everyone else&mdash;of every single living thing&mdash;that ultimately has to pay for my flight?&rdquo;</p>
+        <p>(Besides, you know my niece? Let&rsquo;s get real. You and I both know she&rsquo;d be just as happy if I gave her the money instead&mdash;and so would yours. Just saying.)</p>
+        <address style="text-align: right;">Ingrid Hansen Smythe</address>
+
+        <hr>
+        <p id="calculator">The test data includes a variety of aircraft manufactured by Airbus, Antonov, ATR, Beechcraft, Boeing,
+            Bombardier, Dornier, Embraer, Irkut, Pilatus, Quest, Saab, and Sukhoi. Search for an aircraft model
+            (e.g. 'Boe' to show all aircraft made by Boeing, or '8' for a list that will include the Bombardier
+            Dash 8, etc.), then choose a flight profile (if there is more than one) to see what the impact is of
+            taking that flight:</p>
+        <p><input type="text" id="modelSearch" name="modelSearch" placeholder="Enter aircraft search text"></p>
+
+        <p>Alternatively, if you do not know or care about the exact aircraft model, select from a range of matching
+            models based on number of seats (smaller or bigger aircraft) or distance travelled (from commuter to long-haul).
+        </p>
+        <div>
+            <p>Size of aircraft:</p>
+            <p><input type="range" id="seatsSlider" step="10"></input><span id="aircraftSizeDisplay">? seats</span></p>
+        </div>
+        <div>
+            <p>Sector (from commuter to long-haul):</p>
+            <p><input type="range" id="sectorSlider" step="10"></input><span id="sectorDisplay">? km</span></p>
+        </div>
+        <p>If more than one matching aircraft is displayed, select one of them.</p>
+        <fieldset>
+            <legend>Matching aircraft models:</legend>
+            <div id="modelButtonDiv"></div>
+        </fieldset>
+        <p>Some aircraft models have multiple flight profiles, i.e. different configurations of number of seats, or distance travelled. Optionally, select a different flight profile to use a different set of test data. The data and graphs showing greenhouse heating over time will then be generated.</p>
+        <fieldset>
+            <legend>Flight profiles:</legend>
+            <div id="flightButtonDiv"></div>
+        </fieldset>
+
+        <fieldset id="optionalControls">
+            <legend>Optional controls</legend>
+            <p>After choosing an aircraft model and flight profile, you may fine-tune the data to match your intended
+                trips more closely.</p>
+            <div>
+                <label for="distanceSlider">Kilometres flown:</label>
+                <input type="range" id="distanceSlider" step="10"></input>
+                <span id="distanceDisplay">0</span>
+            </div>
+            <div>
+                <label for="flightCountSelector">How many flights would you like to model?</label>
+                <select id="flightCountSelector"></select>
+            </div>
+            <div>
+                <label for="passengerCountSelector">How many people are flying?</label>
+                <select id="passengerCountSelector"></select>
+            </div>
+            <div>
+                <label for="yearsSlider">How many years of impact would you like to see?</label>
+                <input type="range" id="yearsSlider" step="10" min="10" max="10000" value="1000"></input>
+                <span id="yearsDisplay">1000</span>
+            </div>
+        </fieldset>
+
+        <div id="seatsDiv" class="chartDiv">
+            <p>Assuming each flight has <span id="seats">0</span> and consumes fuel at a rate of <span
+                    id="burn">0</span> kg/km:</p>
+            <h1 id="seatsTitle"></h1>
+            <dl>
+                <dt>Fuel burned:</dt>
+                <dd id="seatsFuelBurned"></dd>
+                <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your
+                    destination):</dt>
+                <dd id="seatsTotalCO2"></dd>
+                <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel:
+                </dt>
+                <dd id="seatsImmediateHeat"></dd>
+                <dt>Time until one Hiroshima bomb's worth of warming is generated by the emitted greenhouse gases
+                    trapping
+                    heat from solar radiation:</dt>
+                <dd id="seatsGreenhouseHeat"></dd>
+            </dl>
+            <canvas id="SeatsChart">
+                <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have
+                    appeared here.</p>
+            </canvas>
+        </div>
+
+        <div id="flightDiv" class="chartDiv">
+            <h1 id="flightTitle"></h1>
+            <dl>
+                <dt>Fuel burned:</dt>
+                <dd id="flightFuelBurned"></dd>
+                <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your
+                    destination):</dt>
+                <dd id="flightTotalCO2"></dd>
+                <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by burning the fuel:
+                </dt>
+                <dd id="flightImmediateHeat"></dd>
+                <dt>Time until one Hiroshima bomb's worth of warming is generated by the emitted greenhouse gases
+                    trapping
+                    heat from solar radiation:</dt>
+                <dd id="flightGreenhouseHeat"></dd>
+            </dl>
+
+            <canvas id="FlightChart">
+                <p>It appears that your browser does not support the Canvas element. A graph of flight impact would have
+                    appeared here.</p>
+            </canvas>
+        </div>
+
+        <hr>
+        <p>Sources:</p>
+        <p id="ref1"><b>1 </b><a href="https://climatecasino.substack.com/p/earth-is-heating-at-a-rate-of-over?r=9pmyc&utm_medium=ios&triedRedirect=true">Earth is Heating at a Rate of Over One Million Hiroshima Bombs Every Day!</a> - by Prof. Eliot Jacobson: The Climate Casino, 15 April 2026</p>
+        <p id="ref2"><b>2 </b><a href="https://megacalc.org/units/joules-per-kilogram">Joule per kilogram</a> - Jet fuel Jet-A rates <span id="mjPerKg"></span> MJ/kg, so you can simply multiply the number of kilograms of fuel burned by that number to get the megajoules of heat per flight.</p>
+        <p id="ref3"><b>3 </b><a href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978">Best of Quirks: Listener question show</a> - Quirks and Quarks (CBC) 7 August 2021</p>
+        <p id="ref4"><b>4 </b><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514">Time scales and ratios of climate forcing due to thermal versus carbon dioxide emissions from fossil fuels</a> - by Xiaochun Zhang and Ken Caldeira: Geophysical Research Letters, 2 June 2015</p>
+        <p id="ref5"><b>5 </b><a href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub">Life cycle assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels</a> - by Balwinder Nimana, Christina Canter, and Amit Kumar: Energy, Volume 88, August 2015. Using oil sands to create jet fuel is far less efficient than Canada's 2030 target of 79.95 gCO<sub>2</sub>e/MJ (grams of carbon dioxide produced over the entire life cycle, from mining through processing, transportation, refining, and finally burning). If jet fuel originates from Alberta crude oil, it emits between <span id="minCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ and <span id="maxCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ.</p>
+        <p id="ref6"><b>6 </b><a href="https://www.newsweek.com/global-air-travel-had-busiest-day-on-record-12245968">Global Air Travel Had Busiest Day on Record Despite Recent Headwinds</a> - by Amanda Greenwood: Newsweek, 26 July 2026</p>
+        <p id="ref7"><b>7 </b><a href="https://easbcn.com/en/how-many-planes-fly-per-day-around-the-world/">How Many Planes Fly Per Day Around the World?</a> - European Aviation School, Barcelona, 16 June 2025</p>
+    </div>
+</body>
+
+</html>
