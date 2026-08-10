@@ -494,13 +494,13 @@ function writeFlightData(kgFuelBurned, megajoules, flightCount, yearsTo1Hiroshim
     let greenhouseKaboomText;
     if (yearsTo1Hiroshima === undefined) {
         greenhouseKaboomText = 'out of range';
-    } else if (yearsTo1Hiroshima == 0) {
-        // Calculate months or days rather than displaying 0 years
+    } else if (yearsTo1Hiroshima < 3) {
+        // Calculate months or days rather than displaying 0 or 1 years
         const mjAnnualToMakeHiroshima = MJ_PER_HIROSHIMA / megajoules;
         // Try months
         let timeForHiroshima = mjAnnualToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT * MONTHS_PER_YEAR;
         let timeLabel = 'months';
-        if (timeForHiroshima < 1) {
+        if (timeForHiroshima < 3) {
             // Try days
             timeForHiroshima *= AVG_DAYS_PER_MONTH;
             timeLabel = 'days'
