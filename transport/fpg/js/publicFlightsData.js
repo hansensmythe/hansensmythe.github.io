@@ -4,8 +4,9 @@
 */
 
 // How wide should our filtering be?
-const SEATS_PLUS_MINUS = 50;
-const KM_PLUS_MINUS = 750;
+export const SEATS_PLUS_MINUS = 50;
+export const KM_PLUS_MINUS = 1000;
+
 /**
  * The Model is used to filter the list of possible models
  * to match the target number of seats and target kilometres flown.
@@ -19,20 +20,37 @@ class Model {
         this.name = name;
         this.flightProfiles = flightProfiles;
     }
-    hasMatchingDistance(targetKilometres) {
-        // Ensure that the inputs are numeric, otherwise we may get concatenation instead of arithmetic!
+    getProfileNames() {
+        // Used when populating flight profile buttons for an aircraft model search (displays all profiles for model)
+        return this.flightProfiles.map(profile => profile.name);
+    }
+    getProfileFromName(profileName) {
+        return this.flightProfiles.find(profile => profile.name == profileName);
+    }
+    // Ensure that the inputs are numeric, otherwise we may get concatenation instead of arithmetic!
+    hasMatchingSector(targetKilometres) {
         const numericKilometres = parseInt(targetKilometres);
-        const minKilometres = numericKilometres - KM_PLUS_MINUS;
-        const maxKilometres = numericKilometres + KM_PLUS_MINUS;
-        return this.flightProfiles.some(profile => profile.kilometres > minKilometres && profile.kilometres < maxKilometres);
+        return this.flightProfiles.some(profile => profile.hasKmInRange(numericKilometres));
+    }
+    getMatchingSectorProfileNames(targetKilometres) {
+        // Return only those profile names within range of the targetKilometres
+        // Used when displaying filtered results from a change in sector range
+        const numericKilometres = parseInt(targetKilometres);
+        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmInRange(numericKilometres));
+        return matchingProfiles.map(profile => profile.name);
     }
     hasMatchingSeats(targetSeats) {
-        // Ensure that the inputs are numeric, otherwise we may get concatenation instead of arithmetic!
         const numericSeats = parseInt(targetSeats);
-        const minTargetSeats = numericSeats - SEATS_PLUS_MINUS;
-        const maxTargetSeats = numericSeats + SEATS_PLUS_MINUS;
-        return this.flightProfiles.some(profile => profile.seats > minTargetSeats && profile.seats < maxTargetSeats);
+        return this.flightProfiles.some(profile => profile.hasSeatsInRange(numericSeats));
     }
+    getMatchingAircraftSizeProfileNames(targetSeats) {
+        // Return only those profile names within range of the targetSeats
+        // Used when displaying filtered results from a change in size of aircraft
+        const numericSeats = parseInt(targetSeats);
+        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasSeatsInRange(numericSeats));
+        return matchingProfiles.map(profile => profile.name);
+    }
+    // Functions to help define overall minimum and maximum values for sliders
     getMinimumSeats() {
         const seats = this.flightProfiles.map(flightProfile => flightProfile.seats);
         return Math.min(...seats);
@@ -63,6 +81,16 @@ class FlightProfile {
         this.seats = seats;
         this.kilometres = kilometres;
         this.burn = burn;
+        this.minSeats = seats - SEATS_PLUS_MINUS;
+        this.maxSeats = seats + SEATS_PLUS_MINUS;
+        this.minKilometres = kilometres - KM_PLUS_MINUS;
+        this.maxKilometres = kilometres + KM_PLUS_MINUS;
+    }
+    hasSeatsInRange(targetSeats) {
+        return this.minSeats <= targetSeats && this.maxSeats >= targetSeats;
+    }
+    hasKmInRange(targetKilometres) {
+        return this.minKilometres <= targetKilometres && this.maxKilometres >= targetKilometres;
     }
 }
 
