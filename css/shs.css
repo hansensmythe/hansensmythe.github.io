@@ -22,6 +22,8 @@ body
 {
   width: 100%;
   text-align: center;
+  max-width: 1200px; /* Does not allow page to expand indefinitely */
+  margin: 0 auto;    /* Centers the content */
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 95%;
   background: white;
@@ -74,6 +76,12 @@ body
   left: 10px;
   font-family: 'Times New Roman', Times, serif;
   text-align: left;
+}
+@media only screen and (min-width: 768px) {
+  #hdr_title
+  {
+    font-size: x-large /* Makes title in header larger when width allows */
+  }
 }
 
 #nav

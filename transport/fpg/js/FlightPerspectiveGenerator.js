@@ -24,9 +24,10 @@ const AVG_DAYS_PER_MONTH = 30.4375;
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let seatsChart = null;
 let flightChart = null;
-// Store the current target values for proper flight profile filtering. 0 means unset
-let currentSeatsTarget = 0;
-let currentKmTarget = 0;
+// Store the current target values for proper flight profile filtering. 0 means unset.
+// Pin the initial value on values that show a good selection of long-haul aircraft
+let currentSeatsTarget = 300;
+let currentKmTarget = 10000;
 
 /**
  * Utility function to set rounded values in sliders at initialization
@@ -143,30 +144,26 @@ function initialize() {
     // Set absolute minimum and maximum slider settings based on MODELS values
     const minSeats = roundToNearest10(Math.min(...MODELS.map(model => model.getMinimumSeats())));
     const maxSeats = roundToNearest10(Math.max(...MODELS.map(model => model.getMaximumSeats())));
-    const defaultSeats = roundToNearest10((minSeats + maxSeats) / 2);
-    currentSeatsTarget = defaultSeats;
     const seatsSlider = document.getElementById('seatsSlider');
     seatsSlider.min = minSeats;
     seatsSlider.max = maxSeats;
-    seatsSlider.value = defaultSeats;
+    seatsSlider.value = currentSeatsTarget;
     const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
-    const seatRange = getSeatRange(defaultSeats);
+    const seatRange = getSeatRange(currentSeatsTarget);
     aircraftSizeDisplay.textContent = `${seatRange.min} to ${seatRange.max} seats`;
 
     const minKilometres = roundToNearest10(Math.min(...MODELS.map(model => model.getMinimumKilometres())));
     const maxKilometres = roundToNearest10(Math.max(...MODELS.map(model => model.getMaximumKilometres())));
-    const defaultKilometres = roundToNearest10((minKilometres + maxKilometres) / 2);
-    currentKmTarget = defaultKilometres;
     const sectorSlider = document.getElementById('sectorSlider');
     sectorSlider.min = minKilometres;
     sectorSlider.max = maxKilometres;
-    sectorSlider.defaultValue = defaultKilometres;
+    sectorSlider.defaultValue = currentKmTarget;
     const sectorDisplay = document.getElementById('sectorDisplay');
-    const sectorRange = getSectorRange(defaultKilometres);
+    const sectorRange = getSectorRange(currentKmTarget);
     sectorDisplay.textContent = `${sectorRange.min} to ${sectorRange.max} km`;
 
     // Load the aircraft models that match the defaults above so that the user sees something from the outset
-    const filteredModels = MODELS.filter((model) => model.hasMatchingSeats(defaultSeats) && model.hasMatchingSector(defaultKilometres));
+    const filteredModels = MODELS.filter((model) => model.hasMatchingSeats(currentSeatsTarget) && model.hasMatchingSector(currentKmTarget));
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
 }

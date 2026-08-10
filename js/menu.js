@@ -1,6 +1,6 @@
 // Global site tag (gtag.js) - Google Analytics
-let gaId = 'G-RQ9ZHH8RCE';
-let script = document.createElement('script');
+const gaId = 'G-RQ9ZHH8RCE';
+const script = document.createElement('script');
 script.onload = function () {
     // This occurs asynchronously once the gtag script is loaded
     window.dataLayer = window.dataLayer || [];
@@ -11,7 +11,7 @@ script.onload = function () {
 script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
 document.head.appendChild(script);
 
-// Used to support hamburger menu
+// Used to support hamburger menu stylesheet
 function addStylesheet(href) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
