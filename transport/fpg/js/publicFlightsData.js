@@ -25,29 +25,29 @@ class Model {
         return this.flightProfiles.map(profile => profile.name);
     }
     getProfileFromName(profileName) {
+        // Used when getting the flight profile from the name in the button
         return this.flightProfiles.find(profile => profile.name == profileName);
     }
-    // Ensure that the inputs are numeric, otherwise we may get concatenation instead of arithmetic!
+    getMatchingProfileNames(targetKilometres, targetSeats) {
+        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmInRange(targetKilometres) && profile.hasSeatsInRange(targetSeats));
+        return matchingProfiles.map(profile => profile.name);
+    }
     hasMatchingSector(targetKilometres) {
-        const numericKilometres = parseInt(targetKilometres);
-        return this.flightProfiles.some(profile => profile.hasKmInRange(numericKilometres));
+        return this.flightProfiles.some(profile => profile.hasKmInRange(targetKilometres));
     }
     getMatchingSectorProfileNames(targetKilometres) {
         // Return only those profile names within range of the targetKilometres
         // Used when displaying filtered results from a change in sector range
-        const numericKilometres = parseInt(targetKilometres);
-        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmInRange(numericKilometres));
+        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasKmInRange(targetKilometres));
         return matchingProfiles.map(profile => profile.name);
     }
     hasMatchingSeats(targetSeats) {
-        const numericSeats = parseInt(targetSeats);
-        return this.flightProfiles.some(profile => profile.hasSeatsInRange(numericSeats));
+        return this.flightProfiles.some(profile => profile.hasSeatsInRange(targetSeats));
     }
     getMatchingAircraftSizeProfileNames(targetSeats) {
         // Return only those profile names within range of the targetSeats
         // Used when displaying filtered results from a change in size of aircraft
-        const numericSeats = parseInt(targetSeats);
-        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasSeatsInRange(numericSeats));
+        const matchingProfiles = this.flightProfiles.filter(profile => profile.hasSeatsInRange(targetSeats));
         return matchingProfiles.map(profile => profile.name);
     }
     // Functions to help define overall minimum and maximum values for sliders
