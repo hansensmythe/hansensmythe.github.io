@@ -53,6 +53,7 @@ function toggleMenu() {
 }
 
 export function init(prefix) {
+    // Get hamburger and close icons from Google APIs
     addStylesheet('https://fonts.googleapis.com/icon?family=Material+Icons');
     const headerDiv = document.getElementById('header');
     // Add standard stuff prior to menu

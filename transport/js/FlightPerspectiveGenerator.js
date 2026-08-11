@@ -396,9 +396,6 @@ function getSelectedButtonValue(buttonName) {
 function recalculateProfile(selectedProfile) {
     // Reenable optional controls
     hideChartElements(false);
-    // Populate data for this profile
-    document.getElementById('seats').innerText = `${selectedProfile.seats} seats`;
-    document.getElementById('burn').innerText = selectedProfile.burn;
 
     // Recalculating the profile requires setting the distance slider's initial value and range.
     // If the user moves the slider, the min and max won't change, but we'll need to recalculate all the distance-related values.
@@ -446,14 +443,12 @@ function writeData() {
         const seatsMegajoules = kgSeatsFuelBurned * MJ_PER_KG_JET_FUEL;
         const manufacturedToBurnedSeatsMegajoules = seatsMegajoules * BURN_TO_TOTAL_RATIO;
 
-        const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
         const { data: seatsData, yearsTo1Hiroshima: seatsYearsTo1Hiroshima } = calculateDataSet(manufacturedToBurnedSeatsMegajoules, yearsToRender);
-        writeSeatsData(kgSeatsFuelBurned, seatsMegajoules, manufacturedToBurnedSeatsMegajoules, seatsText, flightCount, seatsYearsTo1Hiroshima);
-        // Set the global seatsChart to the new value returned from buildLineChart
-        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, seatsText);
+        writeSeatsData(kgSeatsFuelBurned, seatsMegajoules, manufacturedToBurnedSeatsMegajoules, seatsYearsTo1Hiroshima, selectedProfile.seats);
+        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsData, yearsToRender, passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`);
 
         const { data, yearsTo1Hiroshima } = calculateDataSet(manufacturedToBurnedMegajoules, yearsToRender);
-        writeFlightData(kgFuelBurned, megajoules, manufacturedToBurnedMegajoules, flightCount, yearsTo1Hiroshima);
+        writeFlightData(kgFuelBurned, megajoules, manufacturedToBurnedMegajoules, yearsTo1Hiroshima, selectedProfile.burn);
         flightChart = buildLineChart(flightChart, 'FlightChart', data, yearsToRender, `${modelName} - ${selectedProfile.name}`);
     }
 }
@@ -464,12 +459,14 @@ function writeData() {
  * @param {number} kgSeatsFuelBurned - kilograms of fuel burned by the subset of passengers
  * @param {number} seatsMegajoules - Amount of heat generated from the passenger subset
  * @param {number} manufacturedToBurnedSeatsMegajoules - Derived from multiplying seatsMegajoules by ratio between burned CO2 and total CO2
- * @param {string} title - singular or plural description of seats
- * @param {number} flightCount - Number of flights to model (default 1)
  * @param {number} seatsYearsTo1Hiroshima - number of years until just your seats' portion of the flight(s) generates one Hiroshima's warming, or undefined if out of range
+ * @param {number} seatsCount - Total number of seats on the plane
  */
-function writeSeatsData(kgSeatsFuelBurned, seatsMegajoules, manufacturedToBurnedSeatsMegajoules, title, flightCount, seatsYearsTo1Hiroshima) {
-    document.getElementById('seatsTitle').innerText = `CUMULATIVE TOTAL ${flightCount > 1 ? 'FOR ' + flightCount + ' FLIGHTS' : ''} IN JUST ${title.toUpperCase()}`;
+function writeSeatsData(kgSeatsFuelBurned, seatsMegajoules, manufacturedToBurnedSeatsMegajoules, seatsYearsTo1Hiroshima, seatsCount) {
+    const flightCount = getIntegerElementValue('flightCountSelector');
+    const passengerCount = getIntegerElementValue('passengerCountSelector');
+    const titleText = `Your ${passengerCount == 1 ? "seat's" : passengerCount + " seats'"} ${getFormattedNumber(passengerCount / seatsCount * 100)}% share of ${flightCount > 1 ? flightCount + ' flights' : 'the flight'}`;
+    document.getElementById('seatsTitle').innerText = titleText;
     document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgSeatsFuelBurned)} kg`;
 
     const seatsBurnedCO2 = kgSeatsFuelBurned * CO2_PER_KG_JET_FUEL;
@@ -481,7 +478,7 @@ function writeSeatsData(kgSeatsFuelBurned, seatsMegajoules, manufacturedToBurned
     const percentSeatsHiroshima = manufacturedToBurnedSeatsMegajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('seatsImmediateHeat').innerText = `${getFormattedNumber(percentSeatsHiroshima)}%`;
 
-    const greenhouseKaboomText = seatsYearsTo1Hiroshima === undefined ? 'out of range' : `${seatsYearsTo1Hiroshima} years`;
+    const greenhouseKaboomText = seatsYearsTo1Hiroshima === undefined ? `more than ${getIntegerElementValue('yearsSlider')} years` : `${seatsYearsTo1Hiroshima} years`;
     document.getElementById('seatsGreenhouseHeat').innerText = greenhouseKaboomText;
 }
 
@@ -491,12 +488,14 @@ function writeSeatsData(kgSeatsFuelBurned, seatsMegajoules, manufacturedToBurned
  * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or multiple flights)
  * @param {number} megajoules - Amount of heat generated from this flight
  * @param {number} manufacturedToBurnedMegajoules - Derived from multiplying megajoules by ratio between burned CO2 and total CO2
- * @param {number} flightCount - Number of flights to model (default 1)
  * @param {number} yearsTo1Hiroshima - number of years until the flight generates one Hiroshima's warming
+ * @param {number} burn - Rate of fuel burning for this flight profile, in kg/km
  */
-function writeFlightData(kgFuelBurned, megajoules, manufacturedToBurnedMegajoules, flightCount, yearsTo1Hiroshima) {
-    const flightText = `${flightCount > 1 ? 'these ' + flightCount + ' flights' : 'this flight'}`;
-    document.getElementById('flightTitle').innerText = `CUMULATIVE TOTAL FOR ${flightText.toUpperCase()}`;
+function writeFlightData(kgFuelBurned, megajoules, manufacturedToBurnedMegajoules, yearsTo1Hiroshima, burn) {
+    const flightCount = getIntegerElementValue('flightCountSelector');
+    const titleText = `Cumulative impact for ${flightCount > 1 ? 'these ' + flightCount + ' flights' : 'this flight'}`;
+    document.getElementById('flightTitle').innerText = titleText;
+    document.getElementById('burn').innerText = burn;
     document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
 
     const burnedCO2 = kgFuelBurned * CO2_PER_KG_JET_FUEL;
@@ -510,7 +509,7 @@ function writeFlightData(kgFuelBurned, megajoules, manufacturedToBurnedMegajoule
 
     let greenhouseKaboomText;
     if (yearsTo1Hiroshima === undefined) {
-        greenhouseKaboomText = 'out of range';
+        greenhouseKaboomText = `more than ${getIntegerElementValue('yearsSlider')} years`;
     } else if (yearsTo1Hiroshima < 3) {
         // Calculate months or days rather than displaying 0 or 1 years
         const mjAnnualToMakeHiroshima = MJ_PER_HIROSHIMA / manufacturedToBurnedMegajoules;
