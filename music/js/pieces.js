@@ -1,4 +1,4 @@
-// Updated 29 March 2026
+// Updated 10 August 2026
 
 /**
  * Pieces may have more than one type
@@ -92,6 +92,7 @@ export const PIECES = [
     new Piece("December 5", [INSTR], 1991, 342, {}, "A piece composed upon the dissolution of the U.S.S.R., with sounds which remind me of a desolate Russian winter."),
     new Piece("Delusions", [PIANO, INSTR], 1985, 61, { pdf: "Delusions.pdf" }, "Scored for flute and piano, the piece is very fast and in constantly changing metre. Inspired by King Crimson's <em>Lark's Tongues in Aspic</em>. Playable with piano duet, if you don't happen to have a flute."),
     new Piece("Door to Door", [PIANO, INSTR, FILM], 1996, 94, {}, "An adult animation class project produced by Kevin Kurytnik at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>. Every short film had to start and end with the same image of a door, and the piece is consequently divided into very different sections, joined by a repeating sting, or brief motif. Scored for piano, organ, bass, percussion, and synthesizer."),
+    new Piece("The Drowned Girl", [PIANO, VOICE, ARR], 2026, 137, { pdf: "The Drowned Girl.pdf"}, "Arrangement of David Bowie's cover of Kurt Weill's music for Bertold Brecht's play 'Baal'"),
     new Piece("Drunk Detective Show Theme", [INSTR, EXP], 2014, 61, { soundCloud: "drunk-detective-show-theme" }, "A one-minute jazz-inspired exercise in 15/16 time: each bar has three beats, each beat having five pulses."),
     new Piece("Eastern Desert Stereotype", [INSTR, FILM], 1991, 201, { youtube: "3PKfg-O7N-g" }, "What the title says. Scored for percussion, bass, flute, and saxophone; recorded with synthesizers."),
     new Piece("Elbow Falls Interlude", [FILM, ORCH], 1996, 159, {}, "Composed for the <B>Broadcast Filler Service</B> to accompany a video of this waterfall."),
