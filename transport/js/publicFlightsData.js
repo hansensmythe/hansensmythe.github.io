@@ -1,6 +1,5 @@
 /*
-    Data extracted from https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft
-    and https://celebrityprivatejettracker.com/leaderboard/ on 24 July 2026
+    Data extracted from https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft#Example_values on 24 July 2026
 */
 
 // How wide should our filtering be?

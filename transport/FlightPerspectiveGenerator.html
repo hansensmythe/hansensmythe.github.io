@@ -136,7 +136,7 @@
 
         <hr>
         <h2>The Flight Perspective Generator</h2>
-        <p id="calculator">The test data includes a variety of aircraft manufactured by Airbus, Antonov, ATR,
+        <p id="calculator">The test data<a href="#ref8"><sup>8</sup></a> includes a variety of aircraft manufactured by Airbus, Antonov, ATR,
             Beechcraft, Boeing,
             Bombardier, Dornier, Embraer, Irkut, Pilatus, Quest, Saab, and Sukhoi. Search for an aircraft model
             (e.g. 'Boe' to show all aircraft made by Boeing, or '8' for a list that will include the Bombardier
@@ -146,8 +146,7 @@
 
         <p>Alternatively, if you do not know or care about the exact aircraft model, select from a range of matching
             models based on number of seats (smaller or bigger aircraft) or distance travelled (from commuter to
-            long-haul).
-        </p>
+            long-haul).</p>
         <div>
             <p>Size of aircraft:<br>
                 <input type="range" id="seatsSlider" step="10"></input><span id="aircraftSizeDisplay">? seats</span></p>
@@ -189,7 +188,7 @@
             <div>
                 <p>How many years of impact would you like to see?<br>
                     <input type="range" id="yearsSlider" step="10" min="10" max="10000" value="1000"></input>
-                    <span id="yearsDisplay">1000</span>
+                    <span id="yearsDisplay">1000</span></p>
             </div>
         </fieldset>
 
@@ -198,7 +197,7 @@
             <dl>
                 <dt>Fuel burned:</dt>
                 <dd id="seatsFuelBurned"></dd>
-                <dt>CO2 released just from burning the fuel:<a href="#ref8"><sup>8</sup></a></dt>
+                <dt>CO2 released just from burning the fuel:<a href="#ref9"><sup>9</sup></a></dt>
                 <dd id="seatsFuelBurnedCO2"></dd>
                 <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your destination):<a href="#ref5"><sup>5</sup></a></dt>
                 <dd id="seatsTotalCO2"></dd>
@@ -218,7 +217,7 @@
             <dl>
                 <dt>Fuel burned, at a rate of <span id="burn">0</span> kg/km:</dt>
                 <dd id="flightFuelBurned"></dd>
-                <dt>CO2 released just from burning the fuel:<a href="#ref8"><sup>8</sup></a></dt>
+                <dt>CO2 released just from burning the fuel:<a href="#ref9"><sup>9</sup></a></dt>
                 <dd id="flightFuelBurnedCO2"></dd>
                 <dt>CO2 released over the entire life cycle of the fuel (from mining or drilling to you arriving at your destination):<a href="#ref5"><sup>5</sup></a></dt>
                 <dd id="flightTotalCO2"></dd>
@@ -235,35 +234,38 @@
         </div>
 
         <hr>
-        <p>Sources:</p>
-        <p id="ref1"><b>1 </b><a
-                href="https://climatecasino.substack.com/p/earth-is-heating-at-a-rate-of-over?r=9pmyc&utm_medium=ios&triedRedirect=true">Earth
-                is Heating at a Rate of Over One Million Hiroshima Bombs Every Day!</a> - by Prof. Eliot Jacobson: <cite>The
-            Climate Casino, 15 April 2026</cite></p>
-        <p id="ref2"><b>2 </b><a href="https://megacalc.org/units/joules-per-kilogram">Joule per kilogram</a> - Jet fuel
-            Jet-A rates <span id="mjPerKg"></span> MJ/kg, so you can simply multiply the number of kilograms of fuel
+        <h2>Sources</h2>
+        <p id="ref1"><b>1 </b>
+            <a href="https://climatecasino.substack.com/p/earth-is-heating-at-a-rate-of-over" target="_blank">
+            Earth is Heating at a Rate of Over One Million Hiroshima Bombs Every Day!</a> - by Prof. Eliot Jacobson:
+            <cite>The Climate Casino, 15 April 2026</cite></p>
+        <p id="ref2"><b>2 </b><a href="https://megacalc.org/units/joules-per-kilogram" target="_blank">Joule per kilogram</a>
+            - Jet fuel Jet-A rates <span id="mjPerKg"></span> MJ/kg, so you can simply multiply the number of kilograms of fuel
             burned by that number to get the megajoules of heat per flight.</p>
-        <p id="ref3"><b>3 </b><a
-                href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978">Best of
-                Quirks: Listener question show</a> - <cite>Quirks and Quarks (CBC) 7 August 2021</cite></p>
-        <p id="ref4"><b>4 </b><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514">Time
-                scales and ratios of climate forcing due to thermal versus carbon dioxide emissions from fossil
-                fuels</a> - by Xiaochun Zhang and Ken Caldeira: <cite>Geophysical Research Letters, 2 June 2015</cite></p>
-        <p id="ref5"><b>5 </b><a
-                href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub">Life cycle
-                assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels</a> - by
+        <p id="ref3"><b>3 </b>
+            <a href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978" target="_blank">
+            Best of Quirks: Listener question show</a> - <cite>Quirks and Quarks (CBC) 7 August 2021</cite></p>
+        <p id="ref4"><b>4 </b><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514" target="_blank">
+            Time scales and ratios of climate forcing due to thermal versus carbon dioxide emissions from fossil
+            fuels</a> - by Xiaochun Zhang and Ken Caldeira: <cite>Geophysical Research Letters, 2 June 2015</cite></p>
+        <p id="ref5"><b>5 </b>
+            <a href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593" target="_blank">
+            Life cycle assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels</a> - by
             Balwinder Nimana, Christina Canter, and Amit Kumar: <cite>Energy, Volume 88, August 2015</cite>. Using oil sands to
             create jet fuel is far less efficient than Canada's 2030 target of 79.95 gCO<sub>2</sub>e/MJ (grams of
             carbon dioxide produced over the entire life cycle, from mining through processing, transportation,
-            refining, and finally burning). If jet fuel originates from Alberta crude oil, it emits between <span
-                id="minCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ and <span id="maxCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ.
-        </p>
-        <p id="ref6"><b>6 </b><a
-                href="https://www.newsweek.com/global-air-travel-had-busiest-day-on-record-12245968">Global Air Travel
-                Had Busiest Day on Record Despite Recent Headwinds</a> - by Amanda Greenwood: <cite>Newsweek, 26 July 2026</cite></p>
-        <p id="ref7"><b>7 </b><a href="https://easbcn.com/en/how-many-planes-fly-per-day-around-the-world/">How Many
-                Planes Fly Per Day Around the World?</a> - <cite>European Aviation School, Barcelona, 16 June 2025</cite></p>
-        <p id="ref8"><b>8 </b><a href="https://www.iata.org/contentassets/922ebc4cbcd24c4d9fd55933e7070947/icop_faq_general-for-airline-participants.pdf">
+            refining, and finally burning). If jet fuel originates from Alberta crude oil, it emits between
+            <span id="minCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ and <span id="maxCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ.</p>
+        <p id="ref6"><b>6 </b>
+            <a href="https://www.newsweek.com/global-air-travel-had-busiest-day-on-record-12245968" target="_blank">
+            Global Air Travel Had Busiest Day on Record Despite Recent Headwinds</a> - by Amanda Greenwood:
+            <cite>Newsweek, 26 July 2026</cite></p>
+        <p id="ref7"><b>7 </b><a href="https://easbcn.com/en/how-many-planes-fly-per-day-around-the-world/" target="_blank">
+            How Many Planes Fly Per Day Around the World?</a> - <cite>European Aviation School, Barcelona, 16 June 2025</cite></p>
+        <p id="ref8"><b>8 </b><a href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft#Example_values" target="_blank">
+            Fuel economy in aircraft</a> - Example Values: <cite>Wikipedia, 24 July 2026</cite></p>
+        <p id="ref9"><b>9 </b>
+            <a href="https://www.iata.org/contentassets/922ebc4cbcd24c4d9fd55933e7070947/icop_faq_general-for-airline-participants.pdf" target="_blank">
             IATA Carbon Offset Program, 19 April 2022</a> - The combustion of 1 kilogram (kg) of jet fuel in an aircraft engine produces
             <span id="co2PerKg"></span> kg of carbon dioxide (CO2)</p>
     </div>
