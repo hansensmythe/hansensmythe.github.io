@@ -14,18 +14,6 @@ export const BURN_TO_TOTAL_RATIO = MJ_PER_KG_JET_FUEL * AVG_OIL_SANDS_JET_FUEL_k
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
 const MONTHS_PER_YEAR = 12;
 const AVG_DAYS_PER_MONTH = 30.4375;
-// Fraction of CO2 handled by the pulse response model, separated into multiple half-life equations
-const BIOSPHERE_FRACTION = 0.3;
-const DEEP_OCEAN_FRACTION = 0.3;
-const GEOLOGICAL_FRACTION = 0.4;
-// Years before half of the CO2 is absorbed
-const BIOSPHERE_HALFLIFE = 1 / 50;
-const DEEP_OCEAN_HALFLIFE = 1 / 500;
-const GEOLOGICAL_HALFLIFE = 1 / 10000;
-// Annual reduction from each source of CO2 sequestration
-const BIOSPHERE_ANNUAL_REDUCTION = 0.5 ** BIOSPHERE_HALFLIFE; // 50 years until half is taken up by plants and upper ocean
-const DEEP_OCEAN_ANNUAL_REDUCTION = 0.5 ** DEEP_OCEAN_HALFLIFE; // 500 years until half is taken up by the deep ocean
-const GEOLOGICAL_ANNUAL_REDUCTION = 0.5 ** GEOLOGICAL_HALFLIFE; // 10000 years until rock weathering sequesters half the CO2
 
 // Number of years or months below which we try using a lower unit, e.g. if years==2, try months, but if years==3 use years
 const TIME_FOR_HIROSHIMA_SENSITIVITY = 3;
@@ -70,6 +58,78 @@ const LINE_CHART_OPTIONS = {
     }
 };
 
+// Percent boundaries beyond which we do not allow the PulseResponseModel to be set
+const MIN_FRACTION = 0.1;
+const MAX_FRACTION = 0.9;
+
+/**
+ * Object that controls how yearly reduction in CO2 is modelled
+ * 
+ * @constructor
+ * @param {number} biosphereFraction - Fraction of CO2 absorbed by plants and upper ocean
+ * @param {number} biosphereYears - Number of years before half of the CO2 is absorbed by the biosphere
+ * @param {number} deepOceanFraction - Fraction of CO2 absorbed by the deep ocean
+ * @param {number} deepOceanYears - Number of years before half of the CO2 is absorbed by the deep ocean
+ * @param {number} geologicalFraction - Fraction of CO2 eventually sequestered by rock weathering
+ * @param {number} geologicalYears - Number of years before half of the CO2 is sequestered by rock weathering
+ */
+class PulseResponseModel {
+    constructor(biosphereFraction, biosphereYears, deepOceanFraction, deepOceanYears, geologicalFraction, geologicalYears) {
+        // Initialize fractions to equal 1, so that subsequent setting can make adjustments
+        this.biosphereFraction = 0.34;
+        this.deepOceanFraction = 0.26;
+        this.geologicalFraction = 0.4;
+        this.setBiosphereFraction(biosphereFraction);
+        this.setBiosphereAnnualReduction(biosphereYears);
+        // We use deepOceanFraction to take changes from either side - biology or geology
+        this.deepOceanFraction = deepOceanFraction;
+        this.setDeepOceanAnnualReduction(deepOceanYears);
+        this.setGeologicalFraction(geologicalFraction);
+        this.setGeologicalAnnualReduction(geologicalYears);
+    }
+    setBiosphereFraction(biosphereFraction) {
+        const adjustment = this.biosphereFraction - biosphereFraction;
+        if (adjustment !== 0) {
+            // Increase or decrease the deepOcean by the same amount, unless it exceeds min and max values
+            const proposedNewValue = this.deepOceanFraction + adjustment;
+            if (proposedNewValue >= MIN_FRACTION && proposedNewValue <= MAX_FRACTION) {
+                this.deepOceanFraction = proposedNewValue;
+                this.biosphereFraction = biosphereFraction;
+            }
+        }
+    }
+    setGeologicalFraction(geologicalFraction) {
+        const adjustment = this.geologicalFraction - geologicalFraction;
+        if (adjustment !== 0) {
+            // Increase or decrease the deepOcean by the same amount, unless it exceeds min and max values
+            const proposedNewValue = this.deepOceanFraction + adjustment;
+            if (proposedNewValue >= MIN_FRACTION && proposedNewValue <= MAX_FRACTION) {
+                this.deepOceanFraction = proposedNewValue;
+                this.geologicalFraction = geologicalFraction;
+            }
+        }
+    }
+    setBiosphereAnnualReduction(biosphereYears) {
+        const biosphereHalflife = 1 / biosphereYears;
+        this.biosphereAnnualReduction = 0.5 ** biosphereHalflife;
+    }
+    setDeepOceanAnnualReduction(deepOceanYears) {
+        const deepOceanHalflife = 1 / deepOceanYears;
+        this.deepOceanAnnualReduction = 0.5 ** deepOceanHalflife;
+    }
+    setGeologicalAnnualReduction(geologicalYears) {
+        const geologicalHalflife = 1 / geologicalYears;
+        this.geologicalAnnualReduction = 0.5 ** geologicalHalflife;
+    }
+}
+
+export function getDefaultPulseResponseModel() {
+    // Bern model 18.5-year time constant for 34% of emissions for biosphere,
+    // 173-year time constant for 26% of emissions for deep ocean, and
+    // 40% is left for geology - many millennia, with ~<2% still airborne after 100,000 years 
+    return new PulseResponseModel(0.34, 18.5, 0.26, 173, 0.4, 10000);
+}
+
 /**
  * Calculate the annual reduction in greenhouse heat resulting from a matching reduction in CO2
  * due to the action of the three main greenhouse gas sequestration processes, at different time scales,
@@ -77,20 +137,21 @@ const LINE_CHART_OPTIONS = {
  * or return undefined for the number of years if it is never reached (we can't use 0 to indicate that it's
  * unset because that's still a valid number of years before the Kaboom).
  * 
+ * @param {PulseResponseModel} prm - Object containing annual reductions for three types of CO2 sequestration
  * @param {number} kgBurnedFuel - Kilograms of jet fuel burned
  * @param {number} yearsToRender - Integer between about 10 and 10000
  * @param {string} labelText - Description used in chart and in surrounding data
  * @return {{kgFuelBurned, burnedMegajoules, totalMegajoules, chartData, yearsToRender, yearsTo1Hiroshima}}
  */
-export function calculateDataSet(kgBurnedFuel, yearsToRender, labelText) {
+export function calculateDataSet(prm, kgBurnedFuel, yearsToRender, labelText) {
     // Calculate and extrapolate not just the MJ from burning, but add the MJ generated from manufacturing
     const burnedMegajoules = kgBurnedFuel * MJ_PER_KG_JET_FUEL;
     const totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
 
     const initialAnnualHiroshimas = totalMegajoules / YEARS_TO_DUPLICATE_HEAT / MJ_PER_HIROSHIMA;
-    let biosphereCO2HeatRemaining = initialAnnualHiroshimas * BIOSPHERE_FRACTION;
-    let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * DEEP_OCEAN_FRACTION;
-    let geologicalCO2HeatRemaining = initialAnnualHiroshimas * GEOLOGICAL_FRACTION;
+    let biosphereCO2HeatRemaining = initialAnnualHiroshimas * prm.biosphereFraction;
+    let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * prm.deepOceanFraction;
+    let geologicalCO2HeatRemaining = initialAnnualHiroshimas * prm.geologicalFraction;
 
     // Use the Pulse Response Model to generate a sum of exponentials.
     const chartData = [];
@@ -105,9 +166,9 @@ export function calculateDataSet(kgBurnedFuel, yearsToRender, labelText) {
             yearsTo1Hiroshima = i;
         }
         // For every subsequent year, reduce the total by the annual reduction for each halflife
-        biosphereCO2HeatRemaining *= BIOSPHERE_ANNUAL_REDUCTION;
-        deepOceanCO2HeatRemaining *= DEEP_OCEAN_ANNUAL_REDUCTION;
-        geologicalCO2HeatRemaining *= GEOLOGICAL_ANNUAL_REDUCTION;
+        biosphereCO2HeatRemaining *= prm.biosphereAnnualReduction;
+        deepOceanCO2HeatRemaining *= prm.deepOceanAnnualReduction;
+        geologicalCO2HeatRemaining *= prm.geologicalAnnualReduction;
     }
 
     return {

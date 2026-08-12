@@ -9,6 +9,7 @@ import {
     BURN_TO_TOTAL_RATIO,
     buildLineChart,
     calculateDataSet,
+    getDefaultPulseResponseModel,
     getFormattedNumber,
     getTimeToHiroshimaText
 } from './flightCharts.js';
@@ -131,12 +132,13 @@ function recalculateProfile(index) {
 
     // Derive values for an average single flight
     const avgKgBurnedFuelPerFlight = selectedProfile.kgBurnedFuel / selectedProfile.totalFlights;
-    const flightDataSet = calculateDataSet(avgKgBurnedFuelPerFlight, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`);
+    const prm = getDefaultPulseResponseModel();
+    const flightDataSet = calculateDataSet(prm, avgKgBurnedFuelPerFlight, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`);
     const avgKgBurnedCO2PerFlight = selectedProfile.kgBurnedCO2 / selectedProfile.totalFlights;
     writeFlightData(flightDataSet, avgKgBurnedCO2PerFlight, celebritySelector.value);
     flightChart = buildLineChart(flightChart, 'FlightChart', flightDataSet);
 
-    const totalDataSet = calculateDataSet(selectedProfile.kgBurnedFuel, YEARS_TO_RENDER, `${selectedProfile.totalFlights} flights in ${selectedProfile.model}`);
+    const totalDataSet = calculateDataSet(prm, selectedProfile.kgBurnedFuel, YEARS_TO_RENDER, `${selectedProfile.totalFlights} flights in ${selectedProfile.model}`);
     writeTotalData(totalDataSet, selectedProfile.kgBurnedCO2, celebritySelector.value);
     totalChart = buildLineChart(totalChart, 'TotalChart', totalDataSet);
 }

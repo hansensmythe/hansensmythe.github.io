@@ -191,6 +191,41 @@
             </div>
         </fieldset>
 
+        <label>
+            <input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the CO<sub>2</sub> Pulse Response Model</input>
+        </label>
+        <fieldset id="modelControls">
+            <legend>Model tuning controls</legend>
+            <p>Since CO<sub>2</sub> in the atmosphere causes global heating (from sunlight getting absorbed by the Earth, then radiated as heat, which then fails to get radiated back out to space because the greenhouse gases capture it), tracking how CO<sub>2</sub> is reduced is effectively the same as tracking how much heat is added by the CO<sub>2</sub> that remains.
+                I've read that a Pulse Response Model for CO2 sequestration includes accounting for three carbon sinks which work at different rates:
+                <ul>
+                    <li>Over years to decades, plants and the upper ocean absorb some CO<sub>2</sub>, but as the ocean absorbs CO<sub>2</sub> it becomes more acidic, which is a whole other problem, and plants can only use CO<sub>2</sub> if they also have good growing conditions - enough sunlight and water - and in the end will release the CO<sub>2</sub> back into the atmosphere, unless they get buried somehow;</li>
+                    <li>over decades to centuries, the deep ocean absorbs some CO<sub>2</sub>, but as the ocean warms and deep ocean turnover slows, this will become less efficient over time; and</li>
+                    <li>over millennia, geological processes react with CO<sub>2</sub> to form minerals.</li>
+                </ul>
+                I've also read that the Bern Simple Climate Model (used by the IPCC) suggests reasonable values as follows:
+                <ul>
+                    <li>an 18.5-year half life for 34% of emissions to be absorbed by plants and the upper ocean,</li>
+                    <li>a 173-year half life for 26% of emissions to be absorbed by the deep ocean, and</li>
+                    <li>a 10000- to 100000-year half life for the remainder to be sequestered by geological forces.</li>
+                </ul>
+                I've read criticism of the Bern Model, but typically for being too conservative: it's quite possible that global heating will exceed what I'm showing here. I freely admit that I am not using a comprehensive climate model. I'm just providing a rough idea of how much heating is to be expected.
+                These graphs calculate the annual amount of heat that will get added to the atmosphere by the CO<sub>2</sub> that remains after these three processes have sequestered some of it.
+                Adjust these values to see how the graphs change.
+            </p>
+            <input type="range" id="biosphereFraction" step="0.01" min="0.05" max="0.85" value="0.34"></input>
+                <span id="biosphereFractionDisplay">34</span>% of CO<sub>2</sub> is absorbed by plants and upper ocean</p>
+            <input type="range" id="biosphereYears" step=".5" min="4" max="50" value="18.5"></input>
+                <span id="biosphereYearsDisplay">18.5</span> years before half of the above fraction of CO<sub>2</sub> is absorbed by plants and upper ocean</p>
+                <span id="deepOceanFractionDisplay">26</span>% of CO<sub>2</sub> is absorbed by deep ocean (adjust this fraction by changing the biosphere fraction above or the geological fraction below)</p>
+            <input type="range" id="deepOceanYears" step=".5" min="100" max="1000" value="173"></input>
+                <span id="deepOceanYearsDisplay">173</span> years before half of the above fraction of CO<sub>2</sub> is absorbed by deep ocean</p>
+            <input type="range" id="geologicalFraction" step="0.01" min="0.05" max="0.85" value="0.4"></input>
+                <span id="geologicalFractionDisplay">40</span>% of CO<sub>2</sub> is sequestered by geological processes</p>
+            <input type="range" id="geologicalYears" step="1000" min="10000" max="100000" value="10000"></input>
+                <span id="geologicalYearsDisplay">10000</span> years before half of the above fraction of CO<sub>2</sub> is sequestered by geological processes</p>
+        </fieldset>
+
         <div id="seatsDiv" class="chartDiv">
             <h2 id="seatsTitle"></h2>
             <dl>

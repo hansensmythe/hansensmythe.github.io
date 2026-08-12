@@ -8,7 +8,8 @@ import {
     MJ_PER_KG_JET_FUEL,
     CO2_PER_KG_JET_FUEL,
     buildLineChart, 
-    calculateDataSet, 
+    calculateDataSet,
+    getDefaultPulseResponseModel,
     getFormattedNumber, 
     getTimeToHiroshimaText 
 } from './flightCharts.js';
@@ -23,6 +24,7 @@ const MAXIMUM_PASSENGERS = 10;
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let seatsChart = null;
 let flightChart = null;
+let prm = null;
 // Store the current target values for proper flight profile filtering. 0 means unset.
 // Pin the initial value on values that show a good selection of long-haul aircraft
 let currentSeatsTarget = 300;
@@ -125,6 +127,8 @@ function populateDropdown(dropdownId, maxValue) {
  * populates various static elements, and kicks off a default profile display for default size and sector.
  */
 function initialize() {
+    // Get pulse response model to be used (or modified) to generate charts
+    prm = getDefaultPulseResponseModel();
     // Listen for changes to all page elements
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
     document.getElementById('contents').addEventListener('input', handleInputEvent);
@@ -140,6 +144,7 @@ function initialize() {
 
     // Initially disable all optional controls and charts. They're reenabled once the user has chosen a model.
     hideChartElements(true);
+    hideModelControls(true);
 
     // Set absolute minimum and maximum slider settings based on MODELS values
     const minSeats = roundToNearest10(Math.min(...MODELS.map(model => model.getMinimumSeats())));
@@ -167,7 +172,7 @@ function initialize() {
 }
 
 /**
- * Toggle visibility of various page elements depending on whether they're usable.
+ * Toggle visibility of chart-related page elements depending on whether they're usable.
  * 
  * @param {boolean} isHidden - true to hide elements, false to show them
  */
@@ -182,6 +187,16 @@ function hideChartElements(isHidden) {
     });
 }
 
+
+/**
+ * Toggle visibility of model-related page elements depending on whether they're enabled.
+ * 
+ * @param {boolean} isHidden - true to hide elements, false to show them
+ */
+function hideModelControls(isHidden) {
+    document.getElementById('modelControls').style.display = isHidden ? 'none' : 'block';
+}
+
 /**
  * Find the selected model using the modelName
  * @param {string} modelName - Identifying name of the aircraft model
@@ -189,6 +204,14 @@ function hideChartElements(isHidden) {
  */
 function findSelectedModel(modelName) {
     return MODELS.find(model => model.name == modelName);
+}
+
+function updateFractionDisplays() {
+    document.getElementById('biosphereFraction').value = getFormattedNumber(prm.biosphereFraction);
+    document.getElementById('geologicalFraction').value = getFormattedNumber(prm.geologicalFraction);
+    document.getElementById('biosphereFractionDisplay').textContent = getFormattedNumber(prm.biosphereFraction * 100);
+    document.getElementById('deepOceanFractionDisplay').textContent = getFormattedNumber(prm.deepOceanFraction * 100);
+    document.getElementById('geologicalFractionDisplay').textContent = getFormattedNumber(prm.geologicalFraction * 100);
 }
 
 /**
@@ -230,7 +253,13 @@ function handleChangeEvent(event) {
         // We cannot trust indexing from raw data, as the buttons may be filtered.
         const selectedProfile = selectedModel.getProfileFromName(event.target.value);
         recalculateProfile(selectedProfile);
-    } else if (event.target.id == 'distanceSlider' ||
+    } else if (event.target.id == 'enableModelControls') {
+        hideModelControls(!event.target.checked);
+    } else if (event.target.id == 'biosphereFraction' ||
+        event.target.id == 'geologicalFraction' ||
+        event.target.id == 'biosphereYears' ||
+        event.target.id == 'deepOceanYears' ||
+        event.target.id == 'geologicalYears' ||
         event.target.id == 'flightCountSelector' ||
         event.target.id == 'yearsSlider' ||
         event.target.id == 'passengerCountSelector') {
@@ -256,6 +285,21 @@ function handleInputEvent(event) {
     } else if (event.target.id == 'yearsSlider') {
         const yearsDisplay = document.getElementById('yearsDisplay');
         yearsDisplay.textContent = event.target.value;
+    } else if (event.target.id == 'biosphereFraction') {
+        prm.setBiosphereFraction(parseFloat(event.target.value));
+        updateFractionDisplays();
+    } else if (event.target.id == 'geologicalFraction') {
+        prm.setGeologicalFraction(parseFloat(event.target.value));
+        updateFractionDisplays();
+    } else if (event.target.id == 'biosphereYears') {
+        prm.setBiosphereAnnualReduction(parseFloat(event.target.value));
+        document.getElementById('biosphereYearsDisplay').textContent = event.target.value;
+    } else if (event.target.id == 'deepOceanYears') {
+        prm.setDeepOceanAnnualReduction(parseFloat(event.target.value));
+        document.getElementById('deepOceanYearsDisplay').textContent = event.target.value;
+    } else if (event.target.id == 'geologicalYears') {
+        prm.setGeologicalAnnualReduction(parseFloat(event.target.value));
+        document.getElementById('geologicalYearsDisplay').textContent = event.target.value;
     }
 
     // We don't need to listen for 'input' events from any other controls, so no 'else' is needed here
@@ -428,11 +472,11 @@ function writeData() {
         // Calculate the seat data
         const kgSeatsBurnedFuel = kgBurnedFuel / selectedProfile.seats * passengerCount;
 
-        const seatsDataSet = calculateDataSet(kgSeatsBurnedFuel, yearsToRender, passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`);
+        const seatsDataSet = calculateDataSet(prm, kgSeatsBurnedFuel, yearsToRender, passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`);
         writeSeatsData(seatsDataSet, selectedProfile.seats);
         seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsDataSet);
 
-        const flightDataSet = calculateDataSet(kgBurnedFuel, yearsToRender, `${modelName} - ${selectedProfile.name}`);
+        const flightDataSet = calculateDataSet(prm, kgBurnedFuel, yearsToRender, `${modelName} - ${selectedProfile.name}`);
         writeFlightData(flightDataSet, selectedProfile.burn);
         flightChart = buildLineChart(flightChart, 'FlightChart', flightDataSet);
     }
