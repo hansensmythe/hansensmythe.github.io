@@ -28,23 +28,53 @@
 <body>
     <div id="contents">
         <p>This page is a supplement to my <a href="FlightPerspectiveGenerator.html">Flight Perspective Generator</a>
-            to demonstrate the amount of global heating produced by various celebrities, both for individual flights
-            and annual averages, with data on celebrity private flights provided by the Celebrity Private Jet Tracker<a href="#ref1"><sup>1</sup></a>
-.</p>
+            to demonstrate the amount of global heating produced by various celebrities. I used data on celebrity private
+            flights from the Celebrity Private Jet Tracker<a href="#ref1"><sup>1</sup></a> taken on <span class="dataDate"></span>,
+            which provides:
+            <ul>
+                <li>total miles flown (which I convert to kilometres)</li>
+                <li>number of flights taken so far</li>
+                <li>gallons of fuel used (I assume US gallons of Jet A, which I convert to kilograms)</li>
+                <li>metric tons of CO2 generated (which I convert to kilograms)</li>
+            </ul>
+            From these values I have derived data for each average flight: the 'burn' (kilograms burned per kilometre travelled),
+            the average kilometres per flight, the total CO2 pollution including that released during mining, drilling, refining,
+            and transporting the fuel, the amount of heat generated, and from that the number of Hiroshima-equivalents being
+            generated perpetually from the resulting greenhouse gases.</p>
 
         <label for="celebritySelector">Select a celebrity:</label>
         <select id="celebritySelector"></select>
 
         <div id="profileButtonDiv"></div>
 
+        <div id="totalDiv" class="chartDiv">
+            <h1 id="totalTitle"></h1>
+            <dl>
+                <dt>Fuel burned so far, at a rate of <span class="burn">0</span> kg/km:</dt>
+                <dd id="totalBurnedFuel"></dd>
+                <dt>CO<sub>2</sub> released just from burning the fuel</dt>
+                <dd id="totalBurnedCO2"></dd>
+                <dt>CO<sub>2</sub> released over the entire life cycle of the fuel (mining, drilling, dilution, transporting, refining, and finally burning):<a href="#ref2"><sup>2</sup></a></dt>
+                <dd id="totalCO2"></dd>
+                <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
+                <dd id="immediateHeat"></dd>
+                <dt>Time until the emitted greenhouse gases cause one Hiroshima bomb's worth of additional global heating:</dt>
+                <dd id="greenhouseHeat"></dd>
+            </dl>
+            <canvas id="TotalChart">
+                <p>It appears that your browser does not support the Canvas element. A graph of total flight impact
+                    would have appeared here.</p>
+            </canvas>
+        </div>
+
         <div id="flightDiv" class="chartDiv">
             <h1 id="flightTitle"></h1>
             <dl>
-                <dt>Fuel burned, at a rate of <span class="burn">0</span> kg/km:</dt>
-                <dd id="flightFuelBurned"></dd>
-                <dt>CO<sub>2</sub> released just from burning the fuel:<a href="#ref2"><sup>2</sup></a></dt>
-                <dd id="flightFuelBurnedCO2"></dd>
-                <dt>CO<sub>2</sub> released over the entire life cycle of the fuel (from mining or drilling to arriving at their destination):<a href="#ref3"><sup>3</sup></a></dt>
+                <dt>Fuel burned for this flight, at a rate of <span class="burn">0</span> kg/km:</dt>
+                <dd id="flightBurnedFuel"></dd>
+                <dt>CO<sub>2</sub> released just from burning the fuel:</dt>
+                <dd id="flightBurnedCO2"></dd>
+                <dt>CO<sub>2</sub> released over the entire life cycle of the fuel (mining, drilling, dilution, transporting, refining, and finally burning):<a href="#ref2"><sup>2</sup></a></dt>
                 <dd id="flightTotalCO2"></dd>
                 <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
                 <dd id="flightImmediateHeat"></dd>
@@ -57,35 +87,11 @@
             </canvas>
         </div>
 
-        <div id="annualDiv" class="chartDiv">
-            <h1 id="annualTitle"></h1>
-            <dl>
-                <dt>Annual fuel burned, at a rate of <span class="burn">0</span> kg/km:</dt>
-                <dd id="annualFuelBurned"></dd>
-                <dt>Annual CO<sub>2</sub> released just from burning the fuel:<a href="#ref2"><sup>2</sup></a></dt>
-                <dd id="annualFuelBurnedCO2"></dd>
-                <dt>Annual CO<sub>2</sub> released over the entire life cycle of the fuel (from mining or drilling to arriving at their destination):<a href="#ref3"><sup>3</sup></a></dt>
-                <dd id="annualTotalCO2"></dd>
-                <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
-                <dd id="annualImmediateHeat"></dd>
-                <dt>Time until the emitted greenhouse gases cause one Hiroshima bomb's worth of additional global heating:</dt>
-                <dd id="annualGreenhouseHeat"></dd>
-            </dl>
-            <canvas id="AnnualChart">
-                <p>It appears that your browser does not support the Canvas element. A graph of annual flight impact
-                    would have appeared here.</p>
-            </canvas>
-        </div>
-
         <hr>
         <h2>Sources</h2>
         <p id="ref1"><b>1 </b>
-            <a href="https://celebrityprivatejettracker.com/leaderboard/" target="_blank">Celebrity Private Jet Tracker</a> - Leaderboard as of 24 July 2026</p>
+            <a href="https://celebrityprivatejettracker.com/leaderboard/" target="_blank">Celebrity Private Jet Tracker</a> - Leaderboard as of <span class="dataDate"></span></p>
         <p id="ref2"><b>2 </b>
-            <a href="https://www.iata.org/contentassets/922ebc4cbcd24c4d9fd55933e7070947/icop_faq_general-for-airline-participants.pdf" target="_blank">
-            IATA Carbon Offset Program, 19 April 2022</a> - The combustion of 1 kilogram (kg) of jet fuel in an aircraft engine produces
-            <span id="co2PerKg"></span> kg of carbon dioxide (CO<sub>2</sub>)</p>
-        <p id="ref3"><b>3 </b>
             <a href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593" target="_blank">
             Life cycle assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels</a> - by
             Balwinder Nimana, Christina Canter, and Amit Kumar: <cite>Energy, Volume 88, August 2015</cite>. Using oil sands to

@@ -1,17 +1,16 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', initialize);
 
-import { CELEBRITIES } from './celebrityFlightsData.js';
-import { 
+import { CELEBRITIES, DATA_DATE } from './celebrityFlightsData.js';
+import {
     MJ_PER_HIROSHIMA,
-    MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ, 
-    MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ, 
-    AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ, 
-    CO2_PER_KG_JET_FUEL,
-    buildLineChart, 
-    calculateDataSet, 
-    getFormattedNumber, 
-    getTimeToHiroshimaText 
+    MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ,
+    MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ,
+    BURN_TO_TOTAL_RATIO,
+    buildLineChart,
+    calculateDataSet,
+    getFormattedNumber,
+    getTimeToHiroshimaText
 } from './flightCharts.js';
 
 // We render 1000 years as a fixed yet arbitrary value on this page
@@ -19,14 +18,17 @@ const YEARS_TO_RENDER = 1000;
 
 // Define global document elements populated once DOMContentLoaded fires initialize
 let flightChart = null;
-let annualChart = null;
+let totalChart = null;
 
 /**
  * Called once the DOM is loaded. Adds a generic event listener for changes to page controls, populates various static elements,
  * adds a 'input' listener to the distance display, and kicks off a default profile display for long-haul flights.
  */
 function initialize() {
-    document.getElementById('co2PerKg').textContent = CO2_PER_KG_JET_FUEL;
+    const dateSpans = document.querySelectorAll('span.dataDate');
+    dateSpans.forEach((span) => {
+        span.innerText = getFormattedNumber(DATA_DATE);
+    });
     document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('maxCO2ePerMJ').textContent = MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     // Listen for changes to all select elements
@@ -49,8 +51,8 @@ function initialize() {
  */
 function hideChartElements(isHidden) {
     const hidableElements = [
-        document.getElementById('annualDiv'),
-        document.getElementById('flightDiv')
+        document.getElementById('flightDiv'),
+        document.getElementById('totalDiv')
     ];
     hidableElements.forEach((hidableElement) => {
         hidableElement.style.display = isHidden ? 'none' : 'block';
@@ -124,78 +126,74 @@ function recalculateProfile(index) {
     const selectedProfile = CELEBRITIES[celebritySelector.value][index];
     const burnSpans = document.querySelectorAll('span.burn');
     burnSpans.forEach((span) => {
-        span.innerText = selectedProfile.burn;
+        span.innerText = getFormattedNumber(selectedProfile.burn);
     });
-    const kgFuelBurned = selectedProfile.burn * selectedProfile.kilometres;
 
-    const flightDataSet = calculateDataSet(kgFuelBurned, YEARS_TO_RENDER);
-    writeFlightData(flightDataSet, celebritySelector.value);
-    flightChart = buildLineChart(flightChart, 'FlightChart', flightDataSet, `One flight in ${selectedProfile.model}`);
+    // Derive values for an average single flight
+    const avgKgBurnedFuelPerFlight = selectedProfile.kgBurnedFuel / selectedProfile.totalFlights;
+    const flightDataSet = calculateDataSet(avgKgBurnedFuelPerFlight, YEARS_TO_RENDER, `One flight in ${selectedProfile.model}`);
+    const avgKgBurnedCO2PerFlight = selectedProfile.kgBurnedCO2 / selectedProfile.totalFlights;
+    writeFlightData(flightDataSet, avgKgBurnedCO2PerFlight, celebritySelector.value);
+    flightChart = buildLineChart(flightChart, 'FlightChart', flightDataSet);
 
-    // Calculate the annual amount of heating from all the flights
-    const annualKgFuelBurned = kgFuelBurned * selectedProfile.flightsPerYear;
-
-    const annualDataSet = calculateDataSet(annualKgFuelBurned, YEARS_TO_RENDER);
-    writeAnnualData(annualDataSet, celebritySelector.value, selectedProfile.flightsPerYear);
-    annualChart = buildLineChart(annualChart, 'AnnualChart', annualDataSet, `${selectedProfile.flightsPerYear} annual flights in ${selectedProfile.model}`);
+    const totalDataSet = calculateDataSet(selectedProfile.kgBurnedFuel, YEARS_TO_RENDER, `${selectedProfile.totalFlights} flights in ${selectedProfile.model}`);
+    writeTotalData(totalDataSet, selectedProfile.kgBurnedCO2, celebritySelector.value);
+    totalChart = buildLineChart(totalChart, 'TotalChart', totalDataSet);
 }
 
 /**
  * Populate the flight-specific values
  * 
- * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or multiple flights)
- * @param {number} burnedMegajoules - Amount of heat generated from this flight
+ * @param {number} kgBurnedFuel  - kilograms of fuel burned for this flight (or multiple flights)
  * @param {number} totalMegajoules - Derived from multiplying burnedMegajoules by ratio between burned CO2 and total CO2
  * @param {number} yearsToRender - value of the yearsSlider that got passed into calculateDataSet
  * @param {number} yearsTo1Hiroshima - number of years until the flight generates one Hiroshima's warming, or undefined if past yearsToRender
- * @param {string} celebrityName - Inserted into element at the top of the flight data display
+ * @param {string} labelText - Forms part of the title of the data display, along with celebrityName
+ * @param {number} kgBurnedCO2 - Kilograms of CO2 released from burning the fuel
+ * @param {string} celebrityName - Used in the chart title
  */
-function writeFlightData({ kgFuelBurned, burnedMegajoules, totalMegajoules, yearsToRender, yearsTo1Hiroshima }, celebrityName) {
-    document.getElementById('flightTitle').innerText = `${celebrityName} - One Flight`;
+function writeFlightData({ kgBurnedFuel, totalMegajoules, yearsToRender, yearsTo1Hiroshima, labelText }, kgBurnedCO2, celebrityName) {
+    document.getElementById('flightTitle').innerText = `${celebrityName} - ${labelText}`;
 
-    document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
+    document.getElementById('flightBurnedFuel').innerText = `${getFormattedNumber(kgBurnedFuel)} kg`;
 
-    // Convert grams per megajoule into kilograms of CO2 for the flight
-    const burnedCO2 = kgFuelBurned * CO2_PER_KG_JET_FUEL;
-    document.getElementById('flightFuelBurnedCO2').innerText = `${getFormattedNumber(burnedCO2)} kg`;
+    document.getElementById('flightBurnedCO2').innerText = `${getFormattedNumber(kgBurnedCO2)} kg`;
 
-    // Calculate the total lifecycle CO2 for oil sands jet fuel
-    const totalCO2 = burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ;
+    // Multiply kgBurnedCO2 by the ratio between burned and lifecycle emissions
+    const totalCO2 = Math.round(kgBurnedCO2 * BURN_TO_TOTAL_RATIO);
     document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(totalCO2)} kg`;
 
     const percentContextHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    document.getElementById('flightGreenhouseHeat').innerText = 
+    document.getElementById('flightGreenhouseHeat').innerText =
         getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1Hiroshima);
 }
 
 /**
- * Populate the annual values
+ * Populate the total values
  * 
- * @param {number} kgFuelBurned  - kilograms of fuel burned annually
- * @param {number} burnedMegajoules - Amount of heat generated annually
+ * @param {number} kgBurnedFuel  - kilograms of fuel burned
  * @param {number} totalMegajoules - Derived from multiplying burnedMegajoules by ratio between burned CO2 and total CO2
  * @param {number} yearsToRender - for this data, always 1000, but for consistency we use the value passed in the dataSet
- * @param {number} yearsTo1Hiroshima - number of years until the annual flights generate one Hiroshima's warming, or undefined if past yearsToRender
- * @param {string} celebrityName - Inserted into element at the top of the annual data display
- * @param {string} annualFlightCount - Inserted into element at the top of the annual data display
+ * @param {number} yearsTo1Hiroshima - number of years until the total flights generate one Hiroshima's warming, or undefined if past yearsToRender
+ * @param {string} labelText - Forms part of the title of the data display, along with celebrityName
+ * @param {number} kgBurnedCO2 - Kilograms of CO2 released from burning the fuel
+ * @param {string} celebrityName - Used in the chart title
  */
-function writeAnnualData({ kgFuelBurned, totalMegajoules, yearsToRender, yearsTo1Hiroshima }, celebrityName, annualFlightCount) {
-    document.getElementById('annualTitle').innerText = `${celebrityName} - ${annualFlightCount} Annual Flights`;
-    document.getElementById('annualFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg annually`;
+function writeTotalData({ kgBurnedFuel, totalMegajoules, yearsToRender, yearsTo1Hiroshima, labelText }, kgBurnedCO2, celebrityName) {
+    document.getElementById('totalTitle').innerText = `${celebrityName} - ${labelText}`;
+    document.getElementById('totalBurnedFuel').innerText = `${getFormattedNumber(kgBurnedFuel)} kg`;
 
-    const annualBurnedCO2 = kgFuelBurned * CO2_PER_KG_JET_FUEL;
-    document.getElementById('annualFuelBurnedCO2').innerText = `${getFormattedNumber(annualBurnedCO2)} kg`;
+    document.getElementById('totalBurnedCO2').innerText = `${getFormattedNumber(kgBurnedCO2)} kg`;
 
-    // totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
-    // Calculate the total lifecycle CO2 for oil sands jet fuel
-    const annualTotalCO2 = totalMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ;
-    document.getElementById('annualTotalCO2').innerText = `${getFormattedNumber(annualTotalCO2)} kg annually`;
+    // Multiply kgBurnedCO2 by the ratio between burned and lifecycle emissions
+    const totalCO2 = Math.round(kgBurnedCO2 * BURN_TO_TOTAL_RATIO);
+    document.getElementById('totalCO2').innerText = `${getFormattedNumber(totalCO2)} kg`;
 
-    const percentAnnualHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;
-    document.getElementById('annualImmediateHeat').innerText = `${getFormattedNumber(percentAnnualHiroshima)}% annually`;
+    const percentTotalHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;
+    document.getElementById('immediateHeat').innerText = `${getFormattedNumber(percentTotalHiroshima)}%`;
 
-    document.getElementById('annualGreenhouseHeat').innerText = 
+    document.getElementById('greenhouseHeat').innerText =
         `${getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1Hiroshima)} at the current rate`;
 }

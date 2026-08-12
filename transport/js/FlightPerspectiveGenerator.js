@@ -423,42 +423,44 @@ function writeData() {
         const selectedProfileName = getSelectedButtonValue(FLIGHT_PROFILE_BUTTON_NAME);
         const selectedProfile = selectedModel.getProfileFromName(selectedProfileName);
         // Multiply the distance if there's more than one flight to model
-        const kgFuelBurned = selectedProfile.burn * kilometres * flightCount;
+        const kgBurnedFuel = selectedProfile.burn * kilometres * flightCount;
 
         // Calculate the seat data
-        const kgSeatsFuelBurned = kgFuelBurned / selectedProfile.seats * passengerCount;
+        const kgSeatsBurnedFuel = kgBurnedFuel / selectedProfile.seats * passengerCount;
 
-        const seatsDataSet = calculateDataSet(kgSeatsFuelBurned, yearsToRender);
+        const seatsDataSet = calculateDataSet(kgSeatsBurnedFuel, yearsToRender, passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`);
         writeSeatsData(seatsDataSet, selectedProfile.seats);
-        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsDataSet, passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`);
+        seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsDataSet);
 
-        const flightDataSet = calculateDataSet(kgFuelBurned, yearsToRender);
+        const flightDataSet = calculateDataSet(kgBurnedFuel, yearsToRender, `${modelName} - ${selectedProfile.name}`);
         writeFlightData(flightDataSet, selectedProfile.burn);
-        flightChart = buildLineChart(flightChart, 'FlightChart', flightDataSet, `${modelName} - ${selectedProfile.name}`);
+        flightChart = buildLineChart(flightChart, 'FlightChart', flightDataSet);
     }
 }
 
 /**
  * Populate the values on the page for just your seats.
  * 
- * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or multiple flights)
+ * @param {number} kgBurnedFuel  - kilograms of fuel burned for this flight (or multiple flights)
  * @param {number} burnedMegajoules - Amount of heat generated from this flight
  * @param {number} totalMegajoules - Derived from multiplying burnedMegajoules by ratio between burned CO2 and total CO2
  * @param {number} yearsToRender - value of the yearsSlider that got passed into calculateDataSet
  * @param {number} yearsTo1Hiroshima - number of years until the flight generates one Hiroshima's warming, or undefined if past yearsToRender
  * @param {number} seatsCount - Total number of seats on the plane
  */
-function writeSeatsData({ kgFuelBurned, burnedMegajoules, totalMegajoules, yearsToRender, yearsTo1Hiroshima }, seatsCount) {
+function writeSeatsData({ kgBurnedFuel, burnedMegajoules, totalMegajoules, yearsToRender, yearsTo1Hiroshima }, seatsCount) {
     const flightCount = getIntegerElementValue('flightCountSelector');
     const passengerCount = getIntegerElementValue('passengerCountSelector');
+    // For the title we could have included labelText ("Your seat" or "Your x seats")
+    // except for the apostrophe! Build title from scratch:
     const titleText = `Your ${passengerCount == 1 ? "seat's" : passengerCount + " seats'"} ${getFormattedNumber(passengerCount / seatsCount * 100)}% share of ${flightCount > 1 ? flightCount + ' flights' : 'the flight'}`;
     document.getElementById('seatsTitle').innerText = titleText;
-    document.getElementById('seatsFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
+    document.getElementById('seatsBurnedFuel').innerText = `${getFormattedNumber(kgBurnedFuel)} kg`;
 
-    const seatsBurnedCO2 = kgFuelBurned * CO2_PER_KG_JET_FUEL;
-    document.getElementById('seatsFuelBurnedCO2').innerText = `${getFormattedNumber(seatsBurnedCO2)} kg`;
+    const seatsBurnedCO2 = Math.round(kgBurnedFuel * CO2_PER_KG_JET_FUEL);
+    document.getElementById('seatsBurnedCO2').innerText = `${getFormattedNumber(seatsBurnedCO2)} kg`;
 
-    const seatsTotalCO2 = burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ;
+    const seatsTotalCO2 = Math.round(burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ);
     document.getElementById('seatsTotalCO2').innerText = `${getFormattedNumber(seatsTotalCO2)} kg`;
 
     const percentSeatsHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;
@@ -471,26 +473,28 @@ function writeSeatsData({ kgFuelBurned, burnedMegajoules, totalMegajoules, years
 /**
  * Populate the flight-specific values on the page
  * 
- * @param {number} kgFuelBurned  - kilograms of fuel burned for this flight (or multiple flights)
+ * @param {number} kgBurnedFuel  - kilograms of fuel burned for this flight (or multiple flights)
  * @param {number} burnedMegajoules - Amount of heat generated from this flight
  * @param {number} totalMegajoules - Derived from multiplying burnedMegajoules by ratio between burned CO2 and total CO2
  * @param {number} yearsToRender - value of the yearsSlider that got passed into calculateDataSet
  * @param {number} yearsTo1Hiroshima - number of years until the flight generates one Hiroshima's warming, or undefined if past yearsToRender
  * @param {number} burn - Rate of fuel burning for this flight profile, in kg/km
  */
-function writeFlightData({ kgFuelBurned, burnedMegajoules, totalMegajoules, yearsToRender, yearsTo1Hiroshima }, burn) {
+function writeFlightData({ kgBurnedFuel, burnedMegajoules, totalMegajoules, yearsToRender, yearsTo1Hiroshima }, burn) {
     const flightCount = getIntegerElementValue('flightCountSelector');
+    // For the title we could have included labelText e.g. "Boeing 787-9 - Long Haul (304 seats)"
+    // but the title is simpler just dealing with flightCount
     const titleText = `Cumulative impact of ${flightCount > 1 ? 'these ' + flightCount + ' flights' : 'this flight'}`;
     document.getElementById('flightTitle').innerText = titleText;
     document.getElementById('burn').innerText = burn;
-    document.getElementById('flightFuelBurned').innerText = `${getFormattedNumber(kgFuelBurned)} kg`;
+    document.getElementById('flightBurnedFuel').innerText = `${getFormattedNumber(kgBurnedFuel)} kg`;
 
-    const burnedCO2 = kgFuelBurned * CO2_PER_KG_JET_FUEL;
-    document.getElementById('flightFuelBurnedCO2').innerText = `${getFormattedNumber(burnedCO2)} kg`;
+    const burnedCO2 = Math.round(kgBurnedFuel * CO2_PER_KG_JET_FUEL);
+    document.getElementById('flightBurnedCO2').innerText = `${getFormattedNumber(burnedCO2)} kg`;
 
     // totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
     // Calculate the total lifecycle CO2 for oil sands jet fuel
-    const totalCO2 = burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ;
+    const totalCO2 = Math.round(burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ);
     document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(totalCO2)} kg`;
 
     const percentContextHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;

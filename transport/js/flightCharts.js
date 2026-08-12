@@ -8,7 +8,7 @@ export const MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 92.5;
 export const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
 // Take average and convert to kg from grams
 export const AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2000;
-const BURN_TO_TOTAL_RATIO = MJ_PER_KG_JET_FUEL * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ / CO2_PER_KG_JET_FUEL;
+export const BURN_TO_TOTAL_RATIO = MJ_PER_KG_JET_FUEL * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ / CO2_PER_KG_JET_FUEL;
 
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
@@ -77,13 +77,14 @@ const LINE_CHART_OPTIONS = {
  * or return undefined for the number of years if it is never reached (we can't use 0 to indicate that it's
  * unset because that's still a valid number of years before the Kaboom).
  * 
- * @param {number} kgFuelBurned - Kilograms of jet fuel burned
+ * @param {number} kgBurnedFuel - Kilograms of jet fuel burned
  * @param {number} yearsToRender - Integer between about 10 and 10000
+ * @param {string} labelText - Description used in chart and in surrounding data
  * @return {{kgFuelBurned, burnedMegajoules, totalMegajoules, chartData, yearsToRender, yearsTo1Hiroshima}}
  */
-export function calculateDataSet(kgFuelBurned, yearsToRender) {
+export function calculateDataSet(kgBurnedFuel, yearsToRender, labelText) {
     // Calculate and extrapolate not just the MJ from burning, but add the MJ generated from manufacturing
-    const burnedMegajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
+    const burnedMegajoules = kgBurnedFuel * MJ_PER_KG_JET_FUEL;
     const totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
 
     const initialAnnualHiroshimas = totalMegajoules / YEARS_TO_DUPLICATE_HEAT / MJ_PER_HIROSHIMA;
@@ -110,12 +111,13 @@ export function calculateDataSet(kgFuelBurned, yearsToRender) {
     }
 
     return {
-        kgFuelBurned,
+        kgBurnedFuel,
         burnedMegajoules,
         totalMegajoules,
         chartData,
         yearsToRender,
-        yearsTo1Hiroshima
+        yearsTo1Hiroshima,
+        labelText
     };
 }
 
@@ -139,17 +141,17 @@ export function getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1H
     if (yearsTo1Hiroshima === undefined) {
         timeToHiroshimaText = `more than ${yearsToRender} years`;
     } else if (yearsTo1Hiroshima >= TIME_FOR_HIROSHIMA_SENSITIVITY) {
-        // Use the given value
+        // Use the given integer value of years
         timeToHiroshimaText = `${yearsTo1Hiroshima} year${yearsTo1Hiroshima > 1 ? 's' : ''}`
     } else {
         // If we are here, yearsTo1Hiroshima is less than TIME_FOR_HIROSHIMA_SENSITIVITY,
-        // so fine-tune the text by calculating the time to greate precision from total megajoules
+        // so fine-tune the text by calculating the time to create precision from total megajoules
         const mjToMakeHiroshima = MJ_PER_HIROSHIMA / totalMegajoules;
-        // Calculate months rather than displaying 0 or 1 or 2 years
+        // Calculate months rather than displaying 0 to 2 years
         let timeForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT * MONTHS_PER_YEAR;
         let timeLabel = 'months';
         if (timeForHiroshima < TIME_FOR_HIROSHIMA_SENSITIVITY) {
-            // Calculate days rather than displaying 0 or 1 or 2 months
+            // Calculate days rather than displaying 0 to 2 months
             timeForHiroshima *= AVG_DAYS_PER_MONTH;
             timeLabel = 'days'
         }
@@ -164,11 +166,10 @@ export function getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1H
  * 
  * @param {object} oldChart - Reference to the previous global Chart object
  * @param {string} chartId - Identifier for the HTML element into which the chart is written
- * @param {object} dataSet - Object returned from calculateDataSet including chartData[] and yearsToRender 
- * @param {string} labelText - Dataset label
+ * @param {object} dataSet - Object returned from calculateDataSet including chartData[], yearsToRender, and labelText
  * @returns pointer to new line chart
  */
-export function buildLineChart(oldChart, chartId, { chartData, yearsToRender }, labelText) {
+export function buildLineChart(oldChart, chartId, { chartData, yearsToRender, labelText }) {
     const context = document.getElementById(chartId).getContext('2d');
     if (oldChart) {
         oldChart.destroy(); // Free the canvas if a previous chart already exists there
