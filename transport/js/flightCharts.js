@@ -1,6 +1,19 @@
-const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima blast
+export const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima blast
+// From https://megacalc.org/units/joules-per-kilogram
+export const MJ_PER_KG_JET_FUEL = 43.15;
+export const CO2_PER_KG_JET_FUEL = 3.16;
+
+// From https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub
+export const MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 92.5;
+export const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
+// Take average and convert to kg from grams
+export const AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2000;
+const BURN_TO_TOTAL_RATIO = MJ_PER_KG_JET_FUEL * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ / CO2_PER_KG_JET_FUEL;
+
 // Rough estimate of every two months. Good on human scales, but does not include the long tail
 const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+const MONTHS_PER_YEAR = 12;
+const AVG_DAYS_PER_MONTH = 30.4375;
 // Fraction of CO2 handled by the pulse response model, separated into multiple half-life equations
 const BIOSPHERE_FRACTION = 0.3;
 const DEEP_OCEAN_FRACTION = 0.3;
@@ -13,6 +26,9 @@ const GEOLOGICAL_HALFLIFE = 1 / 10000;
 const BIOSPHERE_ANNUAL_REDUCTION = 0.5 ** BIOSPHERE_HALFLIFE; // 50 years until half is taken up by plants and upper ocean
 const DEEP_OCEAN_ANNUAL_REDUCTION = 0.5 ** DEEP_OCEAN_HALFLIFE; // 500 years until half is taken up by the deep ocean
 const GEOLOGICAL_ANNUAL_REDUCTION = 0.5 ** GEOLOGICAL_HALFLIFE; // 10000 years until rock weathering sequesters half the CO2
+
+// Number of years or months below which we try using a lower unit, e.g. if years==2, try months, but if years==3 use years
+const TIME_FOR_HIROSHIMA_SENSITIVITY = 3;
 
 const LINE_CHART_OPTIONS = {
     plugins: {
@@ -61,23 +77,28 @@ const LINE_CHART_OPTIONS = {
  * or return undefined for the number of years if it is never reached (we can't use 0 to indicate that it's
  * unset because that's still a valid number of years before the Kaboom).
  * 
- * @param {number} megajoules - Amount of heat generated from the initial burning of fossil fuel
+ * @param {number} kgFuelBurned - Kilograms of jet fuel burned
  * @param {number} yearsToRender - Integer between about 10 and 10000
+ * @return {{kgFuelBurned, burnedMegajoules, totalMegajoules, chartData, yearsToRender, yearsTo1Hiroshima}}
  */
-export function calculateDataSet(megajoules, yearsToRender) {
-    const initialAnnualHiroshimas = megajoules / YEARS_TO_DUPLICATE_HEAT / MJ_PER_HIROSHIMA;
+export function calculateDataSet(kgFuelBurned, yearsToRender) {
+    // Calculate and extrapolate not just the MJ from burning, but add the MJ generated from manufacturing
+    const burnedMegajoules = kgFuelBurned * MJ_PER_KG_JET_FUEL;
+    const totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
+
+    const initialAnnualHiroshimas = totalMegajoules / YEARS_TO_DUPLICATE_HEAT / MJ_PER_HIROSHIMA;
     let biosphereCO2HeatRemaining = initialAnnualHiroshimas * BIOSPHERE_FRACTION;
     let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * DEEP_OCEAN_FRACTION;
     let geologicalCO2HeatRemaining = initialAnnualHiroshimas * GEOLOGICAL_FRACTION;
 
     // Use the Pulse Response Model to generate a sum of exponentials.
-    const data = [];
+    const chartData = [];
     let runningTotal = 0;
     let yearsTo1Hiroshima = undefined;
     for (let i = 0; i < yearsToRender; i++) {
         // At i==0, the total will equal the initial megajoules translated into annual Hiroshima equivalents
         const totalThisYear = biosphereCO2HeatRemaining + deepOceanCO2HeatRemaining + geologicalCO2HeatRemaining;
-        data.push(totalThisYear + runningTotal);
+        chartData.push(totalThisYear + runningTotal);
         runningTotal += totalThisYear;
         if (yearsTo1Hiroshima === undefined && runningTotal >= 1) {
             yearsTo1Hiroshima = i;
@@ -89,9 +110,52 @@ export function calculateDataSet(megajoules, yearsToRender) {
     }
 
     return {
-        data,
+        kgFuelBurned,
+        burnedMegajoules,
+        totalMegajoules,
+        chartData,
+        yearsToRender,
         yearsTo1Hiroshima
     };
+}
+
+// Use a standard formatter to add commas to numbers for readability
+export function getFormattedNumber(x) {
+    // TODO: Can we get formatting and also number of decimals? 
+    return x.toLocaleString();
+}
+
+/**
+ * Generate user-friendly description of the time before greenhouse gases will trap a Hiroshima's worth
+ * of heat after burning fossil fuels generating an initial amount of megajoules.
+ * 
+ * @param {number} totalMegajoules - Megajoules of heat including manufacturing and burning
+ * @param {number} yearsToRender - How many years in the future we checked (same value as the calculateDataSet input)
+ * @param {number} yearsTo1Hiroshima - Undefined if calculateDataSet if greater than the yearsToRender, otherwise 0 or more
+ * @returns {string} describing time to first Hiroshima energy equivalent in years, months, or days
+ */
+export function getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1Hiroshima) {
+    let timeToHiroshimaText;
+    if (yearsTo1Hiroshima === undefined) {
+        timeToHiroshimaText = `more than ${yearsToRender} years`;
+    } else if (yearsTo1Hiroshima >= TIME_FOR_HIROSHIMA_SENSITIVITY) {
+        // Use the given value
+        timeToHiroshimaText = `${yearsTo1Hiroshima} year${yearsTo1Hiroshima > 1 ? 's' : ''}`
+    } else {
+        // If we are here, yearsTo1Hiroshima is less than TIME_FOR_HIROSHIMA_SENSITIVITY,
+        // so fine-tune the text by calculating the time to greate precision from total megajoules
+        const mjToMakeHiroshima = MJ_PER_HIROSHIMA / totalMegajoules;
+        // Calculate months rather than displaying 0 or 1 or 2 years
+        let timeForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT * MONTHS_PER_YEAR;
+        let timeLabel = 'months';
+        if (timeForHiroshima < TIME_FOR_HIROSHIMA_SENSITIVITY) {
+            // Calculate days rather than displaying 0 or 1 or 2 months
+            timeForHiroshima *= AVG_DAYS_PER_MONTH;
+            timeLabel = 'days'
+        }
+        timeToHiroshimaText = `${getFormattedNumber(timeForHiroshima)} ${timeLabel}`
+    }
+    return timeToHiroshimaText;
 }
 
 /**
@@ -100,12 +164,11 @@ export function calculateDataSet(megajoules, yearsToRender) {
  * 
  * @param {object} oldChart - Reference to the previous global Chart object
  * @param {string} chartId - Identifier for the HTML element into which the chart is written
- * @param {number[]} data - Yearly running total amount of reflected heat absorbed by greenhouse gases released from initial burning
- * @param {number} yearsToRender - Number of years for which to generate labels
+ * @param {object} dataSet - Object returned from calculateDataSet including chartData[] and yearsToRender 
  * @param {string} labelText - Dataset label
- * @returns reference to new line chart
+ * @returns pointer to new line chart
  */
-export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText) {
+export function buildLineChart(oldChart, chartId, { chartData, yearsToRender }, labelText) {
     const context = document.getElementById(chartId).getContext('2d');
     if (oldChart) {
         oldChart.destroy(); // Free the canvas if a previous chart already exists there
@@ -122,7 +185,7 @@ export function buildLineChart(oldChart, chartId, data, yearsToRender, labelText
             datasets: [
                 {
                     label: labelText,
-                    data: data,
+                    data: chartData,
                     borderColor: 'red',
                     fill: true, // Required to fill the area under the line
                     // Scriptable option for dynamic gradient based on chart area
