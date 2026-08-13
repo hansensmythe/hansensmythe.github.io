@@ -25,9 +25,8 @@ const MAXIMUM_PASSENGERS = 10;
 let seatsChart = null;
 let flightChart = null;
 let prm = null;
-// Store the current target values for proper flight profile filtering. 0 means unset.
-// Pin the initial value on values that show a good selection of long-haul aircraft
-let currentSeatsTarget = 300;
+// Store the current target value for proper flight profile filtering. 0 means unset.
+// Pin the initial value to show a good selection of long-haul aircraft
 let currentKmTarget = 10000;
 
 /**
@@ -60,12 +59,30 @@ function getRange(target, plusMinus) {
     };
 }
 
-function getSeatRange(targetSeats) {
-    return getRange(targetSeats, SEATS_PLUS_MINUS);
-}
-
 function getSectorRange(targetKilometres) {
-    return getRange(targetKilometres, KM_PLUS_MINUS);
+    let min, max, desc;
+    if (targetKilometres < 930) {
+        min = 420;
+        max = 930;
+        desc = 'Commuter';
+    } else if (targetKilometres < 1300) {
+        min = 930;
+        max = 1300;
+        desc = 'Regional';
+    } else if (targetKilometres < 4000) {
+        min = 1300;
+        max = 4000;
+        desc = 'Short-haul';
+    } else if (targetKilometres < 8000) {
+        min = 4000;
+        max = 8000;
+        desc = 'Medium-haul';
+    } else {
+        min = 8000;
+        max = 13300;
+        desc = 'Long-haul';
+    }
+    return { min, max, desc };
 }
 
 /**
@@ -114,7 +131,7 @@ function replaceProfileButtons(flightProfileNames) {
 function populateDropdown(dropdownId, maxValue) {
     const dropdown = document.getElementById(dropdownId);
     // Shouldn't need to clear previous options, e.g. dropdown.options.length = 0;
-    for (let i = 1; i <= maxValue; i++) {
+    for (let i = 0; i <= maxValue; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.text = i;
@@ -131,6 +148,7 @@ function initialize() {
     prm = getDefaultPulseResponseModel();
     // Listen for changes to all page elements
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
+    document.getElementById('contents').addEventListener('click', handleClickEvent);
     document.getElementById('contents').addEventListener('input', handleInputEvent);
     // Add constants to page
     document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
@@ -142,19 +160,10 @@ function initialize() {
     populateDropdown('flightCountSelector', MAXIMUM_FLIGHTS);
     populateDropdown('passengerCountSelector', MAXIMUM_PASSENGERS);
 
-    // Initially disable all optional controls and charts. They're reenabled once the user has chosen a model.
+    // Initially disable all controls and charts. They're reenabled as the user progresses through the questions.
+    hideQuestionElements(6);
     hideChartElements(true);
     hideModelControls(true);
-
-    // Set absolute minimum and maximum slider settings based on MODELS values
-    const minSeats = roundToNearest10(Math.min(...MODELS.map(model => model.getMinimumSeats())));
-    const maxSeats = roundToNearest10(Math.max(...MODELS.map(model => model.getMaximumSeats())));
-    const seatsSlider = document.getElementById('seatsSlider');
-    seatsSlider.min = minSeats;
-    seatsSlider.max = maxSeats;
-    seatsSlider.value = currentSeatsTarget;
-    const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
-    aircraftSizeDisplay.textContent = `${minSeats} to ${maxSeats} seats`;
 
     const minKilometres = roundToNearest10(Math.min(...MODELS.map(model => model.getMinimumKilometres())));
     const maxKilometres = roundToNearest10(Math.max(...MODELS.map(model => model.getMaximumKilometres())));
@@ -163,12 +172,55 @@ function initialize() {
     sectorSlider.max = maxKilometres;
     sectorSlider.defaultValue = currentKmTarget;
     const sectorDisplay = document.getElementById('sectorDisplay');
-    sectorDisplay.textContent = `${minKilometres} to ${maxKilometres} km`;
+    sectorDisplay.textContent = `from ${minKilometres} to ${maxKilometres} km`;
 
-    // Load the aircraft models that match the defaults above so that the user sees something from the outset
-    const filteredModels = MODELS.filter((model) => model.hasMatchingSectorAndSeats(currentKmTarget, currentSeatsTarget));
+    // Load the aircraft models that match the defaults
+    const filteredModels = MODELS.filter((model) => model.hasMatchingSector(currentKmTarget));
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
+}
+
+/**
+ * Called for each element hidden by hideQuestionElements as each question is answered
+ * 
+ * @param {string} elementId 
+ */
+function showElement(elementId) {
+    document.getElementById(elementId).style.display = 'block';
+}
+
+/**
+ * Called whenever we need an element hidden
+ * 
+ * @param {string} elementId 
+ */
+function hideElement(elementId) {
+    document.getElementById(elementId).style.display = 'none';
+}
+
+/**
+ * Hide question-related page elements, which are revealed one at a time as the previous question is answered.
+ * 
+ * @param {number} howManyToHide - Number of question elements to hide, from 1 to 5
+ */
+function hideQuestionElements(howManyToHide) {
+    const hidableElementIds = [
+        // List elements in reverse order of presentation, so that we can hide from the bottom up
+        'whatDistance',
+        'howManyYears',
+        'flightProfiles',
+        'aircraftMatches',
+        'whatSector',
+        'howManyFlights'
+        // We always start with howManyPeople being displayed, so it is never hidden
+    ];
+    hidableElementIds.forEach((hidableElementId, index) => {
+        // e.g. if howManyToHide == 6, index will be 0 to 5 so all will get hidden
+        // but if howManyToHide == 3, only hide index 0 to 2
+        if (index < howManyToHide) {
+            hideElement(hidableElementId);
+        }
+    });
 }
 
 /**
@@ -177,16 +229,18 @@ function initialize() {
  * @param {boolean} isHidden - true to hide elements, false to show them
  */
 function hideChartElements(isHidden) {
-    const hidableElements = [
-        document.getElementById('optionalControls'),
-        document.getElementById('seatsDiv'),
-        document.getElementById('flightDiv')
+    const hidableElementIds = [
+        'seatsDiv',
+        'flightDiv'
     ];
-    hidableElements.forEach((hidableElement) => {
-        hidableElement.style.display = isHidden ? 'none' : 'block';
+    hidableElementIds.forEach((hidableElementId) => {
+        if (isHidden) {
+            hideElement(hidableElementId);
+        } else {
+            showElement(hidableElementId);
+        }
     });
 }
-
 
 /**
  * Toggle visibility of model-related page elements depending on whether they're enabled.
@@ -194,7 +248,7 @@ function hideChartElements(isHidden) {
  * @param {boolean} isHidden - true to hide elements, false to show them
  */
 function hideModelControls(isHidden) {
-    document.getElementById('modelControls').style.display = isHidden ? 'none' : 'block';
+    isHidden ? hideElement('modelControls') : showElement('modelControls');
 }
 
 /**
@@ -222,32 +276,39 @@ function updateFractionDisplays() {
 function handleChangeEvent(event) {
     // For radio buttons we can use the 'name' attribute to recognize the event, because each button has a different ID.
     // However, dropdowns and sliders don't have or need a 'name' because their 'id' works to identify them.
-    if (event.target.name == MODEL_BUTTON_NAME) {
+    if (event.target.id == 'passengerCountSelector') {
+        if (event.target.value == 0) {
+            // Reset everything
+            hideQuestionElements(6);
+            hideChartElements(true);
+        } else {
+            showElement('howManyFlights');
+        }
+    } else if (event.target.id == 'flightCountSelector') {
+        if (event.target.value == 0) {
+            // Reset everything but this question
+            hideQuestionElements(5);
+            hideChartElements(true);
+        } else {
+            showElement('whatSector');
+        }
+    } else if (event.target.id == 'sectorSlider') {
+        showElement('aircraftMatches');
+    } else if (event.target.name == MODEL_BUTTON_NAME) {
         // A specific model has been chosen from the model radio buttons, so update the flight profile buttons
         const selectedModel = findSelectedModel(event.target.value);
-        // We may be in the process of selecting a specific model from a size- or sector-filtered list
-        // so we should only get the flight profiles that match current values. Use the presence or
-        // absence of an aircraft search text to know whether or not to filter the profiles.
-        let flightProfileNames;
-        if (currentKmTarget > 0 && currentSeatsTarget > 0) {
-            // Filter profiles by both size and sector. This typically only happens upon first selecting
-            // a model that is presented at initialization time with default size and sector values.
-            flightProfileNames = selectedModel.getMatchingProfileNames(currentKmTarget, currentSeatsTarget);
-        } else if (currentSeatsTarget > 0) {
-            // Use size-filtered profiles
-            flightProfileNames = selectedModel.getMatchingAircraftSizeProfileNames(currentSeatsTarget);
-        } else if (currentKmTarget > 0) {
-            // Use sector-filtered profiles
-            flightProfileNames = selectedModel.getMatchingSectorProfileNames(currentKmTarget);
-        } else {
-            // Model search clears both size and sector filtering, so use all the flight profiles
-            flightProfileNames = selectedModel.getProfileNames();
-        }
+        // We may be in the process of selecting a specific model from a sector-filtered list
+        // so we should only get the flight profiles that match current values.
+        const flightProfileNames = selectedModel.getMatchingSectorProfileNames(currentKmTarget);
+        // Once selected, we don't need to see the list again
+        hideElement('aircraftMatches');
+        showElement('flightProfiles');
+        showElement('whatDistance');
+        showElement('howManyYears');
         replaceProfileButtons(flightProfileNames);
         // Recalculate using the default first flight profile
         recalculateProfile(selectedModel.getProfileFromName(flightProfileNames[0]));
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
-        // A flight profile other than the default first profile has been selected.
         const selectedModel = findSelectedModel(getSelectedButtonValue(MODEL_BUTTON_NAME));
         // From the currently selected model, load the flight profile matching the target.
         // We cannot trust indexing from raw data, as the buttons may be filtered.
@@ -261,9 +322,26 @@ function handleChangeEvent(event) {
         event.target.id == 'deepOceanYears' ||
         event.target.id == 'geologicalYears' ||
         event.target.id == 'flightCountSelector' ||
+        event.target.id == 'distanceSlider' ||
         event.target.id == 'yearsSlider' ||
-        event.target.id == 'passengerCountSelector') {
+        event.target.id == 'passengerCountSelector' ||
+        event.target.id == 'radiativeForcing') {
         writeData();
+    }
+}
+
+function handleClickEvent(event) {
+    if (event.target.id == 'flightCountSelector' || event.target.id == 'howManyFlights') {
+        // The flights has been clicked but has not changed. Count it as a selection
+        if (event.target.value == 0) {
+            // Reset everything but this question
+            hideQuestionElements(5);
+        } else {
+            showElement('whatSector');
+        }
+    } else if (event.target.id == 'sectorSlider' || event.target.id == 'whatSector') {
+        // The sector has been clicked but has not changed. Count it as a selection
+        showElement('aircraftMatches');
     }
 }
 
@@ -273,11 +351,7 @@ function handleChangeEvent(event) {
  * @param {object} event - The object describing the input element on the page
  */
 function handleInputEvent(event) {
-    if (event.target.name == 'modelSearch') {
-        handleModelSearchChange(event);
-    } else if (event.target.id == 'seatsSlider') {
-        handleAircraftSizeChange();
-    } else if (event.target.id == 'sectorSlider') {
+    if (event.target.id == 'sectorSlider') {
         handleSectorChange();
     } else if (event.target.id == 'distanceSlider') {
         const distanceDisplay = document.getElementById('distanceDisplay');
@@ -285,6 +359,10 @@ function handleInputEvent(event) {
     } else if (event.target.id == 'yearsSlider') {
         const yearsDisplay = document.getElementById('yearsDisplay');
         yearsDisplay.textContent = event.target.value;
+    } else if (event.target.id == 'radiativeForcing') {
+        const radiativeForcingDisplay = document.getElementById('radiativeForcingDisplay');
+        radiativeForcingDisplay.textContent = event.target.value;
+        prm.setRadiativeForcingDays(event.target.value);
     } else if (event.target.id == 'biosphereFraction') {
         prm.setBiosphereFraction(parseFloat(event.target.value));
         updateFractionDisplays();
@@ -305,39 +383,6 @@ function handleInputEvent(event) {
     // We don't need to listen for 'input' events from any other controls, so no 'else' is needed here
 }
 
-function handleModelSearchChange(event) {
-    // Clear the sector and size displays, as we're selecting by model name
-    const sectorDisplay = document.getElementById('sectorDisplay');
-    sectorDisplay.textContent = '';
-    currentKmTarget = 0;
-    const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
-    aircraftSizeDisplay.textContent = '';
-    currentSeatsTarget = 0;
-
-    const filteredModelNames = MODELS.map(model => model.name).filter((modelName) => {
-        // Using a safe, case-insensitive search, return only the models with names matching the search term
-        const escapedValue = event.target.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        if (escapedValue.trim().length > 0) {
-            return new RegExp(escapedValue, 'i').test(modelName);
-        } else {
-            // If the user has deleted the last character, there are no matches, not all matches!
-            return false;
-        }
-    });
-
-    replaceModelButtons(filteredModelNames);
-    if (filteredModelNames.length == 1) {
-        // The model will already be preselected. Populate flight profiles for the one model
-        const selectedModel = findSelectedModel(filteredModelNames[0]);
-        replaceProfileButtons(selectedModel.getProfileNames());
-        // Recalculate using the first flight profile. We can trust [0] because we're not filtering profile names
-        recalculateProfile(selectedModel.flightProfiles[0]);
-    } else {
-        replaceProfileButtons([]);
-        hideChartElements(true);
-    }
-}
-
 /**
  * Utility function to get the integer value of a page element using the elementId
  * 
@@ -349,8 +394,6 @@ function getIntegerElementValue(elementId) {
 }
 
 function handleSectorChange() {
-    // Clear the aircraft model search
-    document.getElementById('modelSearch').value = '';
     // Generate a filtered subset of models that match the kilometres flown.
     const targetKilometres = getIntegerElementValue('sectorSlider');
     const filteredModels = MODELS.filter((model) => model.hasMatchingSector(targetKilometres));
@@ -361,56 +404,20 @@ function handleSectorChange() {
         // The model will already be preselected. Populate flight profiles for the one model
         const selectedModel = findSelectedModel(filteredModelNames[0]);
         const filteredProfileNames = selectedModel.getMatchingSectorProfileNames(targetKilometres);
+        showElement('flightProfiles');
         replaceProfileButtons(filteredProfileNames);
         // Recalculate using the first flight profile
         recalculateProfile(selectedModel.getProfileFromName(filteredProfileNames[0]));
     } else {
+        hideQuestionElements(3);
         replaceProfileButtons([]);
         hideChartElements(true);
     }
 
     const sectorDisplay = document.getElementById('sectorDisplay');
     const sectorRange = getSectorRange(targetKilometres);
-    sectorDisplay.textContent = `${sectorRange.min} to ${sectorRange.max} km`;
+    sectorDisplay.textContent = `${sectorRange.desc} (${sectorRange.min} to ${sectorRange.max} km)`;
     currentKmTarget = targetKilometres;
-
-    // Clear the aircraft size display, as we're selecting only for sector
-    const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
-    aircraftSizeDisplay.textContent = '';
-    currentSeatsTarget = 0;
-}
-
-function handleAircraftSizeChange() {
-    // Clear the aircraft model search
-    document.getElementById('modelSearch').value = '';
-    // Generate a filtered subset of models that match the number of aircraft seats.
-    const targetSeats = getIntegerElementValue('seatsSlider');
-    const filteredModels = MODELS.filter((model) => model.hasMatchingSeats(targetSeats));
-    const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
-
-    replaceModelButtons(filteredModelNames);
-    if (filteredModelNames.length == 1) {
-        // The model will already be preselected. Populate flight profiles for the one model
-        const selectedModel = findSelectedModel(filteredModelNames[0]);
-        const filteredProfileNames = selectedModel.getMatchingAircraftSizeProfileNames(targetSeats);
-        replaceProfileButtons(filteredProfileNames);
-        // Recalculate using the first flight profile
-        recalculateProfile(selectedModel.getProfileFromName(filteredProfileNames[0]));
-    } else {
-        replaceProfileButtons([]);
-        hideChartElements(true);
-    }
-
-    const aircraftSizeDisplay = document.getElementById('aircraftSizeDisplay');
-    // Display a range centred on the target value
-    const seatRange = getSeatRange(targetSeats);
-    aircraftSizeDisplay.textContent = `${seatRange.min} to ${seatRange.max} seats`;
-    currentSeatsTarget = targetSeats;
-
-    // Clear the sector display, as we're selecting only for number of seats
-    const sectorDisplay = document.getElementById('sectorDisplay');
-    sectorDisplay.textContent = '';
-    currentKmTarget = 0;
 }
 
 // Convenience function for recalculateProfile. Used both for models and flight profiles.
@@ -427,8 +434,8 @@ function getSelectedButtonValue(buttonName) {
 }
 
 /**
- * Called when a model or flight configuration is changed. Populates seats, burn, fuelPerSeat,
- * and distanceSlider, then recalculates the distance using default kilometres for the flight config.
+ * Called when a model or flight configuration is changed. Recalculates the distance using default kilometres
+ * for the selected profile, displays chart elements, then redisplays all the new data.
  * 
  * @param {FlightProfile} selectedProfile - A single flight profile object
  */
@@ -472,7 +479,8 @@ function writeData() {
         // Calculate the seat data
         const kgSeatsBurnedFuel = kgBurnedFuel / selectedProfile.seats * passengerCount;
 
-        const seatsDataSet = calculateDataSet(prm, kgSeatsBurnedFuel, yearsToRender, passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`);
+        const seatsText = passengerCount == 1 ? 'Your seat' : `Your ${passengerCount} seats`;
+        const seatsDataSet = calculateDataSet(prm, kgSeatsBurnedFuel, yearsToRender, `${seatsText} on ${selectedModel.name}`);
         writeSeatsData(seatsDataSet, selectedProfile.seats);
         seatsChart = buildLineChart(seatsChart, 'SeatsChart', seatsDataSet);
 
@@ -511,7 +519,7 @@ function writeSeatsData({ kgBurnedFuel, burnedMegajoules, totalMegajoules, years
     document.getElementById('seatsImmediateHeat').innerText = `${getFormattedNumber(percentSeatsHiroshima)}%`;
 
     document.getElementById('seatsGreenhouseHeat').innerText = getTimeToHiroshimaText(
-        totalMegajoules, yearsToRender, yearsTo1Hiroshima);
+        prm.radiativeForcingYears, totalMegajoules, yearsToRender, yearsTo1Hiroshima);
 }
 
 /**
@@ -544,6 +552,6 @@ function writeFlightData({ kgBurnedFuel, burnedMegajoules, totalMegajoules, year
     const percentContextHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;
     document.getElementById('flightImmediateHeat').innerText = `${getFormattedNumber(percentContextHiroshima)}%`;
 
-    document.getElementById('flightGreenhouseHeat').innerText = 
-        getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1Hiroshima);
+    document.getElementById('flightGreenhouseHeat').innerText = getTimeToHiroshimaText(
+        prm.radiativeForcingYears, totalMegajoules, yearsToRender, yearsTo1Hiroshima);
 }

@@ -10,8 +10,7 @@ export const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
 export const AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2000;
 export const BURN_TO_TOTAL_RATIO = MJ_PER_KG_JET_FUEL * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ / CO2_PER_KG_JET_FUEL;
 
-// Rough estimate of every two months. Good on human scales, but does not include the long tail
-const YEARS_TO_DUPLICATE_HEAT = 1 / 6;
+const DAYS_PER_YEAR = 365.25;
 const MONTHS_PER_YEAR = 12;
 const AVG_DAYS_PER_MONTH = 30.4375;
 
@@ -74,7 +73,7 @@ const MAX_FRACTION = 0.9;
  * @param {number} geologicalYears - Number of years before half of the CO2 is sequestered by rock weathering
  */
 class PulseResponseModel {
-    constructor(biosphereFraction, biosphereYears, deepOceanFraction, deepOceanYears, geologicalFraction, geologicalYears) {
+    constructor(radiativeForcingDays, biosphereFraction, biosphereYears, deepOceanFraction, deepOceanYears, geologicalFraction, geologicalYears) {
         // Initialize fractions to equal 1, so that subsequent setting can make adjustments
         this.biosphereFraction = 0.34;
         this.deepOceanFraction = 0.26;
@@ -86,6 +85,10 @@ class PulseResponseModel {
         this.setDeepOceanAnnualReduction(deepOceanYears);
         this.setGeologicalFraction(geologicalFraction);
         this.setGeologicalAnnualReduction(geologicalYears);
+        this.setRadiativeForcingDays(radiativeForcingDays);
+    }
+    setRadiativeForcingDays(radiativeForcingDays) {
+        this.radiativeForcingYears = radiativeForcingDays / DAYS_PER_YEAR;
     }
     setBiosphereFraction(biosphereFraction) {
         const adjustment = this.biosphereFraction - biosphereFraction;
@@ -124,10 +127,11 @@ class PulseResponseModel {
 }
 
 export function getDefaultPulseResponseModel() {
-    // Bern model 18.5-year time constant for 34% of emissions for biosphere,
-    // 173-year time constant for 26% of emissions for deep ocean, and
+    // https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514 says radiative forcing from oil is ~45 days.
+    // Bern model for biosphere is 18.5-year time constant for 34% of emissions,
+    // for deep ocean is 173-year time constant for 26% of emissions, and
     // 40% is left for geology - many millennia, with ~<2% still airborne after 100,000 years 
-    return new PulseResponseModel(0.34, 18.5, 0.26, 173, 0.4, 10000);
+    return new PulseResponseModel(45, 0.34, 18.5, 0.26, 173, 0.4, 10000);
 }
 
 /**
@@ -148,7 +152,7 @@ export function calculateDataSet(prm, kgBurnedFuel, yearsToRender, labelText) {
     const burnedMegajoules = kgBurnedFuel * MJ_PER_KG_JET_FUEL;
     const totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
 
-    const initialAnnualHiroshimas = totalMegajoules / YEARS_TO_DUPLICATE_HEAT / MJ_PER_HIROSHIMA;
+    const initialAnnualHiroshimas = totalMegajoules / prm.radiativeForcingYears / MJ_PER_HIROSHIMA;
     let biosphereCO2HeatRemaining = initialAnnualHiroshimas * prm.biosphereFraction;
     let deepOceanCO2HeatRemaining = initialAnnualHiroshimas * prm.deepOceanFraction;
     let geologicalCO2HeatRemaining = initialAnnualHiroshimas * prm.geologicalFraction;
@@ -192,13 +196,15 @@ export function getFormattedNumber(x) {
  * Generate user-friendly description of the time before greenhouse gases will trap a Hiroshima's worth
  * of heat after burning fossil fuels generating an initial amount of megajoules.
  * 
+ * @param {number} radiativeForcingYears - Years (much less than 1) before heat from fuel is duplicated by radiative forcing
  * @param {number} totalMegajoules - Megajoules of heat including manufacturing and burning
  * @param {number} yearsToRender - How many years in the future we checked (same value as the calculateDataSet input)
  * @param {number} yearsTo1Hiroshima - Undefined if calculateDataSet if greater than the yearsToRender, otherwise 0 or more
  * @returns {string} describing time to first Hiroshima energy equivalent in years, months, or days
  */
-export function getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1Hiroshima) {
+export function getTimeToHiroshimaText(radiativeForcingYears, totalMegajoules, yearsToRender, yearsTo1Hiroshima) {
     let timeToHiroshimaText;
+    console.log(`getTimeToHiroshimaText(${radiativeForcingYears}, ${totalMegajoules}, ${yearsToRender}, ${yearsTo1Hiroshima})`);
     if (yearsTo1Hiroshima === undefined) {
         timeToHiroshimaText = `more than ${yearsToRender} years`;
     } else if (yearsTo1Hiroshima >= TIME_FOR_HIROSHIMA_SENSITIVITY) {
@@ -209,7 +215,7 @@ export function getTimeToHiroshimaText(totalMegajoules, yearsToRender, yearsTo1H
         // so fine-tune the text by calculating the time to create precision from total megajoules
         const mjToMakeHiroshima = MJ_PER_HIROSHIMA / totalMegajoules;
         // Calculate months rather than displaying 0 to 2 years
-        let timeForHiroshima = mjToMakeHiroshima * YEARS_TO_DUPLICATE_HEAT * MONTHS_PER_YEAR;
+        let timeForHiroshima = mjToMakeHiroshima * radiativeForcingYears * MONTHS_PER_YEAR;
         let timeLabel = 'months';
         if (timeForHiroshima < TIME_FOR_HIROSHIMA_SENSITIVITY) {
             // Calculate days rather than displaying 0 to 2 months

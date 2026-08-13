@@ -137,94 +137,43 @@
 
         <hr>
         <h2>The Flight Perspective Generator</h2>
-        <p id="calculator">The test data<a href="#ref8"><sup>8</sup></a> include a variety of aircraft manufactured by
-            Airbus, Antonov, ATR, Beechcraft, Boeing, Bombardier, Dornier, Embraer, Irkut, Pilatus, Quest, Saab, and Sukhoi.</p>
-        <fieldset>
-            <legend>Find aircraft of interest from the test data</legend>
-            <p>Search for an aircraft model (e.g. 'Boe' to show all aircraft made by Boeing, or '8' for a list that will
-            include the Bombardier Dash 8, etc.):</p>
-            <p><input type="text" id="modelSearch" name="modelSearch" placeholder="Enter aircraft search text"></p>
-            <p>Alternatively, if you do not know or care about the exact aircraft model, select from a range of matching
-                models based on number of seats (smaller or bigger aircraft) or distance travelled (from commuter to
-                long-haul).</p>
-            <div>
-                <p>Size of aircraft:<br>
-                    <input type="range" id="seatsSlider" step="10"></input><span id="aircraftSizeDisplay">? seats</span></p>
-            </div>
-            <div>
-                <p>Sector (from commuter to long-haul):<br>
-                    <input type="range" id="sectorSlider" step="10"></input><span id="sectorDisplay">? km</span></p>
-            </div>
+        <p id="calculator">This tool uses test data<a href="#ref8"><sup>8</sup></a> to estimate the global heating resulting from a flight.</p>
+
+        <fieldset id="howManyPeople">
+            <legend>How many people are flying?</legend>
+            <select id="passengerCountSelector"></select>
         </fieldset>
-        <p>If more than one matching aircraft is displayed, select one of them, then choose a flight profile
-            (if there is more than one) to see what the impact is of taking that flight:</p>
-        <fieldset>
-            <legend>Matching aircraft models:</legend>
+
+        <fieldset id="howManyFlights">
+            <legend>How many flights would you like to model? (e.g. select 2 for a return flight)</legend>
+            <select id="flightCountSelector"></select>
+        </fieldset>
+
+        <fieldset id="whatSector">
+            <legend>What sort of trip are you taking? (Commuter to long-haul)</legend>
+            <input type="range" id="sectorSlider" step="10"></input><span id="sectorDisplay">? km</span>
+        </fieldset>
+
+        <fieldset id="aircraftMatches">
+            <legend>On what aircraft are you flying? (choose one at random if you don't know or care)</legend>
             <div id="modelButtonDiv"></div>
         </fieldset>
-        <p>Some aircraft models have multiple flight profiles, i.e. different configurations of number of seats, or
-            distance travelled. Optionally, select a different flight profile to use a different set of test data. The
-            data and graphs showing greenhouse heating over time will then be generated.</p>
-        <fieldset>
+        
+        <fieldset id="flightProfiles">
             <legend>Flight profiles:</legend>
+            Some aircraft models have multiple flight profiles, i.e. different configurations of number of seats, or distance travelled.
+                If more than one is available, you may select a different flight profile to use a different set of test data.
             <div id="flightButtonDiv"></div>
         </fieldset>
 
-        <fieldset id="optionalControls">
-            <legend>Optional controls</legend>
-            <p>After choosing an aircraft model and flight profile, you may fine-tune the data to match your intended
-                trips more closely.</p>
-            <div>
-                <p>Kilometres flown:<br>
-                    <input type="range" id="distanceSlider" step="10"></input>
-                    <span id="distanceDisplay">0</span></p>
-            </div>
-            <div>
-                <p>How many flights would you like to model?<br>
-                    <select id="flightCountSelector"></select></p>
-            </div>
-            <div>
-                <p>How many people are flying?<br>
-                    <select id="passengerCountSelector"></select></p>
-            </div>
-            <div>
-                <p>How many years of impact would you like to see?<br>
-                    <input type="range" id="yearsSlider" step="10" min="10" max="10000" value="1000"></input>
-                    <span id="yearsDisplay">1000</span></p>
-            </div>
+        <fieldset id="whatDistance">
+            <legend>What distance are you travelling?<legend>
+            <input type="range" id="distanceSlider" step="10"></input><span id="distanceDisplay">0</span>
         </fieldset>
 
-        <p><input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the CO<sub>2</sub> Pulse Response Model</input></p>
-        <fieldset id="modelControls">
-            <legend>Model tuning controls</legend>
-            <p>Since CO<sub>2</sub> in the atmosphere causes global heating (from sunlight getting absorbed by the Earth, then radiated as heat, which then fails to get radiated back out to space because the greenhouse gases capture it), tracking how CO<sub>2</sub> is reduced is effectively the same as tracking how much heat is added by the CO<sub>2</sub> that remains.
-                I've read that a Pulse Response Model for CO<sub>2</sub> sequestration includes accounting for three carbon sinks which work at different rates:
-                <ul>
-                    <li>Over years to decades, plants and the upper ocean absorb some CO<sub>2</sub>, but as the ocean absorbs CO<sub>2</sub> it becomes more acidic, which is a whole other problem, and plants can only use CO<sub>2</sub> if they also have good growing conditions - enough sunlight and water - and in the end will release the CO<sub>2</sub> back into the atmosphere, unless they get buried somehow;</li>
-                    <li>over decades to centuries, the deep ocean absorbs some CO<sub>2</sub>, but as the ocean warms and deep ocean turnover slows, this will become less efficient over time; and</li>
-                    <li>over millennia, geological processes react with CO<sub>2</sub> to form minerals.</li>
-                </ul>
-                I've also read that the Bern Simple Climate Model<a href="#ref10"><sup>10</sup></a> used by the IPCC suggests reasonable values as follows:
-                <ul>
-                    <li>an 18.5-year half life for 34% of emissions to be absorbed by plants and the upper ocean,</li>
-                    <li>a 173-year half life for 26% of emissions to be absorbed by the deep ocean, and</li>
-                    <li>a 10000- to 100000-year half life for the remainder to be sequestered by geological forces.</li>
-                </ul>
-                I've read criticism of the Bern Model, but typically for being too conservative: it's quite possible that global heating will exceed what I'm showing here. I freely admit that I am not using a comprehensive climate model. I'm just providing a rough idea of how much heating is to be expected.
-                These graphs calculate the annual amount of heat that will get added to the atmosphere by the CO<sub>2</sub> that remains after these three processes have sequestered some of it.
-                Adjust these values to see how the graphs change.
-            </p>
-            <input type="range" id="biosphereFraction" step="0.01" min="0.05" max="0.85" value="0.34"></input>
-                <span id="biosphereFractionDisplay">34</span>% of CO<sub>2</sub> is absorbed by plants and upper ocean</p>
-            <input type="range" id="biosphereYears" step=".5" min="4" max="50" value="18.5"></input>
-                <span id="biosphereYearsDisplay">18.5</span> years before half of the above fraction of CO<sub>2</sub> is absorbed by plants and upper ocean</p>
-                <span id="deepOceanFractionDisplay">26</span>% of CO<sub>2</sub> is absorbed by deep ocean (adjust this fraction by changing the biosphere fraction above or the geological fraction below)</p>
-            <input type="range" id="deepOceanYears" step=".5" min="100" max="1000" value="173"></input>
-                <span id="deepOceanYearsDisplay">173</span> years before half of the above fraction of CO<sub>2</sub> is absorbed by deep ocean</p>
-            <input type="range" id="geologicalFraction" step="0.01" min="0.05" max="0.85" value="0.4"></input>
-                <span id="geologicalFractionDisplay">40</span>% of CO<sub>2</sub> is sequestered by geological processes</p>
-            <input type="range" id="geologicalYears" step="1000" min="10000" max="100000" value="10000"></input>
-                <span id="geologicalYearsDisplay">10000</span> years before half of the above fraction of CO<sub>2</sub> is sequestered by geological processes</p>
+        <fieldset id="howManyYears">
+            <legend>How many years into the future do you want to model?<legend>
+            <input type="range" id="yearsSlider" step="10" min="10" max="10000" value="1000"></input><span id="yearsDisplay">1000</span>
         </fieldset>
 
         <div id="seatsDiv" class="chartDiv">
@@ -268,6 +217,45 @@
             </canvas>
         </div>
 
+        <p><input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the CO<sub>2</sub> Pulse Response Model</input></p>
+        <fieldset id="modelControls">
+            <legend>Model tuning controls</legend>
+            <p>Since CO<sub>2</sub> in the atmosphere causes global heating (from sunlight getting absorbed by the Earth, then radiated as heat, which then fails to get radiated back out to space because the greenhouse gases capture it), tracking how CO<sub>2</sub> is reduced is effectively the same as tracking how much heat is added by the CO<sub>2</sub> that remains.
+                I've read that a Pulse Response Model for CO<sub>2</sub> sequestration includes accounting for three carbon sinks which work at different rates:
+                <ul>
+                    <li>Over years to decades, plants and the upper ocean absorb some CO<sub>2</sub>, but as the ocean absorbs CO<sub>2</sub> it becomes more acidic, which is a whole other problem, and plants can only use CO<sub>2</sub> if they also have good growing conditions - enough sunlight and water - and in the end will release the CO<sub>2</sub> back into the atmosphere, unless they get buried somehow;</li>
+                    <li>over decades to centuries, the deep ocean absorbs some CO<sub>2</sub>, but as the ocean warms and deep ocean turnover slows, this will become less efficient over time; and</li>
+                    <li>over millennia, geological processes react with CO<sub>2</sub> to form minerals.</li>
+                </ul>
+                I've also read that the Bern Simple Climate Model<a href="#ref10"><sup>10</sup></a> used by the IPCC suggests reasonable values as follows:
+                <ul>
+                    <li>an 18.5-year half life for 34% of emissions to be absorbed by plants and the upper ocean,</li>
+                    <li>a 173-year half life for 26% of emissions to be absorbed by the deep ocean, and</li>
+                    <li>a 10000- to 100000-year half life for the remainder to be sequestered by geological forces.</li>
+                </ul>
+                I've read criticism of the Bern Model, but typically for being too conservative: it's quite possible that global heating will exceed what I'm showing here. I freely admit that I am not using a comprehensive climate model. I'm just providing a rough idea of how much heating is to be expected.
+                These graphs calculate the annual amount of heat that will get added to the atmosphere by the CO<sub>2</sub> that remains after these three processes have sequestered some of it.
+                Adjust these values to see how the graphs change.</p>
+            <p>Fraction of CO<sub>2</sub> absorbed by plants and upper ocean:</p>
+            <p><input type="range" id="biosphereFraction" step="0.01" min="0.05" max="0.85" value="0.34"></input><span id="biosphereFractionDisplay">34</span>%</p>
+            <p>Years before half of the above fraction of CO<sub>2</sub> is absorbed by plants and upper ocean:</p>
+            <p><input type="range" id="biosphereYears" step=".5" min="4" max="50" value="18.5"></input><span id="biosphereYearsDisplay">18.5</span></p>
+            <p>Fraction of CO<sub>2</sub> absorbed by deep ocean (adjust this fraction by changing the biosphere fraction above or the geological fraction below)</p>
+            <p><span id="deepOceanFractionDisplay">26</span>%</p>
+            <p>Years before half of the above fraction of CO<sub>2</sub> is absorbed by deep ocean:</p>
+            <p><input type="range" id="deepOceanYears" step=".5" min="100" max="1000" value="173"></input><span id="deepOceanYearsDisplay">173</span></p>
+            <p>Fraction of CO<sub>2</sub> sequestered by geological processes:</p>
+            <p><input type="range" id="geologicalFraction" step="0.01" min="0.05" max="0.85" value="0.4"></input><span id="geologicalFractionDisplay">40</span>%</p>
+            <p>Years before half of the above fraction of CO<sub>2</sub> is sequestered by geological processes:</p>
+            <p><input type="range" id="geologicalYears" step="1000" min="10000" max="100000" value="10000"></input><span id="geologicalYearsDisplay">10000</span></p>
+            <p>But at what rate does greenhouse-gas-induced heating duplicate the heat originally obtained from burning the fuel?
+                "The time-integrated radiative forcing from CO<sub>2</sub> released upon combustion exceeds the amount of heat released upon combustion
+                after 0.093 years (~34 days), 0.122 years (~45 days), and 0.161 years (~59 days) for coal, oil, and gas, respectively."
+                <a href="#ref4"><sup>4</sup></a> The source of aviation fuel is oil, but you may adjust this control to favour a coal-dominant or gas-dominant fossil fuel source to model.</p>
+            <p>Coal <input type="range" id="radiativeForcing" step="1" min="33" max="60" value="45"></input> Gas</p>
+            <p><span id="radiativeForcingDisplay">45</span> days before the heat of combustion is matched by greenhouse-gas-induced heating</p>
+        </fieldset>
+
         <hr>
         <h2>Sources</h2>
         <p id="ref1"><b>1 </b>
@@ -282,7 +270,9 @@
             Best of Quirks: Listener question show</a> - <cite>Quirks and Quarks (CBC) 7 August 2021</cite></p>
         <p id="ref4"><b>4 </b><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514" target="_blank">
             Time scales and ratios of climate forcing due to thermal versus carbon dioxide emissions from fossil
-            fuels</a> - by Xiaochun Zhang and Ken Caldeira: <cite>Geophysical Research Letters, 2 June 2015</cite></p>
+            fuels</a> - by Xiaochun Zhang and Ken Caldeira: <cite>Geophysical Research Letters, 2 June 2015</cite>.
+            N.B.: "The time-integrated radiative forcing from CO<sub>2</sub> released upon combustion exceeds the amount of heat released
+            upon combustion after 0.093 years (~34 days), 0.122 years (~45 days), and 0.161 years (~59 days) for coal, oil, and gas, respectively."</p>
         <p id="ref5"><b>5 </b>
             <a href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593" target="_blank">
             Life cycle assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels</a> - by
