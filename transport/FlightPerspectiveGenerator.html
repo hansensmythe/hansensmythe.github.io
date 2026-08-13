@@ -150,14 +150,16 @@
         </fieldset>
 
         <fieldset id="whatSector">
-            <legend>What sort of trip are you taking? (Commuter to long-haul)</legend>
+            <legend>Roughly how long a trip are you taking? (This filters the aircraft list. Change the value or click anywhere in this box to display matching aircraft.)</legend>
             <input type="range" id="sectorSlider" step="10"></input><span id="sectorDisplay">? km</span>
         </fieldset>
 
         <fieldset id="aircraftMatches">
-            <legend>On what aircraft are you flying? (choose one at random if you don't know or care)</legend>
+            <legend>On what aircraft are you flying? (Choose one at random if you don't know or care)</legend>
             <div id="modelButtonDiv"></div>
         </fieldset>
+
+        <span id="selectedAircraft"></span>
         
         <fieldset id="flightProfiles">
             <legend>Flight profiles:</legend>
@@ -167,7 +169,7 @@
         </fieldset>
 
         <fieldset id="whatDistance">
-            <legend>What distance are you travelling?<legend>
+            <legend>What distance are you travelling? (The initial value is the distance travelled by the test flight)<legend>
             <input type="range" id="distanceSlider" step="10"></input><span id="distanceDisplay">0</span>
         </fieldset>
 

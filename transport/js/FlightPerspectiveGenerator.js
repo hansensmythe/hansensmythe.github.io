@@ -59,30 +59,9 @@ function getRange(target, plusMinus) {
     };
 }
 
-function getSectorRange(targetKilometres) {
-    let min, max, desc;
-    if (targetKilometres < 930) {
-        min = 420;
-        max = 930;
-        desc = 'Commuter';
-    } else if (targetKilometres < 1300) {
-        min = 930;
-        max = 1300;
-        desc = 'Regional';
-    } else if (targetKilometres < 4000) {
-        min = 1300;
-        max = 4000;
-        desc = 'Short-haul';
-    } else if (targetKilometres < 8000) {
-        min = 4000;
-        max = 8000;
-        desc = 'Medium-haul';
-    } else {
-        min = 8000;
-        max = 13300;
-        desc = 'Long-haul';
-    }
-    return { min, max, desc };
+function getSectorRangeString(targetKilometres) {
+    const sectorRange = getRange(targetKilometres, KM_PLUS_MINUS);
+    return `from ${sectorRange.min} to ${sectorRange.max} km`;
 }
 
 /**
@@ -161,7 +140,7 @@ function initialize() {
     populateDropdown('passengerCountSelector', MAXIMUM_PASSENGERS);
 
     // Initially disable all controls and charts. They're reenabled as the user progresses through the questions.
-    hideQuestionElements(6);
+    hideQuestionElements(7);
     hideChartElements(true);
     hideModelControls(true);
 
@@ -172,7 +151,7 @@ function initialize() {
     sectorSlider.max = maxKilometres;
     sectorSlider.defaultValue = currentKmTarget;
     const sectorDisplay = document.getElementById('sectorDisplay');
-    sectorDisplay.textContent = `from ${minKilometres} to ${maxKilometres} km`;
+    sectorDisplay.textContent = getSectorRangeString(currentKmTarget);
 
     // Load the aircraft models that match the defaults
     const filteredModels = MODELS.filter((model) => model.hasMatchingSector(currentKmTarget));
@@ -209,6 +188,7 @@ function hideQuestionElements(howManyToHide) {
         'whatDistance',
         'howManyYears',
         'flightProfiles',
+        'selectedAircraft',
         'aircraftMatches',
         'whatSector',
         'howManyFlights'
@@ -279,7 +259,7 @@ function handleChangeEvent(event) {
     if (event.target.id == 'passengerCountSelector') {
         if (event.target.value == 0) {
             // Reset everything
-            hideQuestionElements(6);
+            hideQuestionElements(7);
             hideChartElements(true);
         } else {
             showElement('howManyFlights');
@@ -287,7 +267,7 @@ function handleChangeEvent(event) {
     } else if (event.target.id == 'flightCountSelector') {
         if (event.target.value == 0) {
             // Reset everything but this question
-            hideQuestionElements(5);
+            hideQuestionElements(6);
             hideChartElements(true);
         } else {
             showElement('whatSector');
@@ -297,11 +277,14 @@ function handleChangeEvent(event) {
     } else if (event.target.name == MODEL_BUTTON_NAME) {
         // A specific model has been chosen from the model radio buttons, so update the flight profile buttons
         const selectedModel = findSelectedModel(event.target.value);
+        const selectedAircraft = document.getElementById('selectedAircraft');
+        selectedAircraft.textContent = `Your selected aircraft: ${selectedModel.name}`;
         // We may be in the process of selecting a specific model from a sector-filtered list
         // so we should only get the flight profiles that match current values.
         const flightProfileNames = selectedModel.getMatchingSectorProfileNames(currentKmTarget);
         // Once selected, we don't need to see the list again
         hideElement('aircraftMatches');
+        showElement('selectedAircraft');
         showElement('flightProfiles');
         showElement('whatDistance');
         showElement('howManyYears');
@@ -335,7 +318,7 @@ function handleClickEvent(event) {
         // The flights has been clicked but has not changed. Count it as a selection
         if (event.target.value == 0) {
             // Reset everything but this question
-            hideQuestionElements(5);
+            hideQuestionElements(6);
         } else {
             showElement('whatSector');
         }
@@ -409,14 +392,13 @@ function handleSectorChange() {
         // Recalculate using the first flight profile
         recalculateProfile(selectedModel.getProfileFromName(filteredProfileNames[0]));
     } else {
-        hideQuestionElements(3);
+        hideQuestionElements(4);
         replaceProfileButtons([]);
         hideChartElements(true);
     }
 
     const sectorDisplay = document.getElementById('sectorDisplay');
-    const sectorRange = getSectorRange(targetKilometres);
-    sectorDisplay.textContent = `${sectorRange.desc} (${sectorRange.min} to ${sectorRange.max} km)`;
+    sectorDisplay.textContent = getSectorRangeString(targetKilometres);
     currentKmTarget = targetKilometres;
 }
 
