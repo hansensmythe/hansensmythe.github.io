@@ -19,6 +19,7 @@
         h2 { text-align: center; }
         dt { padding-top: 10px; }
         dd { font-size: 1.4rem; }
+        fieldset { background: linear-gradient(white, rgb(149, 223, 234)); }
         .chartDiv {
             border: 2px solid black;
             padding: 20px;
@@ -136,25 +137,27 @@
 
         <hr>
         <h2>The Flight Perspective Generator</h2>
-        <p id="calculator">The test data<a href="#ref8"><sup>8</sup></a> includes a variety of aircraft manufactured by
-            Airbus, Antonov, ATR, Beechcraft, Boeing, Bombardier, Dornier, Embraer, Irkut, Pilatus, Quest, Saab, and Sukhoi.
-            Search for an aircraft model (e.g. 'Boe' to show all aircraft made by Boeing, or '8' for a list that will
-            include the Bombardier Dash 8, etc.), then choose a flight profile (if there is more than one) to see what
-            the impact is of taking that flight:</p>
-        <p><input type="text" id="modelSearch" name="modelSearch" placeholder="Enter aircraft search text"></p>
-
-        <p>Alternatively, if you do not know or care about the exact aircraft model, select from a range of matching
-            models based on number of seats (smaller or bigger aircraft) or distance travelled (from commuter to
-            long-haul).</p>
-        <div>
-            <p>Size of aircraft:<br>
-                <input type="range" id="seatsSlider" step="10"></input><span id="aircraftSizeDisplay">? seats</span></p>
-        </div>
-        <div>
-            <p>Sector (from commuter to long-haul):<br>
-                <input type="range" id="sectorSlider" step="10"></input><span id="sectorDisplay">? km</span></p>
-        </div>
-        <p>If more than one matching aircraft is displayed, select one of them.</p>
+        <p id="calculator">The test data<a href="#ref8"><sup>8</sup></a> include a variety of aircraft manufactured by
+            Airbus, Antonov, ATR, Beechcraft, Boeing, Bombardier, Dornier, Embraer, Irkut, Pilatus, Quest, Saab, and Sukhoi.</p>
+        <fieldset>
+            <legend>Find aircraft of interest from the test data</legend>
+            <p>Search for an aircraft model (e.g. 'Boe' to show all aircraft made by Boeing, or '8' for a list that will
+            include the Bombardier Dash 8, etc.):</p>
+            <p><input type="text" id="modelSearch" name="modelSearch" placeholder="Enter aircraft search text"></p>
+            <p>Alternatively, if you do not know or care about the exact aircraft model, select from a range of matching
+                models based on number of seats (smaller or bigger aircraft) or distance travelled (from commuter to
+                long-haul).</p>
+            <div>
+                <p>Size of aircraft:<br>
+                    <input type="range" id="seatsSlider" step="10"></input><span id="aircraftSizeDisplay">? seats</span></p>
+            </div>
+            <div>
+                <p>Sector (from commuter to long-haul):<br>
+                    <input type="range" id="sectorSlider" step="10"></input><span id="sectorDisplay">? km</span></p>
+            </div>
+        </fieldset>
+        <p>If more than one matching aircraft is displayed, select one of them, then choose a flight profile
+            (if there is more than one) to see what the impact is of taking that flight:</p>
         <fieldset>
             <legend>Matching aircraft models:</legend>
             <div id="modelButtonDiv"></div>
@@ -191,19 +194,17 @@
             </div>
         </fieldset>
 
-        <label>
-            <input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the CO<sub>2</sub> Pulse Response Model</input>
-        </label>
+        <p><input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the CO<sub>2</sub> Pulse Response Model</input></p>
         <fieldset id="modelControls">
             <legend>Model tuning controls</legend>
             <p>Since CO<sub>2</sub> in the atmosphere causes global heating (from sunlight getting absorbed by the Earth, then radiated as heat, which then fails to get radiated back out to space because the greenhouse gases capture it), tracking how CO<sub>2</sub> is reduced is effectively the same as tracking how much heat is added by the CO<sub>2</sub> that remains.
-                I've read that a Pulse Response Model for CO2 sequestration includes accounting for three carbon sinks which work at different rates:
+                I've read that a Pulse Response Model for CO<sub>2</sub> sequestration includes accounting for three carbon sinks which work at different rates:
                 <ul>
                     <li>Over years to decades, plants and the upper ocean absorb some CO<sub>2</sub>, but as the ocean absorbs CO<sub>2</sub> it becomes more acidic, which is a whole other problem, and plants can only use CO<sub>2</sub> if they also have good growing conditions - enough sunlight and water - and in the end will release the CO<sub>2</sub> back into the atmosphere, unless they get buried somehow;</li>
                     <li>over decades to centuries, the deep ocean absorbs some CO<sub>2</sub>, but as the ocean warms and deep ocean turnover slows, this will become less efficient over time; and</li>
                     <li>over millennia, geological processes react with CO<sub>2</sub> to form minerals.</li>
                 </ul>
-                I've also read that the Bern Simple Climate Model (used by the IPCC) suggests reasonable values as follows:
+                I've also read that the Bern Simple Climate Model<a href="#ref10"><sup>10</sup></a> used by the IPCC suggests reasonable values as follows:
                 <ul>
                     <li>an 18.5-year half life for 34% of emissions to be absorbed by plants and the upper ocean,</li>
                     <li>a 173-year half life for 26% of emissions to be absorbed by the deep ocean, and</li>
@@ -302,6 +303,9 @@
             <a href="https://www.iata.org/contentassets/922ebc4cbcd24c4d9fd55933e7070947/icop_faq_general-for-airline-participants.pdf" target="_blank">
             IATA Carbon Offset Program, 19 April 2022</a> - The combustion of 1 kilogram (kg) of jet fuel in an aircraft engine produces
             <span id="co2PerKg"></span> kg of carbon dioxide (CO<sub>2</sub>)</p>
+        <p id="ref10"><b>10 </b>
+            <a href="https://gmd.copernicus.org/articles/11/1887/2018/" target="_blank">
+            The Bern Simple Climate Model (BernSCM) v1.0</a> - European Geosciences Union Geoscientific Model Development: <cite>Articles, Volume 11, issue 5, 25 May 2018</cite></p>
     </div>
 </body>
 
