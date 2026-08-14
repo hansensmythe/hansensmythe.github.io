@@ -3,13 +3,6 @@ export const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima bla
 export const MJ_PER_KG_JET_FUEL = 43.15;
 export const CO2_PER_KG_JET_FUEL = 3.16;
 
-// From https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593?via%3Dihub
-export const MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 92.5;
-export const MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ = 126.5;
-// Take average and convert to kg from grams
-export const AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ = (MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ + MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ) / 2000;
-export const BURN_TO_TOTAL_RATIO = MJ_PER_KG_JET_FUEL * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ / CO2_PER_KG_JET_FUEL;
-
 const DAYS_PER_YEAR = 365.25;
 const MONTHS_PER_YEAR = 12;
 const AVG_DAYS_PER_MONTH = 30.4375;
@@ -65,6 +58,8 @@ const MAX_FRACTION = 0.9;
  * Object that controls how yearly reduction in CO2 is modelled
  * 
  * @constructor
+ * @param {number} radiativeForcingDays - Number of days before heat from combustion is matched by radiative forcing
+ * @param {number} gCO2ePerMJ - Carbon intensity of manufacturing fuel in grams of carbon dioxide equivalent per megajoule
  * @param {number} biosphereFraction - Fraction of CO2 absorbed by plants and upper ocean
  * @param {number} biosphereYears - Number of years before half of the CO2 is absorbed by the biosphere
  * @param {number} deepOceanFraction - Fraction of CO2 absorbed by the deep ocean
@@ -73,11 +68,13 @@ const MAX_FRACTION = 0.9;
  * @param {number} geologicalYears - Number of years before half of the CO2 is sequestered by rock weathering
  */
 class PulseResponseModel {
-    constructor(radiativeForcingDays, biosphereFraction, biosphereYears, deepOceanFraction, deepOceanYears, geologicalFraction, geologicalYears) {
+    constructor(radiativeForcingDays, gCO2ePerMJ, biosphereFraction, biosphereYears, deepOceanFraction, deepOceanYears, geologicalFraction, geologicalYears) {
         // Initialize fractions to equal 1, so that subsequent setting can make adjustments
         this.biosphereFraction = 0.34;
         this.deepOceanFraction = 0.26;
         this.geologicalFraction = 0.4;
+        this.setRadiativeForcingDays(radiativeForcingDays);
+        this.setKgCO2ePerMJ(gCO2ePerMJ);
         this.setBiosphereFraction(biosphereFraction);
         this.setBiosphereAnnualReduction(biosphereYears);
         // We use deepOceanFraction to take changes from either side - biology or geology
@@ -85,10 +82,12 @@ class PulseResponseModel {
         this.setDeepOceanAnnualReduction(deepOceanYears);
         this.setGeologicalFraction(geologicalFraction);
         this.setGeologicalAnnualReduction(geologicalYears);
-        this.setRadiativeForcingDays(radiativeForcingDays);
     }
     setRadiativeForcingDays(radiativeForcingDays) {
         this.radiativeForcingYears = radiativeForcingDays / DAYS_PER_YEAR;
+    }
+    setKgCO2ePerMJ(gCO2ePerMJ) {
+        this.kgCO2ePerMJ = gCO2ePerMJ / 1000;
     }
     setBiosphereFraction(biosphereFraction) {
         const adjustment = this.biosphereFraction - biosphereFraction;
@@ -128,10 +127,11 @@ class PulseResponseModel {
 
 export function getDefaultPulseResponseModel() {
     // https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514 says radiative forcing from oil is ~45 days.
-    // Bern model for biosphere is 18.5-year time constant for 34% of emissions,
+    // The average carbon intensity of Alberta oil sands is 109.5 gCO2e/MJ, but the aspirational goal for 2030 is 81 for gasoline and 79 for diesel.
+    // The Bern model for biosphere is 18.5-year time constant for 34% of emissions,
     // for deep ocean is 173-year time constant for 26% of emissions, and
     // 40% is left for geology - many millennia, with ~<2% still airborne after 100,000 years 
-    return new PulseResponseModel(45, 0.34, 18.5, 0.26, 173, 0.4, 10000);
+    return new PulseResponseModel(45, 109.5, 0.34, 18.5, 0.26, 173, 0.4, 10000);
 }
 
 /**
@@ -150,7 +150,8 @@ export function getDefaultPulseResponseModel() {
 export function calculateDataSet(prm, kgBurnedFuel, yearsToRender, labelText) {
     // Calculate and extrapolate not just the MJ from burning, but add the MJ generated from manufacturing
     const burnedMegajoules = kgBurnedFuel * MJ_PER_KG_JET_FUEL;
-    const totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
+    const burnToTotalRatio = MJ_PER_KG_JET_FUEL * prm.kgCO2ePerMJ / CO2_PER_KG_JET_FUEL;
+    const totalMegajoules = burnedMegajoules * burnToTotalRatio;
 
     const initialAnnualHiroshimas = totalMegajoules / prm.radiativeForcingYears / MJ_PER_HIROSHIMA;
     let biosphereCO2HeatRemaining = initialAnnualHiroshimas * prm.biosphereFraction;
@@ -204,7 +205,6 @@ export function getFormattedNumber(x) {
  */
 export function getTimeToHiroshimaText(radiativeForcingYears, totalMegajoules, yearsToRender, yearsTo1Hiroshima) {
     let timeToHiroshimaText;
-    console.log(`getTimeToHiroshimaText(${radiativeForcingYears}, ${totalMegajoules}, ${yearsToRender}, ${yearsTo1Hiroshima})`);
     if (yearsTo1Hiroshima === undefined) {
         timeToHiroshimaText = `more than ${yearsToRender} years`;
     } else if (yearsTo1Hiroshima >= TIME_FOR_HIROSHIMA_SENSITIVITY) {

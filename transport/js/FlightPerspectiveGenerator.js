@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', initialize);
-import { MODELS, KM_PLUS_MINUS, SEATS_PLUS_MINUS } from './publicFlightsData.js';
+import { MODELS, KM_PLUS_MINUS } from './publicFlightsData.js';
 import { 
     MJ_PER_HIROSHIMA,
-    MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ,
-    MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ,
-    AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ,
     MJ_PER_KG_JET_FUEL,
     CO2_PER_KG_JET_FUEL,
     buildLineChart, 
@@ -130,8 +127,6 @@ function initialize() {
     document.getElementById('contents').addEventListener('click', handleClickEvent);
     document.getElementById('contents').addEventListener('input', handleInputEvent);
     // Add constants to page
-    document.getElementById('minCO2ePerMJ').textContent = MIN_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
-    document.getElementById('maxCO2ePerMJ').textContent = MAX_OIL_SANDS_JET_FUEL_gCO2ePerMJ;
     document.getElementById('mjPerKg').textContent = MJ_PER_KG_JET_FUEL;
     document.getElementById('co2PerKg').textContent = CO2_PER_KG_JET_FUEL;
 
@@ -308,7 +303,8 @@ function handleChangeEvent(event) {
         event.target.id == 'distanceSlider' ||
         event.target.id == 'yearsSlider' ||
         event.target.id == 'passengerCountSelector' ||
-        event.target.id == 'radiativeForcing') {
+        event.target.id == 'radiativeForcing' ||
+        event.target.id == 'carbonIntensity') {
         writeData();
     }
 }
@@ -346,6 +342,10 @@ function handleInputEvent(event) {
         const radiativeForcingDisplay = document.getElementById('radiativeForcingDisplay');
         radiativeForcingDisplay.textContent = event.target.value;
         prm.setRadiativeForcingDays(event.target.value);
+    } else if (event.target.id == 'carbonIntensity') {
+        const carbonIntensityDisplay = document.getElementById('carbonIntensityDisplay');
+        carbonIntensityDisplay.textContent = event.target.value;
+        prm.setKgCO2ePerMJ(event.target.value);
     } else if (event.target.id == 'biosphereFraction') {
         prm.setBiosphereFraction(parseFloat(event.target.value));
         updateFractionDisplays();
@@ -494,7 +494,7 @@ function writeSeatsData({ kgBurnedFuel, burnedMegajoules, totalMegajoules, years
     const seatsBurnedCO2 = Math.round(kgBurnedFuel * CO2_PER_KG_JET_FUEL);
     document.getElementById('seatsBurnedCO2').innerText = `${getFormattedNumber(seatsBurnedCO2)} kg`;
 
-    const seatsTotalCO2 = Math.round(burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ);
+    const seatsTotalCO2 = Math.round(burnedMegajoules * prm.kgCO2ePerMJ);
     document.getElementById('seatsTotalCO2').innerText = `${getFormattedNumber(seatsTotalCO2)} kg`;
 
     const percentSeatsHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;
@@ -526,9 +526,9 @@ function writeFlightData({ kgBurnedFuel, burnedMegajoules, totalMegajoules, year
     const burnedCO2 = Math.round(kgBurnedFuel * CO2_PER_KG_JET_FUEL);
     document.getElementById('flightBurnedCO2').innerText = `${getFormattedNumber(burnedCO2)} kg`;
 
-    // totalMegajoules = burnedMegajoules * BURN_TO_TOTAL_RATIO;
+    // totalMegajoules = burnedMegajoules * burnToTotalRatio;
     // Calculate the total lifecycle CO2 for oil sands jet fuel
-    const totalCO2 = Math.round(burnedMegajoules * AVG_OIL_SANDS_JET_FUEL_kgCO2ePerMJ);
+    const totalCO2 = Math.round(burnedMegajoules * prm.kgCO2ePerMJ);
     document.getElementById('flightTotalCO2').innerText = `${getFormattedNumber(totalCO2)} kg`;
 
     const percentContextHiroshima = totalMegajoules / MJ_PER_HIROSHIMA * 100;

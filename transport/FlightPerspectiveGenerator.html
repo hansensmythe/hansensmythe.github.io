@@ -91,7 +91,7 @@
             get a direct flight on a Boeing 737 MAX 8 that gets me (and 167 other passengers) there in a little over 6
             hours&mdash;a distance of about 4500 km. That flight will warm the earth <i>directly</i> by burning the fuel:
             CO<sub>2</sub> isn&rsquo;t even in the picture yet and already that flight has burned 13,514 kg of jet fuel,
-            releasing 583,108 megajoules (MJ) of heat<a href="ref2"><sup>2</sup></a> which is, astonishingly, almost 1% of a
+            releasing 583,108 megajoules (MJ) of heat<a href="#ref2"><sup>2</sup></a> which is, astonishingly, almost 1% of a
             Hiroshima bomb. Naturally I&rsquo;m flying home again, so double that number to almost 2% of a Hiroshima
             bomb&rsquo;s-worth of heating. What can I say? My niece is worth it. She&rsquo;s the bomb. I may want to
             rephrase that.</p>
@@ -155,7 +155,7 @@
         </fieldset>
 
         <fieldset id="aircraftMatches">
-            <legend>On what aircraft are you flying? (Choose one at random if you don't know or care)</legend>
+            <legend>On what aircraft are you flying? (Choose one at random if you don&rsquo;t know or care)</legend>
             <div id="modelButtonDiv"></div>
         </fieldset>
 
@@ -187,9 +187,9 @@
                 <dd id="seatsBurnedCO2"></dd>
                 <dt>CO<sub>2</sub> released over the entire life cycle of the fuel (mining, drilling, dilution, transporting, refining, and finally burning):<a href="#ref5"><sup>5</sup></a></dt>
                 <dd id="seatsTotalCO2"></dd>
-                <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
+                <dt>Fraction of a Hiroshima bomb&rsquo;s worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
                 <dd id="seatsImmediateHeat"></dd>
-                <dt>Time until the emitted greenhouse gases cause one Hiroshima bomb's worth of additional global heating:</dt>
+                <dt>Time until the emitted greenhouse gases cause one Hiroshima bomb&rsquo;s worth of additional global heating:</dt>
                 <dd id="seatsGreenhouseHeat"></dd>
             </dl>
             <canvas id="SeatsChart">
@@ -207,9 +207,9 @@
                 <dd id="flightBurnedCO2"></dd>
                 <dt>CO<sub>2</sub> released over the entire life cycle of the fuel (mining, drilling, dilution, transporting, refining, and finally burning):<a href="#ref5"><sup>5</sup></a></dt>
                 <dd id="flightTotalCO2"></dd>
-                <dt>Fraction of a Hiroshima bomb's worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
+                <dt>Fraction of a Hiroshima bomb&rsquo;s worth of global heating that is generated just by manufacturing then burning the fuel:</dt>
                 <dd id="flightImmediateHeat"></dd>
-                <dt>Time until the emitted greenhouse gases cause one Hiroshima bomb's worth of additional global heating:</dt>
+                <dt>Time until the emitted greenhouse gases cause one Hiroshima bomb&rsquo;s worth of additional global heating:</dt>
                 <dd id="flightGreenhouseHeat"></dd>
             </dl>
 
@@ -223,36 +223,42 @@
         <fieldset id="modelControls">
             <legend>Model tuning controls</legend>
             <p>Since CO<sub>2</sub> in the atmosphere causes global heating (from sunlight getting absorbed by the Earth, then radiated as heat, which then fails to get radiated back out to space because the greenhouse gases capture it), tracking how CO<sub>2</sub> is reduced is effectively the same as tracking how much heat is added by the CO<sub>2</sub> that remains.
-                I've read that a Pulse Response Model for CO<sub>2</sub> sequestration includes accounting for three carbon sinks which work at different rates:
+                I&rsquo;ve read that a Pulse Response Model for CO<sub>2</sub> sequestration includes accounting for three carbon sinks which work at different rates:
                 <ul>
                     <li>Over years to decades, plants and the upper ocean absorb some CO<sub>2</sub>, but as the ocean absorbs CO<sub>2</sub> it becomes more acidic, which is a whole other problem, and plants can only use CO<sub>2</sub> if they also have good growing conditions - enough sunlight and water - and in the end will release the CO<sub>2</sub> back into the atmosphere, unless they get buried somehow;</li>
                     <li>over decades to centuries, the deep ocean absorbs some CO<sub>2</sub>, but as the ocean warms and deep ocean turnover slows, this will become less efficient over time; and</li>
                     <li>over millennia, geological processes react with CO<sub>2</sub> to form minerals.</li>
                 </ul>
-                I've also read that the Bern Simple Climate Model<a href="#ref10"><sup>10</sup></a> used by the IPCC suggests reasonable values as follows:
+                I&rsquo;ve also read that the Bern Simple Climate Model<a href="#ref10"><sup>10</sup></a> used by the IPCC suggests reasonable values as follows:
                 <ul>
                     <li>an 18.5-year half life for 34% of emissions to be absorbed by plants and the upper ocean,</li>
                     <li>a 173-year half life for 26% of emissions to be absorbed by the deep ocean, and</li>
                     <li>a 10000- to 100000-year half life for the remainder to be sequestered by geological forces.</li>
                 </ul>
-                I've read criticism of the Bern Model, but typically for being too conservative: it's quite possible that global heating will exceed what I'm showing here. I freely admit that I am not using a comprehensive climate model. I'm just providing a rough idea of how much heating is to be expected.
+                I&rsquo;ve read criticism of the Bern Model, but typically for being too conservative: it&rsquo;s quite possible that global heating will exceed what I&rsquo;m showing here. I freely admit that I am not using a comprehensive climate model. I&rsquo;m just providing a rough idea of how much heating is to be expected.
                 These graphs calculate the annual amount of heat that will get added to the atmosphere by the CO<sub>2</sub> that remains after these three processes have sequestered some of it.
                 Adjust these values to see how the graphs change.</p>
             <p>Fraction of CO<sub>2</sub> absorbed by plants and upper ocean:</p>
             <p><input type="range" id="biosphereFraction" step="0.01" min="0.05" max="0.85" value="0.34"></input><span id="biosphereFractionDisplay">34</span>%</p>
             <p>Years before half of the above fraction of CO<sub>2</sub> is absorbed by plants and upper ocean:</p>
-            <p><input type="range" id="biosphereYears" step=".5" min="4" max="50" value="18.5"></input><span id="biosphereYearsDisplay">18.5</span></p>
+            <p><input type="range" id="biosphereYears" step=".5" min="4" max="50" value="18.5"></input><span id="biosphereYearsDisplay">18.5</span> years</p>
             <p>Fraction of CO<sub>2</sub> absorbed by deep ocean (adjust this fraction by changing the biosphere fraction above or the geological fraction below)</p>
             <p><span id="deepOceanFractionDisplay">26</span>%</p>
             <p>Years before half of the above fraction of CO<sub>2</sub> is absorbed by deep ocean:</p>
-            <p><input type="range" id="deepOceanYears" step=".5" min="100" max="1000" value="173"></input><span id="deepOceanYearsDisplay">173</span></p>
+            <p><input type="range" id="deepOceanYears" step=".5" min="100" max="1000" value="173"></input><span id="deepOceanYearsDisplay">173</span> years</p>
             <p>Fraction of CO<sub>2</sub> sequestered by geological processes:</p>
             <p><input type="range" id="geologicalFraction" step="0.01" min="0.05" max="0.85" value="0.4"></input><span id="geologicalFractionDisplay">40</span>%</p>
             <p>Years before half of the above fraction of CO<sub>2</sub> is sequestered by geological processes:</p>
-            <p><input type="range" id="geologicalYears" step="1000" min="10000" max="100000" value="10000"></input><span id="geologicalYearsDisplay">10000</span></p>
-            <p>But at what rate does greenhouse-gas-induced heating duplicate the heat originally obtained from burning the fuel?
-                "The time-integrated radiative forcing from CO<sub>2</sub> released upon combustion exceeds the amount of heat released upon combustion
-                after 0.093 years (~34 days), 0.122 years (~45 days), and 0.161 years (~59 days) for coal, oil, and gas, respectively."
+            <p><input type="range" id="geologicalYears" step="1000" min="10000" max="100000" value="10000"></input><span id="geologicalYearsDisplay">10000</span> years</p>
+            <p>The carbon intensity of a fuel is a measure of the greenhouse gas emissions from the extraction, refining, distribution, and use of the fuel.
+                To help reduce emissions from oil and gas, the Clean Fuel Regulations aim to make the gasoline and diesel that Canadians use every day progressively cleaner over time.
+                The baseline carbon intensity of Canada&rsquo;s gasoline is 95 gCO<sub>2</sub>e/MJ and the baseline carbon intensity of diesel is 93 gCO<sub>2</sub>e/MJ, based on 2016 levels.<a href="#ref11"><sup>11</sup></a>
+                However, the actual range of carbon intensity from Alberta&rsquo;s oil sands ranges from 92.5 to 126.5 gCO<sub>2</sub>e/MJ, which is considerably higher
+                than Canada&rsquo;s aspirational goal by 2030 of 81 gCO<sub>2</sub>e/MJ for gasoline and 79 for diesel. Adjust the carbon intensity of the model:</p>
+            <p><input type="range" id="carbonIntensity" step="0.5" min="79" max="126.5" value="109.5"></input><span id="carbonIntensityDisplay">109.5</span> gCO<sub>2</sub>e/MJ</p>
+            <p>At what rate does greenhouse-gas-induced heating duplicate the heat originally obtained from burning the fuel?
+                &ldquo;The time-integrated radiative forcing from CO<sub>2</sub> released upon combustion exceeds the amount of heat released upon combustion
+                after 0.093 years (~34 days), 0.122 years (~45 days), and 0.161 years (~59 days) for coal, oil, and gas, respectively.&rdquo;
                 <a href="#ref4"><sup>4</sup></a> The source of aviation fuel is oil, but you may adjust this control to favour a coal-dominant or gas-dominant fossil fuel source to model.</p>
             <p>Coal <input type="range" id="radiativeForcing" step="1" min="33" max="60" value="45"></input> Gas</p>
             <p><span id="radiativeForcingDisplay">45</span> days before the heat of combustion is matched by greenhouse-gas-induced heating</p>
@@ -260,44 +266,48 @@
 
         <hr>
         <h2>Sources</h2>
-        <p id="ref1"><b>1 </b>
+        <p id="ref1"><strong>1</strong>>
             <a href="https://climatecasino.substack.com/p/earth-is-heating-at-a-rate-of-over" target="_blank">
             Earth is Heating at a Rate of Over One Million Hiroshima Bombs Every Day!</a> - by Prof. Eliot Jacobson:
             <cite>The Climate Casino, 15 April 2026</cite></p>
-        <p id="ref2"><b>2 </b><a href="https://megacalc.org/units/joules-per-kilogram" target="_blank">Joule per kilogram</a>
+        <p id="ref2"><strong>2</strong>><a href="https://megacalc.org/units/joules-per-kilogram" target="_blank">Joule per kilogram</a>
             - Jet fuel Jet-A rates <span id="mjPerKg"></span> MJ/kg, so you can simply multiply the number of kilograms of fuel
             burned by that number to get the megajoules of heat per flight.</p>
-        <p id="ref3"><b>3 </b>
+        <p id="ref3"><strong>3</strong>>
             <a href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978" target="_blank">
             Best of Quirks: Listener question show</a> - <cite>Quirks and Quarks (CBC) 7 August 2021</cite></p>
-        <p id="ref4"><b>4 </b><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514" target="_blank">
+        <p id="ref4"><strong>4</strong>><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL063514" target="_blank">
             Time scales and ratios of climate forcing due to thermal versus carbon dioxide emissions from fossil
             fuels</a> - by Xiaochun Zhang and Ken Caldeira: <cite>Geophysical Research Letters, 2 June 2015</cite>.
             N.B.: "The time-integrated radiative forcing from CO<sub>2</sub> released upon combustion exceeds the amount of heat released
             upon combustion after 0.093 years (~34 days), 0.122 years (~45 days), and 0.161 years (~59 days) for coal, oil, and gas, respectively."</p>
-        <p id="ref5"><b>5 </b>
+        <p id="ref5"><strong>5</strong>>
             <a href="https://www.sciencedirect.com/science/article/abs/pii/S0360544215006593" target="_blank">
-            Life cycle assessment of greenhouse gas emissions from Canada's oil sands-derived transportation fuels</a> - by
+            Life cycle assessment of greenhouse gas emissions from Canada&rsquo;s oil sands-derived transportation fuels</a> - by
             Balwinder Nimana, Christina Canter, and Amit Kumar: <cite>Energy, Volume 88, August 2015</cite>. Using oil sands to
-            create jet fuel is far less efficient than Canada's 2030 target of 79.95 gCO<sub>2</sub>e/MJ (grams of
+            create jet fuel is far less efficient than Canada&rsquo;s 2030 target of 79.95 gCO<sub>2</sub>e/MJ (grams of
             carbon dioxide produced over the entire life cycle, from mining through processing, transportation,
             refining, and finally burning). If jet fuel originates from Alberta crude oil, it emits between
-            <span id="minCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ and <span id="maxCO2ePerMJ">0</span> gCO<sub>2</sub>e/MJ.</p>
-        <p id="ref6"><b>6 </b>
+            92.5 gCO<sub>2</sub>e/MJ and 126.5 gCO<sub>2</sub>e/MJ.</p>
+        <p id="ref6"><strong>6</strong>>
             <a href="https://www.newsweek.com/global-air-travel-had-busiest-day-on-record-12245968" target="_blank">
             Global Air Travel Had Busiest Day on Record Despite Recent Headwinds</a> - by Amanda Greenwood:
             <cite>Newsweek, 26 July 2026</cite></p>
-        <p id="ref7"><b>7 </b><a href="https://easbcn.com/en/how-many-planes-fly-per-day-around-the-world/" target="_blank">
+        <p id="ref7"><strong>7</strong>><a href="https://easbcn.com/en/how-many-planes-fly-per-day-around-the-world/" target="_blank">
             How Many Planes Fly Per Day Around the World?</a> - <cite>European Aviation School, Barcelona, 16 June 2025</cite></p>
-        <p id="ref8"><b>8 </b><a href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft#Example_values" target="_blank">
+        <p id="ref8"><strong>8</strong>><a href="https://en.wikipedia.org/wiki/Fuel_economy_in_aircraft#Example_values" target="_blank">
             Fuel economy in aircraft</a> - Example Values: <cite>Wikipedia, 24 July 2026</cite></p>
-        <p id="ref9"><b>9 </b>
+        <p id="ref9"><strong>9</strong>>
             <a href="https://www.iata.org/contentassets/922ebc4cbcd24c4d9fd55933e7070947/icop_faq_general-for-airline-participants.pdf" target="_blank">
             IATA Carbon Offset Program, 19 April 2022</a> - The combustion of 1 kilogram (kg) of jet fuel in an aircraft engine produces
             <span id="co2PerKg"></span> kg of carbon dioxide (CO<sub>2</sub>)</p>
-        <p id="ref10"><b>10 </b>
+        <p id="ref10"><strong>10</strong>>
             <a href="https://gmd.copernicus.org/articles/11/1887/2018/" target="_blank">
             The Bern Simple Climate Model (BernSCM) v1.0</a> - European Geosciences Union Geoscientific Model Development: <cite>Articles, Volume 11, issue 5, 25 May 2018</cite></p>
+        <p id="ref11"><strong>11</strong>>
+            <a href="https://www.canada.ca/en/services/environment/weather/climatechange/climate-plan/climate-plan-overview/emissions-reduction-2030/2025-progress-report.html" target="_blank">
+            Secondary Indicator 5.1. Annual lifecycle carbon intensity of gasoline and diesel: Compliance under Canada&rsquo;s Clean Fuel Regulations</a> - <cite>2025 Progress Report on the 2030 Emissions Reduction Plan</cite>, Government of Canada
+        </p>
     </div>
 </body>
 
