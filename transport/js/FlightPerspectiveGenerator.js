@@ -14,7 +14,7 @@ import {
 // Control constants
 const MODEL_BUTTON_NAME = 'model';
 const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
-const SLIDER_KM_RANGE = 0.25; // Percent higher or lower for kilometre range
+const SLIDER_KM_RANGE = 0.30; // Percent higher or lower for kilometre range
 const MAXIMUM_FLIGHTS = 20;
 const MAXIMUM_PASSENGERS = 10;
 
@@ -129,6 +129,7 @@ function initialize() {
     // Add constants to page
     document.getElementById('mjPerKg').textContent = MJ_PER_KG_JET_FUEL;
     document.getElementById('co2PerKg').textContent = CO2_PER_KG_JET_FUEL;
+    document.getElementById('kmRange').textContent = getFormattedNumber(SLIDER_KM_RANGE * 100);
 
     // Initialize static dropdown lists
     populateDropdown('flightCountSelector', MAXIMUM_FLIGHTS);
@@ -265,7 +266,10 @@ function handleChangeEvent(event) {
             hideQuestionElements(6);
             hideChartElements(true);
         } else {
+            // If it isn't already displayed, show the next sector
             showElement('whatSector');
+            // And just in case we're modifying a flight that's already displayed:
+            writeData();
         }
     } else if (event.target.id == 'sectorSlider') {
         showElement('aircraftMatches');
