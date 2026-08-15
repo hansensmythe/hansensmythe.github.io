@@ -39,7 +39,7 @@ function initialize() {
         celebritySelector.add(new Option(celebrityName, celebrityName));
     });
 
-    // Initially disable all optional controls and charts. They're reenabled once the user has chosen a model.
+    // Initially disable all optional controls and charts. They're reenabled once the user has chosen a celebrity.
     hideChartElements(true);
 }
 

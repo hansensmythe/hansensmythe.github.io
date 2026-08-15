@@ -258,7 +258,10 @@ function handleChangeEvent(event) {
             hideQuestionElements(7);
             hideChartElements(true);
         } else {
+            // If it isn't already displayed, show the next sector
             showElement('howManyFlights');
+            // And just in case we're modifying a flight that's already displayed:
+            writeData();
         }
     } else if (event.target.id == 'flightCountSelector') {
         if (event.target.value == 0) {
@@ -273,23 +276,6 @@ function handleChangeEvent(event) {
         }
     } else if (event.target.id == 'sectorSlider') {
         showElement('aircraftMatches');
-    } else if (event.target.name == MODEL_BUTTON_NAME) {
-        // A specific model has been chosen from the model radio buttons, so update the flight profile buttons
-        const selectedModel = findSelectedModel(event.target.value);
-        const selectedAircraft = document.getElementById('selectedAircraft');
-        selectedAircraft.textContent = `Your selected aircraft: ${selectedModel.name}`;
-        // We may be in the process of selecting a specific model from a sector-filtered list
-        // so we should only get the flight profiles that match current values.
-        const flightProfileNames = selectedModel.getMatchingSectorProfileNames(currentKmTarget);
-        // Once selected, we don't need to see the list again
-        hideElement('aircraftMatches');
-        showElement('selectedAircraft');
-        showElement('flightProfiles');
-        showElement('whatDistance');
-        showElement('howManyYears');
-        replaceProfileButtons(flightProfileNames);
-        // Recalculate using the default first flight profile
-        recalculateProfile(selectedModel.getProfileFromName(flightProfileNames[0]));
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
         const selectedModel = findSelectedModel(getSelectedButtonValue(MODEL_BUTTON_NAME));
         // From the currently selected model, load the flight profile matching the target.
@@ -314,8 +300,8 @@ function handleChangeEvent(event) {
 }
 
 function handleClickEvent(event) {
-    if (event.target.id == 'flightCountSelector' || event.target.id == 'howManyFlights') {
-        // The flights has been clicked but has not changed. Count it as a selection
+    if (event.target.id == 'flightCountSelector') {
+        // The flight count has been clicked but has not changed. Count it as a selection
         if (event.target.value == 0) {
             // Reset everything but this question
             hideQuestionElements(6);
@@ -325,6 +311,27 @@ function handleClickEvent(event) {
     } else if (event.target.id == 'sectorSlider' || event.target.id == 'whatSector') {
         // The sector has been clicked but has not changed. Count it as a selection
         showElement('aircraftMatches');
+    } else if (event.target.name == MODEL_BUTTON_NAME) {
+        // This is a click event rather than a change event so that the following scenario is handled:
+        // - user selects people, number of flights, trip length, aircraft
+        // - user then selects 0 flights, then 1 flight so that aircraftMatches is hidden, then clicks sectorSlider
+        // - At this point list of aircraft is shown with previously selected aircraft selected. User should be
+        // able to click on the existing selection or change to another one, and get the same functionality.
+        const selectedModel = findSelectedModel(event.target.value);
+        const selectedAircraft = document.getElementById('selectedAircraft');
+        selectedAircraft.textContent = `Your selected aircraft: ${selectedModel.name}`;
+        // We may be in the process of selecting a specific model from a sector-filtered list
+        // so we should only get the flight profiles that match current values.
+        const flightProfileNames = selectedModel.getMatchingSectorProfileNames(currentKmTarget);
+        // Once selected, we don't need to see the list again
+        hideElement('aircraftMatches');
+        showElement('selectedAircraft');
+        showElement('flightProfiles');
+        showElement('whatDistance');
+        showElement('howManyYears');
+        replaceProfileButtons(flightProfileNames);
+        // Recalculate using the default first flight profile
+        recalculateProfile(selectedModel.getProfileFromName(flightProfileNames[0]));
     }
 }
 
