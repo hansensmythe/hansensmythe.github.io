@@ -271,11 +271,10 @@ function handleChangeEvent(event) {
         } else {
             // If it isn't already displayed, show the next sector
             showElement('whatSector');
+            showElement('aircraftMatches');
             // And just in case we're modifying a flight that's already displayed:
             writeData();
         }
-    } else if (event.target.id == 'sectorSlider') {
-        showElement('aircraftMatches');
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
         const selectedModel = findSelectedModel(getSelectedButtonValue(MODEL_BUTTON_NAME));
         // From the currently selected model, load the flight profile matching the target.
@@ -307,10 +306,8 @@ function handleClickEvent(event) {
             hideQuestionElements(6);
         } else {
             showElement('whatSector');
+            showElement('aircraftMatches');
         }
-    } else if (event.target.id == 'sectorSlider' || event.target.id == 'whatSector') {
-        // The sector has been clicked but has not changed. Count it as a selection
-        showElement('aircraftMatches');
     } else if (event.target.name == MODEL_BUTTON_NAME) {
         // This is a click event rather than a change event so that the following scenario is handled:
         // - user selects people, number of flights, trip length, aircraft
@@ -403,7 +400,7 @@ function handleSectorChange() {
         // Recalculate using the first flight profile
         recalculateProfile(selectedModel.getProfileFromName(filteredProfileNames[0]));
     } else {
-        hideQuestionElements(4);
+        hideQuestionElements(3);
         replaceProfileButtons([]);
         hideChartElements(true);
     }
