@@ -390,6 +390,7 @@ function handleSectorChange() {
     const filteredModels = MODELS.filter((model) => model.hasMatchingSector(targetKilometres));
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
+    showElement('aircraftMatches');
 
     if (filteredModelNames.length == 1) {
         // The model will already be preselected. Populate flight profiles for the one model
