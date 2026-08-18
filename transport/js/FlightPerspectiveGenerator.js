@@ -307,6 +307,7 @@ function handleClickEvent(event) {
         } else {
             showElement('whatSector');
             showElement('aircraftMatches');
+            hideElement('selectedAircraft');
         }
     } else if (event.target.name == MODEL_BUTTON_NAME) {
         // This is a click event rather than a change event so that the following scenario is handled:
@@ -391,6 +392,7 @@ function handleSectorChange() {
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
     showElement('aircraftMatches');
+    hideElement('selectedAircraft');
 
     if (filteredModelNames.length == 1) {
         // The model will already be preselected. Populate flight profiles for the one model
