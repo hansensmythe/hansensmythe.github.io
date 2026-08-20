@@ -1,4 +1,5 @@
-export const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima blast
+// From https://en.wikipedia.org/wiki/Little_Boy: Blast yield 13–16 kt (54–67 TJ)
+export const MJ_PER_HIROSHIMA = 63000000;
 // From https://megacalc.org/units/joules-per-kilogram
 export const MJ_PER_KG_JET_FUEL = 43.15;
 export const CO2_PER_KG_JET_FUEL = 3.16;
