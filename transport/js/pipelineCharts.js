@@ -367,8 +367,9 @@ function getConversionFunction(measurementUnit) {
  * @param {number} years - Array of years used on the x-axis
  * @param {number} yearOfProduction - Year of production (we assume that everything produced in a year is also consumed in that year)
  * @param {string} measurementUnit - one of Hiroshimas, Petajoules, or Megatonnes to determine conversion from MBarrels
+ * @param {boolean} isCumulative - if true, calculates running total; otherwise calculates annual total
  */
-export function calculateDataSet(prm, millionBarrels, years, yearOfProduction, measurementUnit) {
+export function calculateDataSet(prm, millionBarrels, years, yearOfProduction, measurementUnit, isCumulative) {
     const heatUnit = getConversionFunction(measurementUnit)(millionBarrels, TOTAL_RATIO);
     const initialAnnualHeatUnits = heatUnit / prm.radiativeForcingYears;
     let biosphereCO2HeatRemaining = initialAnnualHeatUnits * prm.biosphereFraction;
@@ -376,10 +377,16 @@ export function calculateDataSet(prm, millionBarrels, years, yearOfProduction, m
     let geologicalCO2HeatRemaining = initialAnnualHeatUnits * prm.geologicalFraction;
     // Use the Pulse Response Model to generate a sum of exponentials.
     const chartData = [];
+    let runningTotal = 0;
     years.forEach((year) => {
         if (year >= yearOfProduction) {
             const totalThisYear = biosphereCO2HeatRemaining + deepOceanCO2HeatRemaining + geologicalCO2HeatRemaining;
-            chartData.push(totalThisYear);
+            if (isCumulative) {
+                runningTotal += totalThisYear;
+                chartData.push(runningTotal);
+            } else {
+                chartData.push(totalThisYear);
+            }
             // For every subsequent year, reduce the total by the annual reduction for each halflife
             biosphereCO2HeatRemaining *= prm.biosphereAnnualReduction;
             deepOceanCO2HeatRemaining *= prm.deepOceanAnnualReduction;
@@ -389,20 +396,6 @@ export function calculateDataSet(prm, millionBarrels, years, yearOfProduction, m
         }
     });
     return chartData;
-}
-
-function calculateTotal(prm, millionBarrels, yearsToRender, measurementUnit) {
-    // N(t) = N0(1/2)^(t/halflife)
-    const initialQuantity = getConversionFunction(measurementUnit)(millionBarrels, TOTAL_RATIO);
-    const biosphereInitialQuantity = initialQuantity * prm.biosphereFraction;
-    const deepOceanInitialQuantity = initialQuantity * prm.deepOceanFraction;
-    const geologicalInitialQuantity = initialQuantity * prm.geologicalFraction;
-
-    const biosphereQuantityRemaining = biosphereInitialQuantity * 0.5 ** (yearsToRender / prm.radiativeForcingYears);
-    const deepOceanQuantityRemaining = deepOceanInitialQuantity * 0.5 ** (yearsToRender / prm.radiativeForcingYears);
-    const geologicalQuantityRemaining = geologicalInitialQuantity * 0.5 ** (yearsToRender / prm.radiativeForcingYears);
-
-    return biosphereQuantityRemaining + deepOceanQuantityRemaining + geologicalQuantityRemaining;
 }
 
 export function chartHistoricalImpact(oldChart, chartId, prm, measurementUnit) {
@@ -424,11 +417,13 @@ export function chartHistoricalImpact(oldChart, chartId, prm, measurementUnit) {
 }
 
 /**
+ * Create an object with keys matching years of production, and values of annual millions of barrels produced,
+ * covering both historical and extrapolated values.
  * 
- * @param {number} peakMBarrelsPerYear 
- * @param {number} peakYear 
- * @param {number} zeroYear 
- * @returns 
+ * @param {number} peakMBarrelsPerYear - Millions of barrels per year at peak production
+ * @param {number} peakYear - Year we hit peak production
+ * @param {number} zeroYear - Year that oil production stops entirely
+ * @returns {object} incorporating existing oil production years along with estimates of future production years
  */
 function addFutureOilProduction(peakMBarrelsPerYear, peakYear, zeroYear) {
     const totalOilProduction = {};
@@ -460,13 +455,13 @@ function addFutureOilProduction(peakMBarrelsPerYear, peakYear, zeroYear) {
     return totalOilProduction;
 }
 
-export function chartFutureImpact(oldChart, chartId, prm, measurementUnit, peakMBarrelsPerYear, peakYear, zeroYear) {
+export function chartFutureImpact(oldChart, chartId, prm, measurementUnit, peakMBarrelsPerYear, peakYear, zeroYear, totalYears) {
     // Create a new array of oil production years that simulates linear growth and decline
     const totalOilProduction = addFutureOilProduction(peakMBarrelsPerYear, peakYear, zeroYear);
     const firstYear = parseInt(Object.keys(totalOilProduction)[0]);
     const years = [];
-    // Create labels going out to 100. We'll need to ensure that calculateDataSet also goes out to 100
-    for (let i = 0; i < 100; i++) {
+    // Create labels going out to totalYears.
+    for (let i = 0; i < totalYears; i++) {
         years.push(firstYear + i);
     }
 
@@ -475,7 +470,6 @@ export function chartFutureImpact(oldChart, chartId, prm, measurementUnit, peakM
         years,
         Object.keys(totalOilProduction).map((key, index) => {
             // Each iteration generates one block in the vertical stack for the year.
-            // We assume that the number of vertical blocks in the final year is also the last year on the X axis
             const backgroundColour = key > new Date().getFullYear() ? DIMMER[index % DIMMER.length] : RAINBOW[index % RAINBOW.length];
             return {
                 label: `Greenhouse heat from ${key} oil`,
@@ -484,6 +478,33 @@ export function chartFutureImpact(oldChart, chartId, prm, measurementUnit, peakM
             };
         }),
         'Greenhouse gas-induced warming per year',
+        `${measurementUnit} of heat`
+    );
+}
+
+export function chartLongTermImpact(oldChart, chartId, prm, measurementUnit, peakMBarrelsPerYear, peakYear, zeroYear, totalYears) {
+    // Create a new array of oil production years that simulates linear growth and decline
+    const totalOilProduction = addFutureOilProduction(peakMBarrelsPerYear, peakYear, zeroYear);
+    const firstYear = parseInt(Object.keys(totalOilProduction)[0]);
+    const years = [];
+    // Create labels going out to totalYears.
+    for (let i = 0; i < totalYears; i++) {
+        years.push(firstYear + i);
+    }
+
+    return createStackedBarChart(oldChart,
+        chartId,
+        years,
+        Object.keys(totalOilProduction).map((key, index) => {
+            // Each iteration generates one block in the vertical stack for the year.
+            const backgroundColour = key > new Date().getFullYear() ? DIMMER[index % DIMMER.length] : RAINBOW[index % RAINBOW.length];
+            return {
+                label: `Total heat from ${key} oil`,
+                data: calculateDataSet(prm, totalOilProduction[key], years, key, measurementUnit, true),
+                backgroundColor: backgroundColour
+            };
+        }),
+        'Cumulative greenhouse gas-induced warming',
         `${measurementUnit} of heat`
     );
 }

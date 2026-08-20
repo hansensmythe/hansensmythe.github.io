@@ -95,7 +95,7 @@
                 and uses unproven technology in any case. Carbon sequestration projects have a habit of over-promising and under-performing, especially when asked to scale up
                 to meaningful results.</p>
             <p>Modify these settings to show the annual global heating from the emitted greenhouse gases under different scenarios.
-                This chart models annual heating for a hundred years:</p>
+                This chart models annual heating for <span id="futureImpactYears"></span> years:</p>
 
             <p><input type="range" id="maxMBarrels" step="0.25" min="4.5" max="12" value="8"></input><span id="maxMBarrelsDisplay"></span>
                 <label for="maxMBarrels">millions of barrels per day maximum</label></p>
@@ -103,7 +103,7 @@
             <p><select id="zeroYearSelector"></select><label for="zeroYearSelector">Year to shut down production entirely (if modelling a catastrophic shutdown, set to the same year as the maximum)</label></p>
 
             <canvas id="FutureImpactChart">
-                <p>It appears that your browser does not support the Canvas element. A graph of the future global
+                <p>It appears that your browser does not support the Canvas element. A graph of the future annual global
                     heating resulting from radiative forcing due to greenhouse gas emissions would have appeared here.</p>
             </canvas>
             <p>Each year's impact trends slightly down. I'm calculating that using a Pulse Response Model that sums three methods
@@ -115,10 +115,13 @@
             <h2>Long-term heating</h2>
             <p>No matter when Alberta finally stops producing oil, some of the CO<sub>2</sub> released will fail to get absorbed quickly, and stay
                 in the atmosphere, continuing to capture reflected infrared from the planet's surface, for millennia. Here is my estimate the impact
-                of Alberta's entire 2012-<span id="zeroYear"></span> oil production over the next
-                <input type="range" id="futureYears" step="10" min="10" max="10000" value="1000"><span id="futureYearsDisplay"></span>
-                years of global heating (use the slider to change this value):</p>
-            <span id="longTermTotal"></span>
+                of Alberta's entire 2012-<span id="zeroYear"></span> oil production over the next<br>
+                <input type="range" id="futureYears" step="10" min="10" max="5000" value="50"><span id="futureYearsDisplay"></span>
+                years of global heating (use the slider to change this value, but be advised that it may take up to a minute to calculate longer timeframes):</p>
+            <canvas id="LongTermChart">
+                <p>It appears that your browser does not support the Canvas element. A graph of the future cumulative global
+                    heating resulting from radiative forcing due to greenhouse gas emissions would have appeared here.</p>
+            </canvas>
         </fieldset>
 
         <p><input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the CO<sub>2</sub> Pulse Response Model</input></p>

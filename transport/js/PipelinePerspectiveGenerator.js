@@ -8,8 +8,12 @@ import {
     chartHistoricalHeatProduced,
     chartHistoricalImpact,
     chartFutureImpact,
+    chartLongTermImpact,
     getDefaultPulseResponseModel
 } from './pipelineCharts.js';
+
+// Number of years to report in Alberta's plans for growth section
+const FUTURE_IMPACT_YEARS = 100;
 
 const MEASUREMENT_BUTTON_NAME = 'measurement';
 let selectedMeasurement;
@@ -18,6 +22,7 @@ let selectedMeasurement;
 let historicalHeatChart;
 let historicalImpactChart;
 let futureImpactChart;
+let longTermChart;
 
 const prm = getDefaultPulseResponseModel();
 
@@ -108,6 +113,7 @@ function refreshFutureImpactChart() {
     showElement('FutureImpactSection');
     const maxMBarrels = document.getElementById('maxMBarrels');
     document.getElementById('maxMBarrelsDisplay').textContent = maxMBarrels.value;
+    document.getElementById('futureImpactYears').textContent = FUTURE_IMPACT_YEARS;
     futureImpactChart = chartFutureImpact(
         futureImpactChart, 
         'FutureImpactChart', 
@@ -115,20 +121,29 @@ function refreshFutureImpactChart() {
         selectedMeasurement, 
         maxMBarrels.value * DAYS_PER_YEAR, 
         getIntegerElementValue('maxYearSelector'), 
-        getIntegerElementValue('zeroYearSelector')
+        getIntegerElementValue('zeroYearSelector'),
+        FUTURE_IMPACT_YEARS
     );
-    refreshLongTermSection();
+    refreshLongTermChart();
 }
 
-function refreshLongTermSection() {
+function refreshLongTermChart() {
     showElement('LongTermSection');
+    const maxMBarrels = document.getElementById('maxMBarrels');
     const zeroYearSelector = document.getElementById('zeroYearSelector');
     document.getElementById('zeroYear').textContent = zeroYearSelector.value;
     const futureYears = document.getElementById('futureYears');
     document.getElementById('futureYearsDisplay').textContent = futureYears.value;
-    // TODO: Update longTermTotal based on new user values
-    // TODO: Should we generate a chart here, or would that be too time-intensive?
-    document.getElementById('longTermTotal').textContent = `TODO: ${futureYears.value} years of ${selectedMeasurement}`;
+    longTermChart = chartLongTermImpact(
+        longTermChart,
+        'LongTermChart',
+        prm,
+        selectedMeasurement,
+        maxMBarrels.value * DAYS_PER_YEAR,
+        getIntegerElementValue('maxYearSelector'), 
+        getIntegerElementValue('zeroYearSelector'),
+        futureYears.value
+    );
 }
 
 /**
@@ -159,6 +174,8 @@ function initialize() {
 function handleChangeEvent(event) {
     if (event.target.name == MEASUREMENT_BUTTON_NAME) {
         selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
+        // Reset futureYears so that refreshing doesn't look like it's frozen
+        document.getElementById('futureYears').value = 50;
         showElement('HistoricalHeatSection');
         historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
         showElement('HistoricalImpactSection');
@@ -168,7 +185,7 @@ function handleChangeEvent(event) {
     } else if (event.target.id == 'maxMBarrels' || event.target.id == 'maxYearSelector' || event.target.id == 'zeroYearSelector') {
         refreshFutureImpactChart();
     } else if (event.target.id == 'futureYears') {
-        refreshLongTermSection();
+        refreshLongTermChart();
     } else if (event.target.id == 'enableModelControls') {
         hideModelControls(!event.target.checked);
     }
