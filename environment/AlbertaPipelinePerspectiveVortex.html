@@ -22,8 +22,9 @@
         }
         .chartDiv {
             border: 2px solid black;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
+            margin: 10px;
         }
     </style>
     <div id="header"></div>
@@ -124,8 +125,7 @@
                 <label for="megatonnes">Megatonnes (4.184 petajoules, or 1000 kilotons of TNT equivalent)</label>
             </p>
         </fieldset>
-
-        <fieldset id="HistoricalHeatSection">
+        <div id="HistoricalHeatSection">
             <p>Alberta current produces over four million barrels of crude oil per day, or about 1.4 billion barrels per year.
                 Each barrel of crude oil, when burned, releases <span id="mjPerBarrel"></span> megajoules (MJ) of heat.
                 However, governments try to avoid reporting on the heat from burning, and focus on the impact of
@@ -140,9 +140,9 @@
             </canvas>
             <p>Remember that this is NOT warming due to greenhouse gas emissions! It is just the actual heat generated
                 by producing, refining, and burning. All those engines and power plants and factories...</p>
-        </fieldset>
+        </div>
 
-        <fieldset id="HistoricalImpactSection">
+        <div id="HistoricalImpactSection" class="chartDiv">
             <h2>The Carbon Legacy: heat produced <em>indirectly</em> from producing, refining, and burning the oil</h2>
             <p>I don&rsquo;t think &ldquo;carbon footprint&rdquo; is an appropriate term for what we&rsquo;re discussing here.
                 You use &ldquo;carbon footprint&rdquo; to estimate your current consumption of resources,
@@ -157,9 +157,9 @@
                 down, due to absorption of CO<sub>2</sub> by plants and the upper ocean. However, since annual production
                 continues, and is increasing, the annual amount of global heating in 2026 just due to Alberta&rsquo;s production since
                 2012 is about 17 million Hiroshimas.</p>
-        </fieldset>
+        </div>
 
-        <fieldset id="FutureImpactSection">
+        <div id="FutureImpactSection" class="chartDiv">
             <h2>Alberta&rsquo;s plans for growth</h2>
             <p>But what of the future? The planned Southen Route pipeline between Alberta and British Columbia is
                 expected to carry an additional 1 million barrels of oil per day. Furthermore, the Alberta government
@@ -174,15 +174,16 @@
                 Carbon sequestration projects have a habit of over-promising and under-performing, especially when asked
                 to scale up to meaningful results.<a href="#ref14"><sup>14</sup></a> I am therefore not bothering to include
                 the minuscule effect that Pathways might eventually provide.</p>
-            <p>Modify these settings to show the annual global heating from the emitted greenhouse gases under different
-                scenarios:</p>
-            <p><input type="range" id="maxMBarrels" step="0.25" min="4.5" max="12" value="8"></input>
-                <span id="maxMBarrelsDisplay"></span>
-                <label for="maxMBarrels">millions of barrels per day maximum</label>
-            </p>
-            <p><select id="maxYearSelector"></select><label for="maxYearSelector">Year to hit that maximum</label></p>
-            <p><select id="zeroYearSelector"></select><label for="zeroYearSelector">Year to shut down production
-                    entirely (if modelling a catastrophic shutdown, set to the same year as the maximum)</label></p>
+            <fieldset>
+                <legend>Modify these settings to show the annual global heating from the emitted greenhouse gases under different scenarios:</legend>
+                <p><input type="range" id="maxMBarrels" step="0.25" min="4.5" max="12" value="8"></input>
+                    <span id="maxMBarrelsDisplay"></span>
+                    <label for="maxMBarrels">millions of barrels per day maximum</label>
+                </p>
+                <p><select id="maxYearSelector"></select><label for="maxYearSelector">Year to hit that maximum</label></p>
+                <p><select id="zeroYearSelector"></select><label for="zeroYearSelector">Year to shut down production
+                        entirely (if modelling a catastrophic shutdown, set to the same year as the maximum)</label></p>
+            </fieldset>
             <p>This chart models annual heating for <span id="futureImpactYears"></span> years. Note that long after
                 oil production has stopped, its carbon legacy remains very much alive.</p>
             <canvas id="FutureImpactChart">
@@ -191,9 +192,9 @@
                 </p>
             </canvas>
             <p>Each year&rsquo;s impact trends slightly down. Unfortunately, it takes many millennia to reduce the annual heating down to almost nothing.</p>
-        </fieldset>
+        </div>
 
-        <fieldset id="LongTermSection">
+        <div id="LongTermSection" class="chartDiv">
             <h2>Long-term heating</h2>
             <p>No matter when Alberta finally stops producing oil, some of the CO<sub>2</sub> released will fail to get absorbed quickly,
                 and stay in the atmosphere, continuing to capture reflected infrared from the planet&rsquo;s surface, for millennia.
@@ -204,19 +205,7 @@
                 <p>It appears that your browser does not support the Canvas element. A graph of the future cumulative
                     global heating resulting from radiative forcing due to greenhouse gas emissions would have appeared here.</p>
             </canvas>
-        </fieldset>
-
-        <fieldset id="ConclusionSection">
-            <h2>Conclusion</h2>
-            <p>I grew up knowing about the relationship between greenhouse gas emissions and global warming, but only in terms
-                of global average temperature rise, or millions of tons of CO<sub>2</sub>, neither of which really stir the
-                imagination or help us to understand how much energy we are pumping into the ecosphere. I hope that the truly
-                horrifying numbers that I can show, resulting only from a couple of dozen years of oil production, may prompt
-                readers to reconsider their priorities. Should I try to calculate my personal carbon legacy for my tombstone?
-                No&mdash;there&rsquo;s no point. My CO<sub>2</sub> will still be there, acidifying the ocean, exterminating
-                species, causing weather disasters, and pushing climate change, long after my tombstone erodes down to
-                illegibility. Our graves need no flowers: the air has recorded our names.</p>
-        </fieldset>
+        </div>
 
         <p><input type="checkbox" id="enableModelControls">Show my assumptions and tweak the variables in the
             CO<sub>2</sub> Pulse Response Model</input></p>
@@ -269,7 +258,17 @@
                 greenhouse-gas-induced heating</p>
         </fieldset>
 
-        <hr>
+        <div id="ConclusionSection" class="chartDiv">
+            <h2>Conclusion</h2>
+            <p>I grew up knowing about the relationship between greenhouse gas emissions and global warming, but only in terms
+                of global average temperature rise, or millions of tons of CO<sub>2</sub>, neither of which really stir the
+                imagination or help us to understand how much energy we are pumping into the ecosphere. I hope that the truly
+                horrifying numbers that I can show, resulting only from a couple of dozen years of oil production, may prompt
+                readers to reconsider their priorities. Should I try to calculate my personal carbon legacy for my tombstone?
+                No&mdash;there&rsquo;s no point. My CO<sub>2</sub> will still be there, acidifying the ocean, exterminating
+                species, causing weather disasters, and pushing climate change, long after my tombstone erodes down to
+                illegibility. Our graves need no flowers: the air has recorded our names.</p>
+        </div>
         <h2>Sources</h2>
         <p id="ref1"><strong>1</strong>
             <a href="https://www.cbc.ca/radio/quirks/aug-7-best-of-quirks-listener-question-show-1.5849978" target="_blank">
