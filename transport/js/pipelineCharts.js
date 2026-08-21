@@ -4,12 +4,24 @@ export const DAYS_PER_YEAR = 365.25;
 
 // https://www150.statcan.gc.ca/n1/pub/57-601-x/00105/4173282-eng.htm
 export const MJ_PER_BARREL_CRUDE_OIL = 6193;
-export const MJ_PER_MEGATONNE = 4184000000;
+const MJ_PER_MEGATONNE = 4184000000;
 
-// I could not find any information on amount of heat (MJ) emitted during oil sands production. However,
-// since we know that burning a barrel of crude oil releases 438 kgCO2, the MJ likely has a similar ratio
-const KG_CO2_PER_BARREL_BURNED = 438;
-const KG_CO2_PER_BARREL_PRODUCED = 59;
+// I could not find any information on amount of heat (MJ) emitted during oil sands production.
+// However, we can deduce it from CO2 statistics:
+// https://www.envorem.com/calculations says 2.79 tonnes CO2 per tonne oil (lower than 3.15 seen elsewhere)
+// https://www.aliexpress.com/s/wiki-ssr/article/barrel-of-oil-weight says 136 to 143 kilograms per barrel
+// Assume 139 kg, get 379.44 to 399 kg CO2 per barrel burned. Take average:
+const KG_CO2_PER_BARREL_BURNED = 389;
+// According to https://www.alberta.ca/albertas-greenhouse-gas-emissions-reduction-performance
+// in 2024 Alberta's total GHG emissions were 260.1 MtCO2e (260,100,000 tonnes)
+// and oil sands was 32.73% of that (plus oil and gas transmission and refining at 4.19%, and conventional oil production 7.08%)
+// so those three together are 44%, which does not include natural gas production and processing: 15.05%!
+// therefore 2024 oil CO2e = 260,100,000 * 0.44 = 114,444,000 tons of CO2.
+// 2024 data here, adding up '2024': new OilProductionByYear(2.087, 1.271, 0.382, 0.155, 0.085),
+// equals 3.98 million barrels per day, or 1453.695 million per year
+// 1,453,695,000 barrels / 114,444,000 tons of CO2 = 12.7022
+const KG_CO2_PER_BARREL_PRODUCED = 12.7022;
+
 const PRODUCED_RATIO = KG_CO2_PER_BARREL_PRODUCED / KG_CO2_PER_BARREL_BURNED;
 
 // https://www.sciencedirect.com/topics/earth-and-planetary-sciences/oil-refinery
@@ -176,6 +188,94 @@ function createStackedBarChart(oldChart, chartId, labels, datasets, xText, yText
     return newChart;
 }
 
+/**
+ * Build a line chart for the given number of years, containing the running total heat generated from the initial 
+ * burning of fossil fuels that released the given number of megajoules of heat.
+ * 
+ * @param {object} oldChart - Reference to the previous global Chart object
+ * @param {string} chartId - Identifier for the HTML element into which the chart is written
+ * @param {string[]} labels - Array of strings on the X axis associated with array of datasets
+ * @param {string} labelText - Text displayed for the single red line of heat
+ * @param {number[]} chartData - Array of numbers with the same size as the labels array, holding the graphed values
+ * @param {string} xText - Legend to show on X axis
+ * @param {string} yText - Legend to show on Y axis
+ * @returns {object} Reference to new chart.
+ */
+export function createLineChart(oldChart, chartId, labels, labelText, chartData, xText, yText) {
+    const context = document.getElementById(chartId).getContext('2d');
+    if (oldChart) {
+        oldChart.destroy(); // Free the canvas if a previous chart already exists there
+    }
+
+    // Chart is imported in HTML. Ignore the warning about Chart being undefined.
+    const newChart = new Chart(context, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: labelText,
+                    data: chartData,
+                    borderColor: 'red',
+                    fill: true, // Required to fill the area under the line
+                    // Scriptable option for dynamic gradient based on chart area
+                    backgroundColor: (context) => {
+                        const chart = context.chart;
+                        const { ctx, chartArea } = chart;
+                        if (!chartArea) return null; // Handle initial render
+                        // Create vertical gradient
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(210, 207, 17, 0.3)');
+                        gradient.addColorStop(1, 'rgba(250, 46, 0, 0.8)');
+                        return gradient;
+                    }
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'black'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: xText,
+                        font: {
+                            weight: 'bold'
+                        },
+                        color: 'blue',
+                    },
+                    ticks: {
+                        color: 'blue'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: yText,
+                        font: {
+                            weight: 'bold'
+                        },
+                        color: 'red',
+                    },
+                    ticks: {
+                        color: 'red',
+                        beginAtZero: true
+                    }
+                }
+            }
+        }
+    });
+
+    return newChart;
+}
+
 export function chartHistoricalOilProduction(chartId) {
     createStackedBarChart(
         undefined,
@@ -185,27 +285,27 @@ export function chartHistoricalOilProduction(chartId) {
             {
                 label: 'Bitumen',
                 data: Object.values(OIL_PRODUCTION_YEARS).map((year) => year.bitumen),
-                backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                backgroundColor: 'rgba(0, 0, 0, 0.9)'
             },
             {
                 label: 'Synthetic Crude Oil',
                 data: Object.values(OIL_PRODUCTION_YEARS).map((year) => year.sco),
-                backgroundColor: 'rgba(0, 0, 196, 0.75)'
+                backgroundColor: 'rgba(0, 0, 196, 0.9)'
             },
             {
                 label: 'Conventional Light & Medium',
                 data: Object.values(OIL_PRODUCTION_YEARS).map((year) => year.convLtMed),
-                backgroundColor: 'rgba(255, 0, 0, 0.75)'
+                backgroundColor: 'rgba(255, 0, 0, 0.9)'
             },
             {
                 label: 'Conventional Heavy',
                 data: Object.values(OIL_PRODUCTION_YEARS).map((year) => year.convHeavy),
-                backgroundColor: 'rgba(255, 0, 255, 0.75)'
+                backgroundColor: 'rgba(255, 0, 255, 0.9)'
             },
             {
                 label: 'Condensate',
                 data: Object.values(OIL_PRODUCTION_YEARS).map((year) => year.condensate),
-                backgroundColor: 'rgba(0, 255, 0, 0.75)'
+                backgroundColor: 'rgba(0, 255, 0, 0.9)'
             }
         ],
         'Alberta oil production by type',
@@ -411,7 +511,7 @@ export function chartHistoricalImpact(oldChart, chartId, prm, measurementUnit) {
                 backgroundColor: RAINBOW[index % RAINBOW.length]
             };
         }),
-        'Greenhouse gas-induced warming per year from producing, refining, and burning the oil',
+        'Greenhouse gas-induced warming per year',
         `${measurementUnit} of heat`
     );
 }
@@ -485,26 +585,19 @@ export function chartFutureImpact(oldChart, chartId, prm, measurementUnit, peakM
 export function chartLongTermImpact(oldChart, chartId, prm, measurementUnit, peakMBarrelsPerYear, peakYear, zeroYear, totalYears) {
     // Create a new array of oil production years that simulates linear growth and decline
     const totalOilProduction = addFutureOilProduction(peakMBarrelsPerYear, peakYear, zeroYear);
-    const firstYear = parseInt(Object.keys(totalOilProduction)[0]);
+    // Sum all the oil produced from 2012 to zeroYear. We'll use this as our initial value, and zeroYear as its production year
+    const productionYears = Object.keys(totalOilProduction);
+    let grandTotalMillionBarrels = 0;
+    productionYears.forEach((productionYear) => {
+        grandTotalMillionBarrels += totalOilProduction[productionYear];
+    });
+
     const years = [];
     // Create labels going out to totalYears.
     for (let i = 0; i < totalYears; i++) {
-        years.push(firstYear + i);
+        years.push(zeroYear + i);
     }
 
-    return createStackedBarChart(oldChart,
-        chartId,
-        years,
-        Object.keys(totalOilProduction).map((key, index) => {
-            // Each iteration generates one block in the vertical stack for the year.
-            const backgroundColour = key > new Date().getFullYear() ? DIMMER[index % DIMMER.length] : RAINBOW[index % RAINBOW.length];
-            return {
-                label: `Total heat from ${key} oil`,
-                data: calculateDataSet(prm, totalOilProduction[key], years, key, measurementUnit, true),
-                backgroundColor: backgroundColour
-            };
-        }),
-        'Cumulative greenhouse gas-induced warming',
-        `${measurementUnit} of heat`
-    );
+    const chartData = calculateDataSet(prm, grandTotalMillionBarrels, years, zeroYear, measurementUnit, true);
+    return createLineChart(oldChart, chartId, years, `Cumulative global heating from Alberta oil production 2012 to ${zeroYear}`, chartData, 'Year', `${measurementUnit} of heat`);
 }

@@ -171,23 +171,53 @@ function initialize() {
     chartHistoricalOilProduction('HistoricalChart');
 }
 
-function handleChangeEvent(event) {
-    if (event.target.name == MEASUREMENT_BUTTON_NAME) {
-        selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
-        // Reset futureYears so that refreshing doesn't look like it's frozen
-        document.getElementById('futureYears').value = 50;
+function showMeasurementCharts() {
+    // Except if no measurement has been selected, show charts and refresh their data
+    if (selectedMeasurement) {
         showElement('HistoricalHeatSection');
         historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
         showElement('HistoricalImpactSection');
         historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
         // Also show defaults for Alberta's plans for growth immediately - user can change
         refreshFutureImpactChart();
-    } else if (event.target.id == 'maxMBarrels' || event.target.id == 'maxYearSelector' || event.target.id == 'zeroYearSelector') {
+    }
+}
+
+function updateFractionDisplays() {
+    document.getElementById('biosphereFraction').value = getFormattedNumber(prm.biosphereFraction);
+    document.getElementById('geologicalFraction').value = getFormattedNumber(prm.geologicalFraction);
+    document.getElementById('biosphereFractionDisplay').textContent = getFormattedNumber(prm.biosphereFraction * 100);
+    document.getElementById('deepOceanFractionDisplay').textContent = getFormattedNumber(prm.deepOceanFraction * 100);
+    document.getElementById('geologicalFractionDisplay').textContent = getFormattedNumber(prm.geologicalFraction * 100);
+}
+
+function handleChangeEvent(event) {
+    if (event.target.name == MEASUREMENT_BUTTON_NAME) {
+        selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
+        document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
+        showMeasurementCharts();
+    } else if (event.target.id == 'maxMBarrels' ||
+        event.target.id == 'maxYearSelector' ||
+        event.target.id == 'zeroYearSelector') {
+        // These controls are visible only once the FutureImpactSection is already visible
         refreshFutureImpactChart();
     } else if (event.target.id == 'futureYears') {
+        // This control is visible only once the LongTermSection is already visible
         refreshLongTermChart();
     } else if (event.target.id == 'enableModelControls') {
         hideModelControls(!event.target.checked);
+    } else if (event.target.id == 'biosphereFraction' ||
+        event.target.id == 'geologicalFraction' ||
+        event.target.id == 'biosphereYears' ||
+        event.target.id == 'deepOceanYears' ||
+        event.target.id == 'geologicalYears' ||
+        event.target.id == 'flightCountSelector' ||
+        event.target.id == 'distanceSlider' ||
+        event.target.id == 'yearsSlider' ||
+        event.target.id == 'passengerCountSelector' ||
+        event.target.id == 'radiativeForcing') {
+            // These model controls update the PRM, but showMeasurementCharts does nothing unless selectedMeasurement is defined
+        showMeasurementCharts();
     }
 }
 
@@ -209,5 +239,24 @@ function handleInputEvent(event) {
     } else if (event.target.id == 'futureYears') {
         // Update the futureYearsDisplay
         document.getElementById('futureYearsDisplay').textContent = event.target.value;
+    } else if (event.target.id == 'radiativeForcing') {
+        const radiativeForcingDisplay = document.getElementById('radiativeForcingDisplay');
+        radiativeForcingDisplay.textContent = event.target.value;
+        prm.setRadiativeForcingDays(event.target.value);
+    } else if (event.target.id == 'biosphereFraction') {
+        prm.setBiosphereFraction(parseFloat(event.target.value));
+        updateFractionDisplays();
+    } else if (event.target.id == 'geologicalFraction') {
+        prm.setGeologicalFraction(parseFloat(event.target.value));
+        updateFractionDisplays();
+    } else if (event.target.id == 'biosphereYears') {
+        prm.setBiosphereAnnualReduction(parseFloat(event.target.value));
+        document.getElementById('biosphereYearsDisplay').textContent = event.target.value;
+    } else if (event.target.id == 'deepOceanYears') {
+        prm.setDeepOceanAnnualReduction(parseFloat(event.target.value));
+        document.getElementById('deepOceanYearsDisplay').textContent = event.target.value;
+    } else if (event.target.id == 'geologicalYears') {
+        prm.setGeologicalAnnualReduction(parseFloat(event.target.value));
+        document.getElementById('geologicalYearsDisplay').textContent = event.target.value;
     }
 }
