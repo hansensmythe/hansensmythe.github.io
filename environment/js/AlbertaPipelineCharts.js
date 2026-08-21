@@ -4,14 +4,18 @@ export const DAYS_PER_YEAR = 365.25;
 
 // https://www150.statcan.gc.ca/n1/pub/57-601-x/00105/4173282-eng.htm
 export const MJ_PER_BARREL_CRUDE_OIL = 6193;
+// https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki
+export const MJ_PER_HIROSHIMA = 64850000; // Megajoules of heat in Hiroshima blast: 62.8–66.9 ± 8.4 TJ
 const MJ_PER_MEGATONNE = 4184000000;
 
 // I could not find any information on amount of heat (MJ) emitted during oil sands production.
 // However, we can deduce it from CO2 statistics:
-// https://www.envorem.com/calculations says 2.79 tonnes CO2 per tonne oil (lower than 3.15 seen elsewhere)
+// https://www.envorem.com/calculations says 2.79 mass units CO2 per mass unit oil (lower than 3.15 seen elsewhere)
 // https://www.aliexpress.com/s/wiki-ssr/article/barrel-of-oil-weight says 136 to 143 kilograms per barrel
 // Assume 139 kg, get 379.44 to 399 kg CO2 per barrel burned. Take average:
 const KG_CO2_PER_BARREL_BURNED = 389;
+// If we used 3.15 we'd get 428.4 to 450.45, average 439.425 kg. Averaging THESE gives 414 kg,
+// so we may be underestimating the amount of CO2 generated per barrel burned.
 // According to https://www.alberta.ca/albertas-greenhouse-gas-emissions-reduction-performance
 // in 2024 Alberta's total GHG emissions were 260.1 MtCO2e (260,100,000 tonnes)
 // and oil sands was 32.73% of that (plus oil and gas transmission and refining at 4.19%, and conventional oil production 7.08%)
@@ -31,8 +35,6 @@ const REFINED_RATIO = MJ_PER_BARREL_REFINED / MJ_PER_BARREL_CRUDE_OIL;
 // Where MJ_PER_BARREL_CRUDE_OIL == 1, add the produced and refined ratios to generate a total ratio
 const TOTAL_RATIO = 1 + PRODUCED_RATIO + REFINED_RATIO;
 
-// https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki
-export const MJ_PER_HIROSHIMA = 63000000; // Megajoules of heat in Hiroshima blast
 
 const RAINBOW = [
     "rgba(128, 255, 128, 0.75)",
@@ -506,7 +508,7 @@ export function chartHistoricalImpact(oldChart, chartId, prm, measurementUnit) {
         Object.keys(OIL_PRODUCTION_YEARS),
         Object.keys(OIL_PRODUCTION_YEARS).map((key, index) => {
             return {
-                label: `Greenhouse heat from ${key} oil`,
+                label: `Carbon legacy from ${key} oil`,
                 data: calculateDataSet(prm, OIL_PRODUCTION_YEARS[key].totalMillionBarrels, Object.keys(OIL_PRODUCTION_YEARS), key, measurementUnit),
                 backgroundColor: RAINBOW[index % RAINBOW.length]
             };
@@ -572,7 +574,7 @@ export function chartFutureImpact(oldChart, chartId, prm, measurementUnit, peakM
             // Each iteration generates one block in the vertical stack for the year.
             const backgroundColour = key > new Date().getFullYear() ? DIMMER[index % DIMMER.length] : RAINBOW[index % RAINBOW.length];
             return {
-                label: `Greenhouse heat from ${key} oil`,
+                label: `Carbon legacy from ${key} oil`,
                 data: calculateDataSet(prm, totalOilProduction[key], years, key, measurementUnit),
                 backgroundColor: backgroundColour
             };

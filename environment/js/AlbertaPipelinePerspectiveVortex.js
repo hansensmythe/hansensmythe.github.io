@@ -10,7 +10,7 @@ import {
     chartFutureImpact,
     chartLongTermImpact,
     getDefaultPulseResponseModel
-} from './pipelineCharts.js';
+} from './AlbertaPipelineCharts.js';
 
 // Number of years to report in Alberta's plans for growth section
 const FUTURE_IMPACT_YEARS = 100;
@@ -144,6 +144,7 @@ function refreshLongTermChart() {
         getIntegerElementValue('zeroYearSelector'),
         futureYears.value
     );
+    showElement('ConclusionSection');
 }
 
 /**
@@ -165,6 +166,7 @@ function initialize() {
     hideElement('HistoricalImpactSection');
     hideElement('FutureImpactSection');
     hideElement('LongTermSection');
+    hideElement('ConclusionSection');
     hideModelControls(true);
 
     // Historical oil production does not report heat, so can be shown immediately

@@ -78,13 +78,12 @@ export function init(prefix) {
     hdrRight.appendChild(navUL);
     headerDiv.appendChild(hdrRight);
 
-    // Home
-    navUL.appendChild(createMenuItem(prefix, 'index.html', 'Home'));
-
     // Hamburger menu
     const menuUL = document.createElement('ul');
     menuUL.className = 'menu';
+    menuUL.appendChild(createMenuItem(prefix, 'index.html', 'Home'));
     menuUL.appendChild(createListItemWithChildren(prefix, 'Environment', [
+        { href: 'environment/AlbertaPipelinePerspectiveVortex.html', text: 'Alberta Pipeline Perspective Vortex.html' },
         { href: 'environment/VotingForChange.html', text: 'Voting for Change' },
         { href: 'environment/DearFinancial.html', text: 'Dear Financial Advisor' }
     ]));
