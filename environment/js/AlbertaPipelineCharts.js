@@ -3,7 +3,7 @@ export const DATA_DATE = '4 August 2026';
 export const DAYS_PER_YEAR = 365.25;
 
 // https://www150.statcan.gc.ca/n1/pub/57-601-x/00105/4173282-eng.htm
-const MJ_PER_BARREL_CRUDE_OIL = 6193;
+export const MJ_PER_BARREL_CRUDE_OIL = 6193;
 // https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki
 const MJ_PER_HIROSHIMA = 64850000; // Megajoules of heat in Hiroshima blast: 62.8–66.9 ± 8.4 TJ
 const MJ_PER_MEGATONNE = 4184000000;
@@ -13,7 +13,7 @@ const MJ_PER_MEGATONNE = 4184000000;
 // https://www.envorem.com/calculations says 2.79 mass units CO2 per mass unit oil (lower than 3.15 seen elsewhere)
 // https://www.aliexpress.com/s/wiki-ssr/article/barrel-of-oil-weight says 136 to 143 kilograms per barrel
 // Assume 139 kg, get 379.44 to 399 kg CO2 per barrel burned. Take average:
-const KG_CO2_PER_BARREL_BURNED = 389;
+export const KG_CO2_PER_BARREL_BURNED = 389;
 // If we used 3.15 we'd get 428.4 to 450.45, average 439.425 kg. Averaging THESE gives 414 kg,
 // so we may be underestimating the amount of CO2 generated per barrel burned.
 // According to https://www.alberta.ca/albertas-greenhouse-gas-emissions-reduction-performance
@@ -24,17 +24,16 @@ const KG_CO2_PER_BARREL_BURNED = 389;
 // 2024 data here, adding up '2024': new OilProductionByYear(2.087, 1.271, 0.382, 0.155, 0.085),
 // equals 3.98 million barrels per day, or 1453.695 million per year
 // 1,453,695,000 barrels / 114,444,000 tons of CO2 = 12.7022
-const KG_CO2_PER_BARREL_PRODUCED = 12.7022;
+export const KG_CO2_PER_BARREL_PRODUCED = 12.7022;
 
-const PRODUCED_RATIO = KG_CO2_PER_BARREL_PRODUCED / KG_CO2_PER_BARREL_BURNED;
+export const PRODUCED_RATIO = KG_CO2_PER_BARREL_PRODUCED / KG_CO2_PER_BARREL_BURNED;
 
 // https://www.sciencedirect.com/topics/earth-and-planetary-sciences/oil-refinery
 const MJ_PER_BARREL_REFINED = 615; // Typical refinery in U.S. consumes 540 to 690 MJ per barrel of crude oil refined
-const REFINED_RATIO = MJ_PER_BARREL_REFINED / MJ_PER_BARREL_CRUDE_OIL;
+export const REFINED_RATIO = MJ_PER_BARREL_REFINED / MJ_PER_BARREL_CRUDE_OIL;
 
 // Where MJ_PER_BARREL_CRUDE_OIL == 1, add the produced and refined ratios to generate a total ratio
-const TOTAL_RATIO = 1 + PRODUCED_RATIO + REFINED_RATIO;
-
+export const TOTAL_RATIO = 1 + PRODUCED_RATIO + REFINED_RATIO;
 
 const RAINBOW = [
     "rgba(128, 255, 128, 0.75)",
@@ -130,9 +129,10 @@ export const OIL_PRODUCTION_YEARS = {
 };
 
 /**
+ * Creates a stacked bar chart using the input labels, datasets, and legends.
  * 
  * @param {object} oldChart - Reference to previous chart, if it exists. Undefined for static initialized charts
- * @param {string} chartId 
+ * @param {string} chartId  - String identifier of the canvas element on the page
  * @param {string[]} labels - Array of strings associated with array of datasets
  * @param {object[]} datasets - Array of objects containing label, data, and backgroundColor
  * @param {string} xText - Legend to show on X axis

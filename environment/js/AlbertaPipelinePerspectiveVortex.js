@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', initialize);
 import {
     DATA_DATE,
     DAYS_PER_YEAR,
+    KG_CO2_PER_BARREL_BURNED,
+    MJ_PER_BARREL_CRUDE_OIL,
+    PRODUCED_RATIO,
+    REFINED_RATIO,
+    TOTAL_RATIO,
+    calculateDataSet,
     chartHistoricalOilProduction,
     chartHistoricalHeatProduced,
     chartHistoricalImpact,
@@ -166,11 +172,6 @@ function initialize() {
     document.getElementById('contents').addEventListener('input', handleInputEvent);
 
     hideModelControls(true);
-    // Initially hide key detail sections
-    const sections = document.querySelectorAll('[id$="Key"]');
-    sections.forEach((section) => {
-        section.style.display = 'none';
-    });
 
     chartHistoricalOilProduction('HistoricalChart');
     historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
@@ -186,11 +187,42 @@ function updateFractionDisplays() {
     document.getElementById('geologicalFractionDisplay').textContent = getFormattedNumber(prm.geologicalFraction * 100);
 }
 
+/**
+ * Update the Cheery Bonus Calculator section values, if we have all the necessary inputs
+ */
+function recalculate() {
+    const calcBarrels = document.getElementById('calcBarrels');
+    const calcYears = document.getElementById('calcYears');
+    if (calcBarrels.value > 0 && calcYears.value > 0) {
+        const producedBarrels = calcBarrels.value * PRODUCED_RATIO;
+        const refinedBarrels = calcBarrels.value * REFINED_RATIO;
+        // Produced + refined + combusted
+        const totalBarrels = calcBarrels.value * TOTAL_RATIO;
+        document.getElementById('calcProductionHeat').textContent = getFormattedNumber(producedBarrels * MJ_PER_BARREL_CRUDE_OIL);
+        document.getElementById('calcProductionCO2').textContent = getFormattedNumber(producedBarrels * KG_CO2_PER_BARREL_BURNED);
+        document.getElementById('calcRefiningHeat').textContent = getFormattedNumber(refinedBarrels * MJ_PER_BARREL_CRUDE_OIL);
+        document.getElementById('calcRefiningCO2').textContent = getFormattedNumber(refinedBarrels * KG_CO2_PER_BARREL_BURNED);
+        document.getElementById('calcCombustionHeat').textContent = getFormattedNumber(calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL);
+        document.getElementById('calcCombustionCO2').textContent = getFormattedNumber(calcBarrels.value * KG_CO2_PER_BARREL_BURNED);
+        // This is a bit inefficient - to leverage the calculateDataSet we need to create an array of years
+        // when really we're only using the last one.
+        const thisYear = new Date().getFullYear();
+        const years = [];
+        // Create labels going out to totalYears.
+        for (let i = 0; i < calcYears.value; i++) {
+            years.push(thisYear + i);
+        }
+        const chartData = calculateDataSet(prm, totalBarrels / 1000000, years, thisYear, selectedMeasurement, true);
+        document.getElementById('calcLongTermHeat').textContent = `${selectedMeasurement} added to global heating by year ${years[years.length - 1]}: ${getFormattedNumber(chartData[chartData.length - 1])}`;
+    }
+}
+
 function handleChangeEvent(event) {
     if (event.target.name == MEASUREMENT_BUTTON_NAME) {
         selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
         document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
         refreshFutureImpactChart();
+        recalculate();
     } else if (event.target.id == 'maxMBarrels' ||
         event.target.id == 'maxYearSelector' ||
         event.target.id == 'zeroYearSelector') {
@@ -211,8 +243,12 @@ function handleChangeEvent(event) {
         event.target.id == 'radiativeForcing') {
         // These model controls update the PRM used in the future impact charts
         refreshFutureImpactChart();
+        recalculate();
+    } else if (event.target.id == 'calcBarrels' || event.target.id == 'calcYears') {
+        recalculate();
     }
 }
+
 function handleClickEvent(event) {
     if (event.target.type == 'button') {
         const button = document.getElementById(event.target.id);
@@ -264,5 +300,14 @@ function handleInputEvent(event) {
     } else if (event.target.id == 'geologicalYears') {
         prm.setGeologicalAnnualReduction(parseFloat(event.target.value));
         document.getElementById('geologicalYearsDisplay').textContent = event.target.value;
+    } else if (event.target.id == 'calcBarrels' || event.target.id == 'calcYears') {
+        const input = document.getElementById(event.target.id);
+        // Sanitize the input if necessary
+        const integerValue = parseInt(input.value);
+        if (Number.isNaN(integerValue)) {
+            input.value = '';
+        } else {
+            input.value = integerValue;
+        }
     }
 }
