@@ -233,7 +233,7 @@ function recalculateYears() {
         const thisYear = new Date().getFullYear();
         const years = [];
         // Create labels going out to totalYears.
-        for (let i = 0; i < calcYears.value; i++) {
+        for (let i = 1; i <= calcYears.value; i++) {
             years.push(thisYear + i);
         }
         const chartData = calculateDataSet(prm, totalBarrels / 1000000, years, thisYear, selectedMeasurement, true);
