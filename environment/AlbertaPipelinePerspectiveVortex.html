@@ -341,14 +341,13 @@
         <div id="CheeryBonusCalculator" class="chartDiv">
             <h2>Cheery Bonus Calculator</h2>
             <p>Here's a calculator that tells you what the impact is of a barrel (or more) of crude oil.</p>
-            <input type="text" id="calcBarrels" name="calcBarrels" minlength="1" maxlength="9" size="18" placeholder="Enter 1 to 999999999"><label for="calcBarrels"> barrels of crude oil</label><br>
-            <input type="text" id="calcYears" name="calcYears" minlength="1" maxlength="5" size="14" placeholder="Enter 1 to 99999"><label for="calcYears"> years to calculate cumulative heating</label>
             <table>
-                <tr><th></th><th>MJ of heat</th><th>kg of CO<sub>2</sub></th></tr>
+                <tr><th><input type="text" id="calcBarrels" name="calcBarrels" minlength="1" maxlength="9" size="18" placeholder="Enter 1 to 999999999"><label for="calcBarrels"> barrels</label></th><th>MJ of heat</th><th>kg of CO<sub>2</sub></th></tr>
                 <tr><th>Production</th><td id="calcProductionHeat"></td><td id="calcProductionCO2"></td></tr>
                 <tr><th>Refining</th><td id="calcRefiningHeat"></td><td id="calcRefiningCO2"></td></tr>
                 <tr><th>Combustion</th><td id="calcCombustionHeat"></td><td id="calcCombustionCO2"></td></tr>
             </table>
+            <input type="text" id="calcYears" name="calcYears" minlength="1" maxlength="5" size="14" placeholder="Enter 1 to 99999"><label for="calcYears"> years to calculate cumulative heating</label><br>
             <span id="calcLongTermHeat" style="font-weight: bold;"></span>
         </div>
 

@@ -213,7 +213,7 @@ function recalculate() {
             years.push(thisYear + i);
         }
         const chartData = calculateDataSet(prm, totalBarrels / 1000000, years, thisYear, selectedMeasurement, true);
-        document.getElementById('calcLongTermHeat').textContent = `${selectedMeasurement} added to global heating by year ${years[years.length - 1]}: ${getFormattedNumber(chartData[chartData.length - 1])}`;
+        document.getElementById('calcLongTermHeat').textContent = `${getFormattedNumber(chartData[chartData.length - 1])} ${selectedMeasurement} added to global heating by year ${years[years.length - 1]}`;
     }
 }
 
