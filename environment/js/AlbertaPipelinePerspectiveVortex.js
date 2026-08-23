@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', initialize);
 
 import {
-    MJ_PER_BARREL_CRUDE_OIL,
+    DATA_DATE,
     DAYS_PER_YEAR,
     chartHistoricalOilProduction,
     chartHistoricalHeatProduced,
@@ -13,7 +13,7 @@ import {
 } from './AlbertaPipelineCharts.js';
 
 // Number of years to report in Alberta's plans for growth section
-const FUTURE_IMPACT_YEARS = 100;
+const FUTURE_IMPACT_YEARS = 200;
 
 const MEASUREMENT_BUTTON_NAME = 'measurement';
 let selectedMeasurement;
@@ -107,10 +107,9 @@ function populateDropdown(dropdownId, minValue, maxValue, defaultValue) {
 }
 
 /**
- * Called to use default values, and recalculated if those values change
+ * Using the latest selectedMeasurement and prm values, redisplays the Future Impact Chart, and calls refreshLongTermChart.
  */
 function refreshFutureImpactChart() {
-    showElement('FutureImpactSection');
     const maxMBarrels = document.getElementById('maxMBarrels');
     document.getElementById('maxMBarrelsDisplay').textContent = maxMBarrels.value;
     document.getElementById('futureImpactYears').textContent = FUTURE_IMPACT_YEARS;
@@ -127,8 +126,10 @@ function refreshFutureImpactChart() {
     refreshLongTermChart();
 }
 
+/**
+ * Using the latest selectedMeasurement and prm values, redisplays the Long Term Chart.
+ */
 function refreshLongTermChart() {
-    showElement('LongTermSection');
     const maxMBarrels = document.getElementById('maxMBarrels');
     const zeroYearSelector = document.getElementById('zeroYearSelector');
     document.getElementById('zeroYear').textContent = zeroYearSelector.value;
@@ -144,7 +145,6 @@ function refreshLongTermChart() {
         getIntegerElementValue('zeroYearSelector'),
         futureYears.value
     );
-    showElement('ConclusionSection');
 }
 
 /**
@@ -153,36 +153,29 @@ function refreshLongTermChart() {
  */
 function initialize() {
     // Add constants to page
-    document.getElementById('mjPerBarrel').textContent = getFormattedNumber(MJ_PER_BARREL_CRUDE_OIL);
+    document.getElementById('dataDate').textContent = getFormattedNumber(DATA_DATE);
+    // Use default measurement for now
+    selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
+    document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
     populateDropdown('maxYearSelector', 2027, 2050, 2035);
     populateDropdown('zeroYearSelector', 2027, 2075, 2050);
  
     // Add listeners for user events
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
+    document.getElementById('contents').addEventListener('click', handleClickEvent);
     document.getElementById('contents').addEventListener('input', handleInputEvent);
 
-    // Initially hide elements that should not be populated until we get some user input
-    hideElement('HistoricalHeatSection');
-    hideElement('HistoricalImpactSection');
-    hideElement('FutureImpactSection');
-    hideElement('LongTermSection');
-    hideElement('ConclusionSection');
     hideModelControls(true);
+    // Initially hide key detail sections
+    const sections = document.querySelectorAll('[id$="Key"]');
+    sections.forEach((section) => {
+        section.style.display = 'none';
+    });
 
-    // Historical oil production does not report heat, so can be shown immediately
     chartHistoricalOilProduction('HistoricalChart');
-}
-
-function showMeasurementCharts() {
-    // Except if no measurement has been selected, show charts and refresh their data
-    if (selectedMeasurement) {
-        showElement('HistoricalHeatSection');
-        historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
-        showElement('HistoricalImpactSection');
-        historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
-        // Also show defaults for Alberta's plans for growth immediately - user can change
-        refreshFutureImpactChart();
-    }
+    historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
+    historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
+    refreshFutureImpactChart();
 }
 
 function updateFractionDisplays() {
@@ -197,14 +190,12 @@ function handleChangeEvent(event) {
     if (event.target.name == MEASUREMENT_BUTTON_NAME) {
         selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
         document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
-        showMeasurementCharts();
+        refreshFutureImpactChart();
     } else if (event.target.id == 'maxMBarrels' ||
         event.target.id == 'maxYearSelector' ||
         event.target.id == 'zeroYearSelector') {
-        // These controls are visible only once the FutureImpactSection is already visible
         refreshFutureImpactChart();
     } else if (event.target.id == 'futureYears') {
-        // This control is visible only once the LongTermSection is already visible
         refreshLongTermChart();
     } else if (event.target.id == 'enableModelControls') {
         hideModelControls(!event.target.checked);
@@ -218,8 +209,21 @@ function handleChangeEvent(event) {
         event.target.id == 'yearsSlider' ||
         event.target.id == 'passengerCountSelector' ||
         event.target.id == 'radiativeForcing') {
-            // These model controls update the PRM, but showMeasurementCharts does nothing unless selectedMeasurement is defined
-        showMeasurementCharts();
+        // These model controls update the PRM used in the future impact charts
+        refreshFutureImpactChart();
+    }
+}
+function handleClickEvent(event) {
+    if (event.target.type == 'button') {
+        const button = document.getElementById(event.target.id);
+        const matchingDiv = `${event.target.id}Key`;
+        if (button.value == 'Show more') {
+            showElement(matchingDiv);
+            button.value = 'Show less';
+        } else {
+            hideElement(matchingDiv);
+            button.value = 'Show more';
+        }
     }
 }
 
