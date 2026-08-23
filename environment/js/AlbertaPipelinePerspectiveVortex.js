@@ -38,6 +38,15 @@ function getFormattedNumber(x) {
     return x.toLocaleString();
 }
 
+function getFormattedInteger(x) {
+    const integer = Math.round(x);
+    if (integer > 10) {
+        return getFormattedNumber(integer);
+    } else {
+        return getFormattedNumber(x);
+    }
+}
+
 /**
  * Called whenever we need an element unhidden
  *
@@ -188,22 +197,37 @@ function updateFractionDisplays() {
 }
 
 /**
- * Update the Cheery Bonus Calculator section values, if we have all the necessary inputs
+ * Update the Cheery Bonus Calculator section MJ and kg values, if we have all the necessary inputs
  */
-function recalculate() {
+function recalculateBarrels() {
+    const calcBarrels = document.getElementById('calcBarrels');
+    if (calcBarrels.value > 0) {
+        const producedBarrels = calcBarrels.value * PRODUCED_RATIO;
+        const refinedBarrels = calcBarrels.value * REFINED_RATIO;
+        document.getElementById('calcProductionHeat').textContent = getFormattedInteger(producedBarrels * MJ_PER_BARREL_CRUDE_OIL);
+        document.getElementById('calcProductionCO2').textContent = getFormattedInteger(producedBarrels * KG_CO2_PER_BARREL_BURNED);
+        document.getElementById('calcRefiningHeat').textContent = getFormattedInteger(refinedBarrels * MJ_PER_BARREL_CRUDE_OIL);
+        document.getElementById('calcRefiningCO2').textContent = getFormattedInteger(refinedBarrels * KG_CO2_PER_BARREL_BURNED);
+        document.getElementById('calcCombustionHeat').textContent = getFormattedInteger(calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL);
+        document.getElementById('calcCombustionCO2').textContent = getFormattedInteger(calcBarrels.value * KG_CO2_PER_BARREL_BURNED);
+    } else {
+        document.getElementById('calcProductionHeat').textContent = '';
+        document.getElementById('calcProductionCO2').textContent = '';
+        document.getElementById('calcRefiningHeat').textContent = '';
+        document.getElementById('calcRefiningCO2').textContent = '';
+        document.getElementById('calcCombustionHeat').textContent = '';
+        document.getElementById('calcCombustionCO2').textContent = '';
+    }
+}
+
+/**
+ * Update the Cheery Bonus Calculator years value, if we have all the necessary inputs
+ */
+function recalculateYears() {
     const calcBarrels = document.getElementById('calcBarrels');
     const calcYears = document.getElementById('calcYears');
     if (calcBarrels.value > 0 && calcYears.value > 0) {
-        const producedBarrels = calcBarrels.value * PRODUCED_RATIO;
-        const refinedBarrels = calcBarrels.value * REFINED_RATIO;
-        // Produced + refined + combusted
         const totalBarrels = calcBarrels.value * TOTAL_RATIO;
-        document.getElementById('calcProductionHeat').textContent = getFormattedNumber(producedBarrels * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcProductionCO2').textContent = getFormattedNumber(producedBarrels * KG_CO2_PER_BARREL_BURNED);
-        document.getElementById('calcRefiningHeat').textContent = getFormattedNumber(refinedBarrels * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcRefiningCO2').textContent = getFormattedNumber(refinedBarrels * KG_CO2_PER_BARREL_BURNED);
-        document.getElementById('calcCombustionHeat').textContent = getFormattedNumber(calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcCombustionCO2').textContent = getFormattedNumber(calcBarrels.value * KG_CO2_PER_BARREL_BURNED);
         // This is a bit inefficient - to leverage the calculateDataSet we need to create an array of years
         // when really we're only using the last one.
         const thisYear = new Date().getFullYear();
@@ -213,7 +237,9 @@ function recalculate() {
             years.push(thisYear + i);
         }
         const chartData = calculateDataSet(prm, totalBarrels / 1000000, years, thisYear, selectedMeasurement, true);
-        document.getElementById('calcLongTermHeat').textContent = `${getFormattedNumber(chartData[chartData.length - 1])} ${selectedMeasurement} added to global heating by year ${years[years.length - 1]}`;
+        document.getElementById('calcLongTermHeat').textContent = `${getFormattedInteger(chartData[chartData.length - 1])} ${selectedMeasurement} added to global heating by year ${years[years.length - 1]}`;
+    } else {
+        document.getElementById('calcLongTermHeat').textContent = '';
     }
 }
 
@@ -222,7 +248,8 @@ function handleChangeEvent(event) {
         selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
         document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
         refreshFutureImpactChart();
-        recalculate();
+        recalculateBarrels();
+        recalculateYears();
     } else if (event.target.id == 'maxMBarrels' ||
         event.target.id == 'maxYearSelector' ||
         event.target.id == 'zeroYearSelector') {
@@ -243,9 +270,12 @@ function handleChangeEvent(event) {
         event.target.id == 'radiativeForcing') {
         // These model controls update the PRM used in the future impact charts
         refreshFutureImpactChart();
-        recalculate();
-    } else if (event.target.id == 'calcBarrels' || event.target.id == 'calcYears') {
-        recalculate();
+        recalculateYears();
+    } else if (event.target.id == 'calcBarrels') {
+        recalculateBarrels();
+        recalculateYears();
+    } else if (event.target.id == 'calcYears') {
+        recalculateYears();
     }
 }
 
