@@ -142,12 +142,12 @@ function refreshFutureImpactChart() {
     document.getElementById('maxMBarrelsDisplay').textContent = maxMBarrels.value;
     document.getElementById('futureImpactYears').textContent = FUTURE_IMPACT_YEARS;
     futureImpactChart = chartFutureImpact(
-        futureImpactChart, 
-        'FutureImpactChart', 
-        prm, 
-        selectedMeasurement, 
-        maxMBarrels.value * DAYS_PER_YEAR, 
-        getIntegerElementValue('maxYearSelector'), 
+        futureImpactChart,
+        'FutureImpactChart',
+        prm,
+        selectedMeasurement,
+        maxMBarrels.value * DAYS_PER_YEAR,
+        getIntegerElementValue('maxYearSelector'),
         getIntegerElementValue('zeroYearSelector'),
         FUTURE_IMPACT_YEARS
     );
@@ -169,7 +169,7 @@ function refreshLongTermChart() {
         prm,
         selectedMeasurement,
         maxMBarrels.value * DAYS_PER_YEAR,
-        getIntegerElementValue('maxYearSelector'), 
+        getIntegerElementValue('maxYearSelector'),
         getIntegerElementValue('zeroYearSelector'),
         futureYears.value
     );
@@ -187,7 +187,7 @@ function initialize() {
     document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
     populateDropdown('maxYearSelector', 2027, 2050, 2035);
     populateDropdown('zeroYearSelector', 2027, 2075, 2050);
- 
+
     // Add listeners for user events
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
     document.getElementById('contents').addEventListener('click', handleClickEvent);
@@ -232,27 +232,26 @@ function barrelsToKgCO2(barrels, ratio) {
 function recalculateBarrels() {
     const calcBarrels = document.getElementById('calcBarrels');
     document.getElementById('calcEquivalentHeader').textContent = `${selectedMeasurement} of heat`;
+    const rows = [
+        { key: 'Production', ratio: PRODUCED_RATIO },
+        { key: 'Refining', ratio: REFINED_RATIO },
+        { key: 'Combustion', ratio: 1 },
+        { key: 'Total', ratio: TOTAL_RATIO },
+    ];
     if (calcBarrels.value > 0) {
         const megajoules = calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL;
-        document.getElementById('calcProductionEquivalent').textContent = megajoulesToSelectedMeasurement(megajoules, PRODUCED_RATIO);
-        document.getElementById('calcProductionHeat').textContent = getFormattedInteger(megajoules * PRODUCED_RATIO);
-        document.getElementById('calcProductionCO2').textContent = barrelsToKgCO2(calcBarrels.value, PRODUCED_RATIO);
-        document.getElementById('calcRefiningEquivalent').textContent = megajoulesToSelectedMeasurement(megajoules, REFINED_RATIO);
-        document.getElementById('calcRefiningHeat').textContent = getFormattedInteger(megajoules * REFINED_RATIO);
-        document.getElementById('calcRefiningCO2').textContent = barrelsToKgCO2(calcBarrels.value, REFINED_RATIO);
-        document.getElementById('calcCombustionEquivalent').textContent = megajoulesToSelectedMeasurement(megajoules, 1);
-        document.getElementById('calcCombustionHeat').textContent = getFormattedInteger(megajoules);
-        document.getElementById('calcCombustionCO2').textContent = barrelsToKgCO2(calcBarrels.value, 1);
+        rows.forEach((row) => {
+            document.getElementById(`calc${row.key}Equivalent`).textContent = megajoulesToSelectedMeasurement(megajoules, row.ratio);
+            document.getElementById(`calc${row.key}Heat`).textContent = getFormattedInteger(megajoules * row.ratio);
+            document.getElementById(`calc${row.key}CO2`).textContent = barrelsToKgCO2(calcBarrels.value, row.ratio);
+        });
     } else {
-        document.getElementById('calcProductionEquivalent').textContent = '';
-        document.getElementById('calcProductionHeat').textContent = '';
-        document.getElementById('calcProductionCO2').textContent = '';
-        document.getElementById('calcRefiningEquivalent').textContent = '';
-        document.getElementById('calcRefiningHeat').textContent = '';
-        document.getElementById('calcRefiningCO2').textContent = '';
-        document.getElementById('calcCombustionEquivalent').textContent = '';
-        document.getElementById('calcCombustionHeat').textContent = '';
-        document.getElementById('calcCombustionCO2').textContent = '';
+        const cols = ['Equivalent', 'Heat', 'CO2'];
+        rows.forEach((row) => {
+            cols.forEach((col) => {
+                document.getElementById(`calc${row.key}${col}`).textContent = '';
+            });
+        });
     }
 }
 
