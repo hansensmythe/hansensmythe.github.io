@@ -127,6 +127,14 @@ function populateDropdown(dropdownId, minValue, maxValue, defaultValue) {
 }
 
 /**
+ * Update the heat and legacy charts whenever the selected measurement changes.
+ */
+function refreshHeatAndLegacyCharts() {
+    historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
+    historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
+}
+
+/**
  * Using the latest selectedMeasurement and prm values, redisplays the Future Impact Chart, and calls refreshLongTermChart.
  */
 function refreshFutureImpactChart() {
@@ -188,8 +196,7 @@ function initialize() {
     hideModelControls(true);
 
     chartHistoricalOilProduction('HistoricalChart');
-    historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
-    historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
+    refreshHeatAndLegacyCharts();
     refreshFutureImpactChart();
 }
 
@@ -276,6 +283,7 @@ function handleChangeEvent(event) {
     if (event.target.name == MEASUREMENT_BUTTON_NAME) {
         selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
         document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
+        refreshHeatAndLegacyCharts();
         refreshFutureImpactChart();
         recalculateBarrels();
         recalculateYears();
