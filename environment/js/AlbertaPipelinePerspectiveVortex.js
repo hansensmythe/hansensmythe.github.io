@@ -6,6 +6,8 @@ import {
     DAYS_PER_YEAR,
     KG_CO2_PER_BARREL_BURNED,
     MJ_PER_BARREL_CRUDE_OIL,
+    MJ_PER_HIROSHIMA,
+    MJ_PER_MEGATONNE,
     PRODUCED_RATIO,
     REFINED_RATIO,
     TOTAL_RATIO,
@@ -40,7 +42,7 @@ function getFormattedNumber(x) {
 
 function getFormattedInteger(x) {
     const integer = Math.round(x);
-    if (integer > 10) {
+    if (integer > 100) {
         return getFormattedNumber(integer);
     } else {
         return getFormattedNumber(x);
@@ -196,25 +198,49 @@ function updateFractionDisplays() {
     document.getElementById('geologicalFractionDisplay').textContent = getFormattedNumber(prm.geologicalFraction * 100);
 }
 
+/*
+ * These calculations are similar to that in AlbertaPipelineCharts, but here we're calculating megajoules from
+ * barrels first. I thought it was easier than multiplying then dividing by a million, and simplified the code.
+ */
+function megajoulesToSelectedMeasurement(megajoules, ratio) {
+    if (selectedMeasurement == 'Hiroshimas') {
+        return getFormattedInteger(megajoules * ratio / MJ_PER_HIROSHIMA);
+    } else if (selectedMeasurement == 'Petajoules') {
+        return getFormattedInteger(megajoules * ratio / 1000000000);
+    } else {
+        return getFormattedInteger(megajoules * ratio / MJ_PER_MEGATONNE);
+    }
+}
+
+function barrelsToKgCO2(barrels, ratio) {
+    return getFormattedInteger(barrels * ratio * KG_CO2_PER_BARREL_BURNED);
+}
+
 /**
  * Update the Cheery Bonus Calculator section MJ and kg values, if we have all the necessary inputs
  */
 function recalculateBarrels() {
     const calcBarrels = document.getElementById('calcBarrels');
+    document.getElementById('calcEquivalentHeader').textContent = `${selectedMeasurement} of heat`;
     if (calcBarrels.value > 0) {
-        const producedBarrels = calcBarrels.value * PRODUCED_RATIO;
-        const refinedBarrels = calcBarrels.value * REFINED_RATIO;
-        document.getElementById('calcProductionHeat').textContent = getFormattedInteger(producedBarrels * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcProductionCO2').textContent = getFormattedInteger(producedBarrels * KG_CO2_PER_BARREL_BURNED);
-        document.getElementById('calcRefiningHeat').textContent = getFormattedInteger(refinedBarrels * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcRefiningCO2').textContent = getFormattedInteger(refinedBarrels * KG_CO2_PER_BARREL_BURNED);
-        document.getElementById('calcCombustionHeat').textContent = getFormattedInteger(calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcCombustionCO2').textContent = getFormattedInteger(calcBarrels.value * KG_CO2_PER_BARREL_BURNED);
+        const megajoules = calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL;
+        document.getElementById('calcProductionEquivalent').textContent = megajoulesToSelectedMeasurement(megajoules, PRODUCED_RATIO);
+        document.getElementById('calcProductionHeat').textContent = getFormattedInteger(megajoules * PRODUCED_RATIO);
+        document.getElementById('calcProductionCO2').textContent = barrelsToKgCO2(calcBarrels.value, PRODUCED_RATIO);
+        document.getElementById('calcRefiningEquivalent').textContent = megajoulesToSelectedMeasurement(megajoules, REFINED_RATIO);
+        document.getElementById('calcRefiningHeat').textContent = getFormattedInteger(megajoules * REFINED_RATIO);
+        document.getElementById('calcRefiningCO2').textContent = barrelsToKgCO2(calcBarrels.value, REFINED_RATIO);
+        document.getElementById('calcCombustionEquivalent').textContent = megajoulesToSelectedMeasurement(megajoules, 1);
+        document.getElementById('calcCombustionHeat').textContent = getFormattedInteger(megajoules);
+        document.getElementById('calcCombustionCO2').textContent = barrelsToKgCO2(calcBarrels.value, 1);
     } else {
+        document.getElementById('calcProductionEquivalent').textContent = '';
         document.getElementById('calcProductionHeat').textContent = '';
         document.getElementById('calcProductionCO2').textContent = '';
+        document.getElementById('calcRefiningEquivalent').textContent = '';
         document.getElementById('calcRefiningHeat').textContent = '';
         document.getElementById('calcRefiningCO2').textContent = '';
+        document.getElementById('calcCombustionEquivalent').textContent = '';
         document.getElementById('calcCombustionHeat').textContent = '';
         document.getElementById('calcCombustionCO2').textContent = '';
     }
