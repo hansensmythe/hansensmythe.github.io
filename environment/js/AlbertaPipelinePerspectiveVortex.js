@@ -44,8 +44,11 @@ function getFormattedInteger(x) {
     const integer = Math.round(x);
     if (integer > 100) {
         return getFormattedNumber(integer);
-    } else {
+    } else if (integer > 1) {
         return getFormattedNumber(x);
+    } else {
+        // Return number to reasonable number of digits
+        return x.toFixed(4);
     }
 }
 
