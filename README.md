@@ -1,0 +1,1 @@
+Personal website of Steve Hansen Smythe. Includes short essays on environment, music, philosophy, and transport, tools and descriptions for some of my favourite games, and a searchable index of my music projects.
