@@ -1,4 +1,4 @@
-// Updated 10 August 2026
+// Updated 5 September 2026
 
 /**
  * Pieces may have more than one type
@@ -98,7 +98,7 @@ export const PIECES = [
     new Piece("Elbow Falls Interlude", [FILM, ORCH], 1996, 159, {}, "Composed for the <B>Broadcast Filler Service</B> to accompany a video of this waterfall."),
     new Piece("Engagement", [INSTR, EXP], 2005, 214, { soundClick: "12343414" }, "Scored for two altos and synthesizer (or bass, guitar, zither, bagpipe, flute, oboe, trumpet, trombone, tuba, marimba, and percussion). A piece exploring alternative rhythms. (The primary time signature is five beats of dash-dotted quarters, and a dotted eighth. See my <a href=placenotation.html>essay on modifications to music notation</a> if you want to know what a dash-dotted quarter is.)"),
     new Piece("Engagement", [INSTR, EXP], 2015, 214, { soundCloud: "engagement" }, "Re-recorded version of Engagement (2005) done on Logic Pro X."),
-    new Piece("Evangeline", [PIANO, VOICE, INSTR], 2012, 285, { pdf: "Evangeline.pdf" }, "Words by Sappho Hansen Smythe. Recording scored for voice, flute, french horn, trumpet, percussion, acoustic guitar, bass guitar, piano, and strings; manuscript simplified for voice and piano."),
+    new Piece("Evangeline", [PIANO, VOICE, INSTR], 2012, 285, { mp3: "Evangeline - orchestral accompaniment.mp3", pdf: "Evangeline.pdf" }, "Words by Sappho Hansen Smythe. Recording scored for voice, flute, french horn, trumpet, percussion, acoustic guitar, bass guitar, piano, and strings; manuscript simplified for voice and piano."),
     new Piece("Evening", [FILM], 1989, 195, { youtube: "TCwBqjwBbIk" }, "Based on a Mozart sonatina; originally composed for the <B>Canadian Cancer Society</B> video <em>BSE For Every Woman</em>."),
     new Piece("Evolution of the Long-Tailed Bird", [INSTR, FILM], 1994, 0, {}, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
     new Piece("Fanfare for Mark", [INSTR], 1983, 4, {}, "Fanfare for three trombones, ending in a chord using deliberately mistuned notes, in honour of the ego and unbridled arrogance of another fellow trombonist, and played upon his arrival."),
