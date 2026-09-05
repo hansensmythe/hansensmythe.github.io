@@ -6,6 +6,8 @@ import {
     DAYS_PER_YEAR,
     KG_CO2_PER_BARREL_BURNED,
     MJ_PER_BARREL_CRUDE_OIL,
+    MJ_PER_HIROSHIMA,
+    MJ_PER_MEGATONNE,
     PRODUCED_RATIO,
     REFINED_RATIO,
     TOTAL_RATIO,
@@ -40,10 +42,13 @@ function getFormattedNumber(x) {
 
 function getFormattedInteger(x) {
     const integer = Math.round(x);
-    if (integer > 10) {
+    if (integer > 100) {
         return getFormattedNumber(integer);
-    } else {
+    } else if (integer > 1) {
         return getFormattedNumber(x);
+    } else {
+        // Return number to reasonable number of digits
+        return x.toFixed(4);
     }
 }
 
@@ -122,6 +127,14 @@ function populateDropdown(dropdownId, minValue, maxValue, defaultValue) {
 }
 
 /**
+ * Update the heat and legacy charts whenever the selected measurement changes.
+ */
+function refreshHeatAndLegacyCharts() {
+    historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
+    historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
+}
+
+/**
  * Using the latest selectedMeasurement and prm values, redisplays the Future Impact Chart, and calls refreshLongTermChart.
  */
 function refreshFutureImpactChart() {
@@ -129,12 +142,12 @@ function refreshFutureImpactChart() {
     document.getElementById('maxMBarrelsDisplay').textContent = maxMBarrels.value;
     document.getElementById('futureImpactYears').textContent = FUTURE_IMPACT_YEARS;
     futureImpactChart = chartFutureImpact(
-        futureImpactChart, 
-        'FutureImpactChart', 
-        prm, 
-        selectedMeasurement, 
-        maxMBarrels.value * DAYS_PER_YEAR, 
-        getIntegerElementValue('maxYearSelector'), 
+        futureImpactChart,
+        'FutureImpactChart',
+        prm,
+        selectedMeasurement,
+        maxMBarrels.value * DAYS_PER_YEAR,
+        getIntegerElementValue('maxYearSelector'),
         getIntegerElementValue('zeroYearSelector'),
         FUTURE_IMPACT_YEARS
     );
@@ -156,7 +169,7 @@ function refreshLongTermChart() {
         prm,
         selectedMeasurement,
         maxMBarrels.value * DAYS_PER_YEAR,
-        getIntegerElementValue('maxYearSelector'), 
+        getIntegerElementValue('maxYearSelector'),
         getIntegerElementValue('zeroYearSelector'),
         futureYears.value
     );
@@ -174,7 +187,7 @@ function initialize() {
     document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
     populateDropdown('maxYearSelector', 2027, 2050, 2035);
     populateDropdown('zeroYearSelector', 2027, 2075, 2050);
- 
+
     // Add listeners for user events
     document.getElementById('contents').addEventListener('change', handleChangeEvent);
     document.getElementById('contents').addEventListener('click', handleClickEvent);
@@ -183,8 +196,7 @@ function initialize() {
     hideModelControls(true);
 
     chartHistoricalOilProduction('HistoricalChart');
-    historicalHeatChart = chartHistoricalHeatProduced(historicalHeatChart, 'HistoricalHeatChart', selectedMeasurement);
-    historicalImpactChart = chartHistoricalImpact(historicalImpactChart, 'HistoricalImpactChart', prm, selectedMeasurement);
+    refreshHeatAndLegacyCharts();
     refreshFutureImpactChart();
 }
 
@@ -196,27 +208,50 @@ function updateFractionDisplays() {
     document.getElementById('geologicalFractionDisplay').textContent = getFormattedNumber(prm.geologicalFraction * 100);
 }
 
+/*
+ * These calculations are similar to that in AlbertaPipelineCharts, but here we're calculating megajoules from
+ * barrels first. I thought it was easier than multiplying then dividing by a million, and simplified the code.
+ */
+function megajoulesToSelectedMeasurement(megajoules, ratio) {
+    if (selectedMeasurement == 'Hiroshimas') {
+        return getFormattedInteger(megajoules * ratio / MJ_PER_HIROSHIMA);
+    } else if (selectedMeasurement == 'Petajoules') {
+        return getFormattedInteger(megajoules * ratio / 1000000000);
+    } else {
+        return getFormattedInteger(megajoules * ratio / MJ_PER_MEGATONNE);
+    }
+}
+
+function barrelsToKgCO2(barrels, ratio) {
+    return getFormattedInteger(barrels * ratio * KG_CO2_PER_BARREL_BURNED);
+}
+
 /**
  * Update the Cheery Bonus Calculator section MJ and kg values, if we have all the necessary inputs
  */
 function recalculateBarrels() {
     const calcBarrels = document.getElementById('calcBarrels');
+    document.getElementById('calcEquivalentHeader').textContent = `${selectedMeasurement} of heat`;
+    const rows = [
+        { key: 'Production', ratio: PRODUCED_RATIO },
+        { key: 'Refining', ratio: REFINED_RATIO },
+        { key: 'Combustion', ratio: 1 },
+        { key: 'Total', ratio: TOTAL_RATIO },
+    ];
     if (calcBarrels.value > 0) {
-        const producedBarrels = calcBarrels.value * PRODUCED_RATIO;
-        const refinedBarrels = calcBarrels.value * REFINED_RATIO;
-        document.getElementById('calcProductionHeat').textContent = getFormattedInteger(producedBarrels * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcProductionCO2').textContent = getFormattedInteger(producedBarrels * KG_CO2_PER_BARREL_BURNED);
-        document.getElementById('calcRefiningHeat').textContent = getFormattedInteger(refinedBarrels * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcRefiningCO2').textContent = getFormattedInteger(refinedBarrels * KG_CO2_PER_BARREL_BURNED);
-        document.getElementById('calcCombustionHeat').textContent = getFormattedInteger(calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL);
-        document.getElementById('calcCombustionCO2').textContent = getFormattedInteger(calcBarrels.value * KG_CO2_PER_BARREL_BURNED);
+        const megajoules = calcBarrels.value * MJ_PER_BARREL_CRUDE_OIL;
+        rows.forEach((row) => {
+            document.getElementById(`calc${row.key}Equivalent`).textContent = megajoulesToSelectedMeasurement(megajoules, row.ratio);
+            document.getElementById(`calc${row.key}Heat`).textContent = getFormattedInteger(megajoules * row.ratio);
+            document.getElementById(`calc${row.key}CO2`).textContent = barrelsToKgCO2(calcBarrels.value, row.ratio);
+        });
     } else {
-        document.getElementById('calcProductionHeat').textContent = '';
-        document.getElementById('calcProductionCO2').textContent = '';
-        document.getElementById('calcRefiningHeat').textContent = '';
-        document.getElementById('calcRefiningCO2').textContent = '';
-        document.getElementById('calcCombustionHeat').textContent = '';
-        document.getElementById('calcCombustionCO2').textContent = '';
+        const cols = ['Equivalent', 'Heat', 'CO2'];
+        rows.forEach((row) => {
+            cols.forEach((col) => {
+                document.getElementById(`calc${row.key}${col}`).textContent = '';
+            });
+        });
     }
 }
 
@@ -247,6 +282,7 @@ function handleChangeEvent(event) {
     if (event.target.name == MEASUREMENT_BUTTON_NAME) {
         selectedMeasurement = getSelectedButtonValue(MEASUREMENT_BUTTON_NAME);
         document.getElementById('selectedMeasurement').textContent = selectedMeasurement;
+        refreshHeatAndLegacyCharts();
         refreshFutureImpactChart();
         recalculateBarrels();
         recalculateYears();

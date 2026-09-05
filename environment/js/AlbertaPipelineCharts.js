@@ -5,8 +5,8 @@ export const DAYS_PER_YEAR = 365.25;
 // https://www150.statcan.gc.ca/n1/pub/57-601-x/00105/4173282-eng.htm
 export const MJ_PER_BARREL_CRUDE_OIL = 6193;
 // https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki
-const MJ_PER_HIROSHIMA = 64850000; // Megajoules of heat in Hiroshima blast: 62.8–66.9 ± 8.4 TJ
-const MJ_PER_MEGATONNE = 4184000000;
+export const MJ_PER_HIROSHIMA = 64850000; // Megajoules of heat in Hiroshima blast: 62.8–66.9 ± 8.4 TJ
+export const MJ_PER_MEGATONNE = 4184000000;
 
 // I could not find any information on amount of heat (MJ) emitted during oil sands production.
 // However, we can deduce it from CO2 statistics:
@@ -339,14 +339,7 @@ function millionBarrelsToMegatonnes(MBarrels, conversionFactor) {
 }
 
 export function chartHistoricalHeatProduced(oldChart, chartId, measurementUnit) {
-    let conversionFunction;
-    if (measurementUnit == 'Hiroshimas') {
-        conversionFunction = millionBarrelsToHiroshimas;
-    } else if (measurementUnit == 'Petajoules') {
-        conversionFunction = millionBarrelsToPetajoules;
-    } else {
-        conversionFunction = millionBarrelsToMegatonnes;
-    }
+    const conversionFunction = getConversionFunction(measurementUnit);
 
     return createStackedBarChart(
         oldChart,
