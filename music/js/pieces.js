@@ -1,4 +1,4 @@
-// Updated 5 September 2026
+// Updated 27 September 2026
 
 /**
  * Pieces may have more than one type
@@ -155,6 +155,7 @@ export const PIECES = [
     new Piece("O Canada Ragtime", [ORCH], 1990, 76, { youtube: "ZlgNpsD9bpU" }, "A playful rendition of Canada's national anthem. Scored for orchestra and ragtime pick-up band; recorded with synthesizers. The only one of my compositions to make it onto the Low Budget Radio  <a href=http://www.lowbudgetradio.com/ratearecord.html>Listener's Choice ballot</a> for 2005, where it came in 366th, being narrowly beat out by Stompin' Tom Connors The Man In The Moon Is A Newfie in 364th place, but beating out such classics as Pepe The Purple Platypus by Squish and the Pregnant Elephants. Go figure."),
     new Piece("Of Aragorn", [PIANO, VOICE], 1983, 81, { pdf: "OfAragorn.pdf" }, "Scored for soprano and piano, words by J.R.R. Tolkien."),
     new Piece("Oh Lord, It's Hard To Play Country", [VOICE, INSTR], 1984, 64, { pdf: "HardToPlayCountry.pdf" }, "Scored for twangy country voice, guitar, bass, and snare drum."),
+    new Piece("Omsk", [PIANO], 2005, 80, { mp3: "Omsk.mp3", pdf: "Omsk.pdf"}, 'I collaborated with another composer on the Train Variations for two pianos, but one of the variations\' single piano parts was good enough as a standalone piece: a variation on the folk melody "Bells Were Sounding In Novgorod". Listen for the rhythm of the double set of wheels at each end of a train car: "duhduh ... duhduh duhduh ... duhduh". It is scored using <a href=./PlaceNotation.html>dot place notation.<a>'),
     new Piece("The Old Country Dance", [PIANO], 1969, 0,{ pdf: "OldCountryDance.pdf" }, "The first piece I composed that I actually think is good."),
     new Piece("Paranoid Androids", [INSTR], 1990, 238, { youtube: "e722yPkISWQ" }, "I used the weird over-compressed end of a normal electric piano sample as a percussion instrument, and added wailing dischords. We danced around listening to it over and over the day I first recorded it."),
     new Piece("Physics and the Art of Meditation", [INSTR], 1990, 3000, {}, "Music by which to meditate, or watch <a href=\"http://flippingartgallery.com\">great art by Erica Neumann</a>!  The title is a joke. Has nothing to do with physics. Whipped up in time to sell cassettes at a science fiction/fantasy convention, and sales were satisfyingly brisk. Side one of the cassette was wet with water sounds, and side two was dry with crickets and percussion."),
