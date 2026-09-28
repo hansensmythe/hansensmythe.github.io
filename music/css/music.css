@@ -8,6 +8,12 @@ caption
   font-size: x-large;
 }
 
+input
+{
+    border: 1px solid #000;
+    background-color: beige;
+}
+
 th
 {
   white-space: nowrap;
