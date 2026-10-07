@@ -26,23 +26,23 @@ function addFavicon() {
     const appleLink = document.createElement('link');
     appleLink.rel = 'apple-touch-icon';
     appleLink.sizes = '180x180';
-    appleLink.href = '/favicon_io/apple-touch-icon.png';
+    appleLink.href = '/apple-touch-icon.png';
     firstHead.appendChild(appleLink);
 
     const icon32Link = document.createElement('link');
     icon32Link.rel = 'icon';
     icon32Link.sizes = '32x32';
-    icon32Link.href = '/favicon_io/favicon-32x32.png';
+    icon32Link.href = '/favicon-32x32.png';
     firstHead.appendChild(icon32Link);
 
     const icon16Link = document.createElement('link');
     icon16Link.rel = 'icon';
     icon16Link.sizes = '16x16';
-    icon16Link.href = '/favicon_io/favicon-16x16.png';
+    icon16Link.href = '/favicon-16x16.png';
     firstHead.appendChild(icon16Link);
 
     const manifestLink = document.createElement('link');
-    manifestLink.href = '/favicon_io/site.webmanifest';
+    manifestLink.href = '/site.webmanifest';
     firstHead.appendChild(manifestLink);
 }
 
