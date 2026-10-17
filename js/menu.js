@@ -78,10 +78,17 @@ function toggleMenu() {
     }
 }
 
-export function init(prefix) {
+/**
+ * Add and populate header elements once page is loaded.
+ * 
+ * @param {number} level - 0 for pages at the top level, 1, 2, ... for nested pages
+ */
+export function init(level) {
     // Get hamburger and close icons from Google APIs
     addStylesheet('https://fonts.googleapis.com/icon?family=Material+Icons');
     addFavicon();
+
+    const prefix = '' + '../'.repeat(level);
 
     const headerDiv = document.getElementById('header');
     // Add standard stuff prior to menu
