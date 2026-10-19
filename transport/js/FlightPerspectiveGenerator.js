@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', initialize);
+window.addEventListener('load', applyQueryParams);
+
 import { MODELS, KM_PLUS_MINUS } from './publicFlightsData.js';
 import { 
     MJ_PER_HIROSHIMA,
@@ -17,6 +19,12 @@ const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
 const SLIDER_KM_RANGE = 0.30; // Percent higher or lower for kilometre range
 const MAXIMUM_FLIGHTS = 20;
 const MAXIMUM_PASSENGERS = 10;
+const QUERY_PARAMS = {
+    PASSENGERS: 'p',
+    FLIGHTS: 'n',
+    SECTORKM: 's',
+    MODEL: 'm'
+};
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
 let seatsChart = null;
@@ -116,7 +124,8 @@ function populateDropdown(dropdownId, maxValue) {
 }
 
 /**
- * Called once the DOM is loaded. Adds generic event listeners for inputs and changes to page controls,
+ * Called once the DOM is loaded, but before stylesheets, images, or subframes have finished loading.
+ * Adds generic event listeners for inputs and changes to page controls,
  * populates various static elements, and kicks off a default profile display for default size and sector.
  */
 function initialize() {
@@ -153,6 +162,55 @@ function initialize() {
     const filteredModels = MODELS.filter((model) => model.hasMatchingSector(currentKmTarget));
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
+}
+
+/**
+ * Called once the window is loaded and all document initialization, CSS, etc. has been applied
+ */
+function applyQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    const passengerCount = parseInt(params.get(QUERY_PARAMS.PASSENGERS), 10);
+    // Guard against non-numeric and negative values in the URL
+    if (!isNaN(passengerCount) && passengerCount >= 0) {
+        const select = document.getElementById('passengerCountSelector');
+        select.value = passengerCount;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+
+        // Only proceed to flight count if passengerCount > 0
+        if (passengerCount > 0) {
+            const flightCount = parseInt(params.get(QUERY_PARAMS.FLIGHTS), 10);
+            // Guard against non-numeric and negative values in the URL
+            if (!isNaN(flightCount) && flightCount >= 0) {
+                const select = document.getElementById('flightCountSelector');
+                select.value = flightCount;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // Only proceed to sector selection if flightCount > 0
+                if (flightCount > 0) {
+                    const sectorKm = parseInt(params.get(QUERY_PARAMS.SECTORKM), 10);
+                    // Guard against non-numeric and non-positive values in the URL
+                    if (!isNaN(sectorKm) && sectorKm > 0) {
+                        const inputRange = document.getElementById('sectorSlider');
+                        inputRange.value = sectorKm;
+                        inputRange.dispatchEvent(new Event('input', { bubbles: true }));
+
+                        // Dispatching an input event will display and update the model names.
+                        // Given a sector, we don't need to know the names of the aircraft displayed,
+                        // only the index number of the checked button.
+                        const modelIndex = parseInt(params.get(QUERY_PARAMS.MODEL), 10);
+                        if (!isNaN(modelIndex) && modelIndex >= 0) {
+                            const modelButtonDiv = document.getElementById('modelButtonDiv');
+                            const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
+                            if (modelIndex < modelButtons.length) {
+                                modelButtons[modelIndex].checked = true;
+                                modelButtons[modelIndex].click();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -245,6 +303,42 @@ function updateFractionDisplays() {
 }
 
 /**
+ * Update URL to include a query parameters
+ * 
+ * @param {string} key - query parameter name, e.g. 's' for sector in kilometres
+ * @param {string} value - value string matching parameter, e.g. '2500'
+ */
+function setQueryParam(key, value) {
+    // Parse the current URL
+    const url = new URL(window.location);
+    
+    // Set or update the query parameter
+    url.searchParams.set(key, value);
+    
+    // Update the browser URL without reloading
+    window.history.replaceState({}, '', url.toString());
+    // Use pushState if you want to preserve history, or replaceState if you want to replace the current entry
+}
+
+/**
+ * Remove a set of query parameters from the URL. Query parameters are chained and dependent upon the existence
+ * of other query parameters higher up the chain, in order: 'p' (passenger count), 'n' (flight count), 's' (sector km),
+ * and 'm' (model index).
+ * 
+ * @param {number} paramCount - Number of query parameters to remove, e.g. 3 would remove 'm', 's', and 'n' but not 'p'
+ */
+function removeQueryParam(paramCount) {
+    const url = new URL(window.location.href);
+    Object.keys(QUERY_PARAMS).reverse().forEach((key, index) => {
+        // Index goes 0 (m), 1 (s), 2 (n), 3 (p) in this reversed array
+        if (paramCount > index) {
+            url.searchParams.delete(QUERY_PARAMS[key]);
+        }
+    });
+    window.history.replaceState({}, '', url.toString());
+}
+
+/**
  * For every control, listen for a 'change' event and fire the appropriate function to update values.
  * 
  * @param {object} event - The object describing the changed element on the page
@@ -255,9 +349,14 @@ function handleChangeEvent(event) {
     if (event.target.id == 'passengerCountSelector') {
         if (event.target.value == 0) {
             // Reset everything
+            removeQueryParam(4);
             hideQuestionElements(7);
             hideChartElements(true);
         } else {
+            // Add or update the param in the URL
+            setQueryParam(QUERY_PARAMS.PASSENGERS, event.target.value);
+            // but remove other dependent parameters
+            removeQueryParam(3);
             // If it isn't already displayed, show the next sector
             showElement('howManyFlights');
             // And just in case we're modifying a flight that's already displayed:
@@ -265,10 +364,18 @@ function handleChangeEvent(event) {
         }
     } else if (event.target.id == 'flightCountSelector') {
         if (event.target.value == 0) {
+            // Remove this and its dependent parameters
+            removeQueryParam(3);
             // Reset everything but this question
             hideQuestionElements(6);
             hideChartElements(true);
         } else {
+            // Add or update the param in the URL
+            setQueryParam(QUERY_PARAMS.FLIGHTS, event.target.value);
+            // Since the sector has a default value, it too should be added to the query params
+            setQueryParam(QUERY_PARAMS.SECTORKM, getIntegerElementValue('sectorSlider'));
+            // but remove the other dependent parameter - the selected model
+            removeQueryParam(1);
             // If it isn't already displayed, show the next sector
             showElement('whatSector');
             showElement('aircraftMatches');
@@ -276,6 +383,7 @@ function handleChangeEvent(event) {
             writeData();
         }
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
+        // We have selected a flight profile. Go back and find the model to which it applied.
         const selectedModel = findSelectedModel(getSelectedButtonValue(MODEL_BUTTON_NAME));
         // From the currently selected model, load the flight profile matching the target.
         // We cannot trust indexing from raw data, as the buttons may be filtered.
@@ -313,8 +421,16 @@ function handleClickEvent(event) {
         // This is a click event rather than a change event so that the following scenario is handled:
         // - user selects people, number of flights, trip length, aircraft
         // - user then selects 0 flights, then 1 flight so that aircraftMatches is hidden, then clicks sectorSlider
-        // - At this point list of aircraft is shown with previously selected aircraft selected. User should be
+        // At this point list of aircraft is shown with previously selected aircraft selected. The user should be
         // able to click on the existing selection or change to another one, and get the same functionality.
+
+        // Add or update the INDEX of the selected button in the URL
+        const modelButtonDiv = document.getElementById('modelButtonDiv');
+        const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
+        const selectedModelIndex = [...modelButtons].findIndex(model => model.checked);
+        setQueryParam(QUERY_PARAMS.MODEL, selectedModelIndex);
+        // We have no further dependent query parameters to delete
+
         const selectedModel = findSelectedModel(event.target.value);
         const selectedAircraft = document.getElementById('selectedAircraft');
         selectedAircraft.textContent = `Your selected aircraft: ${selectedModel.name}`;
@@ -340,6 +456,10 @@ function handleClickEvent(event) {
  */
 function handleInputEvent(event) {
     if (event.target.id == 'sectorSlider') {
+        // Add or update the param in the URL
+        setQueryParam(QUERY_PARAMS.SECTORKM, event.target.value);
+        // but remove the remaining dependent parameter
+        removeQueryParam(1);
         handleSectorChange();
     } else if (event.target.id == 'distanceSlider') {
         const distanceDisplay = document.getElementById('distanceDisplay');

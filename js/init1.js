@@ -1,5 +1,5 @@
 import { init } from './menu.js';
 
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
     init(1);
 });
