@@ -20,10 +20,10 @@ const SLIDER_KM_RANGE = 0.30; // Percent higher or lower for kilometre range
 const MAXIMUM_FLIGHTS = 20;
 const MAXIMUM_PASSENGERS = 10;
 const QUERY_PARAMS = {
-    PASSENGERS: 'p',
-    FLIGHTS: 'n',
-    SECTORKM: 's',
-    MODEL: 'm'
+    MODEL: 'model',
+    SECTORKM: 'sector',
+    FLIGHTS: 'flights',
+    PASSENGERS: 'people',
 };
 
 // Define global document elements populated once DOMContentLoaded fires loadSelectors
@@ -171,7 +171,9 @@ function applyQueryParams() {
     const params = new URLSearchParams(window.location.search);
     const passengerCount = parseInt(params.get(QUERY_PARAMS.PASSENGERS), 10);
     // Guard against non-numeric and negative values in the URL
-    if (!isNaN(passengerCount) && passengerCount >= 0) {
+    if (isNaN(passengerCount) || passengerCount < 0) {
+        removeQueryParam(4);
+    } else {
         const select = document.getElementById('passengerCountSelector');
         select.value = passengerCount;
         select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -180,7 +182,9 @@ function applyQueryParams() {
         if (passengerCount > 0) {
             const flightCount = parseInt(params.get(QUERY_PARAMS.FLIGHTS), 10);
             // Guard against non-numeric and negative values in the URL
-            if (!isNaN(flightCount) && flightCount >= 0) {
+            if (isNaN(flightCount) || flightCount < 0) {
+                removeQueryParam(3);
+            } else {
                 const select = document.getElementById('flightCountSelector');
                 select.value = flightCount;
                 select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -189,7 +193,9 @@ function applyQueryParams() {
                 if (flightCount > 0) {
                     const sectorKm = parseInt(params.get(QUERY_PARAMS.SECTORKM), 10);
                     // Guard against non-numeric and non-positive values in the URL
-                    if (!isNaN(sectorKm) && sectorKm > 0) {
+                    if (isNaN(sectorKm) || sectorKm <= 0) {
+                        removeQueryParam(2);
+                    } else {
                         const inputRange = document.getElementById('sectorSlider');
                         inputRange.value = sectorKm;
                         inputRange.dispatchEvent(new Event('input', { bubbles: true }));
@@ -198,7 +204,9 @@ function applyQueryParams() {
                         // Given a sector, we don't need to know the names of the aircraft displayed,
                         // only the index number of the checked button.
                         const modelIndex = parseInt(params.get(QUERY_PARAMS.MODEL), 10);
-                        if (!isNaN(modelIndex) && modelIndex >= 0) {
+                        if (isNaN(modelIndex) || modelIndex < 0) {
+                            removeQueryParam(1);
+                        } else {
                             const modelButtonDiv = document.getElementById('modelButtonDiv');
                             const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
                             if (modelIndex < modelButtons.length) {
@@ -329,8 +337,8 @@ function setQueryParam(key, value) {
  */
 function removeQueryParam(paramCount) {
     const url = new URL(window.location.href);
-    Object.keys(QUERY_PARAMS).reverse().forEach((key, index) => {
-        // Index goes 0 (m), 1 (s), 2 (n), 3 (p) in this reversed array
+    Object.keys(QUERY_PARAMS).forEach((key, index) => {
+        // Index: 0 (m), 1 (s), 2 (n), 3 (p)
         if (paramCount > index) {
             url.searchParams.delete(QUERY_PARAMS[key]);
         }

@@ -100,6 +100,11 @@
     width: 225px;
     height: 230px;
   }
+  #new
+  {
+    position: absolute;
+    top: 1050px;
+  }
 }
 
 #featured img
