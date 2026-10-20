@@ -17,6 +17,7 @@ import {
 const MODEL_BUTTON_NAME = 'model';
 const FLIGHT_PROFILE_BUTTON_NAME = 'flightProfile';
 const SLIDER_KM_RANGE = 0.30; // Percent higher or lower for kilometre range
+const DEFAULT_SECTOR_KM = 10000;
 const MAXIMUM_FLIGHTS = 20;
 const MAXIMUM_PASSENGERS = 10;
 const QUERY_PARAMS = {
@@ -33,9 +34,6 @@ const QUERY_PARAMS = {
 let seatsChart = null;
 let flightChart = null;
 let prm = null;
-// Store the current target value for proper flight profile filtering. 0 means unset.
-// Pin the initial value to show a good selection of long-haul aircraft
-let currentKmTarget = 10000;
 
 /**
  * Utility function to set rounded values in sliders at initialization
@@ -157,162 +155,14 @@ function initialize() {
     const sectorSlider = document.getElementById('sectorSlider');
     sectorSlider.min = minKilometres;
     sectorSlider.max = maxKilometres;
-    sectorSlider.defaultValue = currentKmTarget;
+    sectorSlider.defaultValue = DEFAULT_SECTOR_KM;
     const sectorDisplay = document.getElementById('sectorDisplay');
-    sectorDisplay.textContent = getSectorRangeString(currentKmTarget);
+    sectorDisplay.textContent = getSectorRangeString(sectorSlider.value);
 
     // Load the aircraft models that match the defaults
-    const filteredModels = MODELS.filter((model) => model.hasMatchingSector(currentKmTarget));
+    const filteredModels = MODELS.filter((model) => model.hasMatchingSector(sectorSlider.value));
     const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
     replaceModelButtons(filteredModelNames);
-}
-
-/**
- * Update URL to include a query parameters
- * 
- * @param {string} key - query parameter name, e.g. 's' for sector in kilometres
- * @param {string} value - value string matching parameter, e.g. '2500'
- */
-function setQueryParam(key, value) {
-    // Parse the current URL
-    const url = new URL(window.location);
-
-    // Set or update the query parameter
-    url.searchParams.set(key, value);
-
-    // Update the browser URL without reloading
-    window.history.replaceState({}, '', url.toString());
-    // Use pushState if you want to preserve history, or replaceState if you want to replace the current entry
-}
-
-/**
- * Remove a set of query parameters from the URL. Query parameters are chained and dependent upon the existence
- * of other query parameters higher up the chain, in order: 'p' (passenger count), 'n' (flight count), 's' (sector km),
- * and 'm' (model index).
- * 
- * @param {number} paramCount - Number of query parameters to remove, e.g. 3 would remove 'm', 's', and 'n' but not 'p'
- */
-function removeQueryParam(paramCount) {
-    const url = new URL(window.location.href);
-    Object.keys(QUERY_PARAMS).forEach((key, index) => {
-        // Index: 0 (m), 1 (s), 2 (n), 3 (p)
-        if (paramCount > index) {
-            url.searchParams.delete(QUERY_PARAMS[key]);
-        }
-    });
-    window.history.replaceState({}, '', url.toString());
-}
-
-/**
- * Called once the window is loaded and all document initialization, CSS, etc. has been applied
- */
-function applyQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    setPassengerCount();
-
-    function setPassengerCount() {
-        const passengerCount = getCleanQueryParam(QUERY_PARAMS.PASSENGERS, true);
-        if (passengerCount !== undefined) {
-            const select = document.getElementById('passengerCountSelector');
-            select.value = passengerCount;
-            select.dispatchEvent(new Event('change', { bubbles: true }));
-
-            // Only proceed to flight count if passengerCount > 0
-            if (passengerCount > 0) {
-                setFlightCount();
-            }
-        }
-    }
-
-    function setFlightCount() {
-        const flightCount = getCleanQueryParam(QUERY_PARAMS.FLIGHTS, true);
-        if (flightCount !== undefined) {
-            const select = document.getElementById('flightCountSelector');
-            select.value = flightCount;
-            select.dispatchEvent(new Event('change', { bubbles: true }));
-
-            // Only proceed to sector selection if flightCount > 0
-            if (flightCount > 0) {
-                setSector();
-            }
-        }
-    }
-
-    function setSector() {
-        const sectorKm = getCleanQueryParam(QUERY_PARAMS.SECTORKM, false);
-        // We could just use falsiness here, as sectorKm will be > 0 if it's present at all
-        if (sectorKm) {
-            const sectorRange = document.getElementById('sectorSlider');
-            sectorRange.value = sectorKm;
-            sectorRange.dispatchEvent(new Event('input', { bubbles: true }));
-
-            // Dispatching an input event will display and update the model names.
-            // Given a sector, we don't need to know the names of the aircraft displayed,
-            // only the index number of the checked button.
-            setModel();
-        }
-    }
-
-    function setModel() {
-        const modelIndex = getCleanQueryParam(QUERY_PARAMS.MODEL, true);
-        if (modelIndex !== undefined) {
-            const modelButtonDiv = document.getElementById('modelButtonDiv');
-            const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
-            if (modelIndex < modelButtons.length) {
-                modelButtons[modelIndex].checked = true;
-                modelButtons[modelIndex].click();
-
-                setProfile();
-            }
-        }
-    }
-
-    function setProfile() {
-        const profileIndex = getCleanQueryParam(QUERY_PARAMS.PROFILE, true);
-        if (profileIndex !== undefined) {
-            const profileButtonDiv = document.getElementById('flightButtonDiv');
-            const profileButtons = profileButtonDiv.querySelectorAll('input[type="radio"]');
-            if (profileIndex < profileButtons.length) {
-                profileButtons[profileIndex].checked = true;
-                profileButtons[profileIndex].click();
-
-                setDistance();
-            }
-        }
-    }
-
-    function setDistance() {
-        const distanceKm = getCleanQueryParam(QUERY_PARAMS.DISTANCEKM, true);
-        if (distanceKm !== undefined) {
-            const distanceRange = document.getElementById('distanceSlider');
-            distanceRange.value = distanceKm;
-            distanceRange.dispatchEvent(new Event('input', { bubbles: true }));
-
-            setYears();
-        }
-    }
-
-    function setYears() {
-        const years = getCleanQueryParam(QUERY_PARAMS.YEARS, false);
-        if (years !== undefined) {
-            const yearsRange = document.getElementById('yearsSlider');
-            yearsRange.value = years;
-            yearsRange.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }
-
-    // Return a valid integer value from the given query parameter if possible, otherwise undefined
-    function getCleanQueryParam(param, includeZero) {
-        const value = parseInt(params.get(param), 10);
-        if (isNaN(value) || value < (includeZero ? 0 : 1)) {
-            // Remove this and all dependent query parameters
-            const paramValues = Object.values(QUERY_PARAMS);
-            const index = paramValues.indexOf(param);
-            removeQueryParam(index);
-            return undefined;
-        }
-        return value;
-    }
 }
 
 /**
@@ -405,6 +255,273 @@ function updateFractionDisplays() {
 }
 
 /**
+ * Utility function to get the integer value of a page element using the elementId
+ * 
+ * @param {string} elementId - Id of the target element
+ * @returns {number} integer value of the target element
+ */
+function getIntegerElementValue(elementId) {
+    return parseInt(document.getElementById(elementId).value);
+}
+
+/**
+ * Used by applyQueryParams and handleChangeEvent to set the people query param and show the flights page element.
+ * 
+ * @param {number} passengerCount - Number of passengers for which to calculate the impact
+ */
+function handlePassengerCountChange(passengerCount) {
+    // Add or update the param in the URL
+    setQueryParam(QUERY_PARAMS.PASSENGERS, passengerCount);
+    // If it isn't already displayed, show the next sector
+    showElement('howManyFlights');
+}
+
+/**
+ * Used by applyQueryParams and handleChangeEvent to set flights and sector query parameters
+ * and display the appropriate page elements.
+ * 
+ * @param {number} flightCount - Number of flights for which to calculate the impact
+ */
+function handleFlightCountChange(flightCount) {
+    // Add or update the param in the URL
+    setQueryParam(QUERY_PARAMS.FLIGHTS, flightCount);
+    // Since the sector has a default value, it too should be added to the query params
+    setQueryParam(QUERY_PARAMS.SECTORKM, getIntegerElementValue('sectorSlider'));
+    // If it isn't already displayed, show the next sector
+    showElement('whatSector');
+    showElement('aircraftMatches');
+}
+
+/**
+ * Used by applyQueryParams and handleInputEvent to filter the list of models, preselect a model if there is 
+ * only one in the list (and display its profiles), and hide or display various page elements.
+ */
+function handleSectorChange() {
+    // Generate a filtered subset of models that match the kilometres flown.
+    const targetKilometres = getIntegerElementValue('sectorSlider');
+    const filteredModels = MODELS.filter((model) => model.hasMatchingSector(targetKilometres));
+    const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
+    replaceModelButtons(filteredModelNames);
+    showElement('aircraftMatches');
+    hideElement('selectedAircraft');
+
+    if (filteredModelNames.length == 1) {
+        // The model will already be preselected. Populate flight profiles for the one model
+        const selectedModel = findSelectedModel(filteredModelNames[0]);
+        const filteredProfileNames = selectedModel.getMatchingSectorProfileNames(targetKilometres);
+        showElement('flightProfiles');
+        replaceProfileButtons(filteredProfileNames);
+        // Recalculate using the first flight profile
+        setQueryParam(QUERY_PARAMS.PROFILE, 0);
+        recalculateProfile(selectedModel.getProfileFromName(filteredProfileNames[0]));
+        writeData();
+    } else {
+        hideQuestionElements(3);
+        replaceProfileButtons([]);
+        hideChartElements(true);
+    }
+
+    const sectorDisplay = document.getElementById('sectorDisplay');
+    sectorDisplay.textContent = getSectorRangeString(targetKilometres);
+}
+
+/**
+ * Used by applyQueryParams and handleClickEvent to update model and profile lists.
+ * 
+ * @param {string} modelName - Name of the selected model, e.g. "Airbus A350-900"
+ */
+function handleModelSelection(modelName) {
+    // Add or update the INDEX of the selected button in the URL
+    const modelButtonDiv = document.getElementById('modelButtonDiv');
+    const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
+    const selectedModelIndex = [...modelButtons].findIndex(model => model.checked);
+    setQueryParam(QUERY_PARAMS.MODEL, selectedModelIndex);
+    // We have no further dependent query parameters to delete
+
+    const selectedModel = findSelectedModel(modelName);
+    const selectedAircraft = document.getElementById('selectedAircraft');
+    selectedAircraft.textContent = `Your selected aircraft: ${selectedModel.name}`;
+    // We may be in the process of selecting a specific model from a sector-filtered list
+    // so we should only get the flight profiles that match current values.
+    const flightProfileNames = selectedModel.getMatchingSectorProfileNames(getIntegerElementValue('sectorSlider'));
+    // Once selected, we don't need to see the list again
+    hideElement('aircraftMatches');
+    showElement('selectedAircraft');
+    showElement('flightProfiles');
+    showElement('whatDistance');
+    showElement('howManyYears');
+    replaceProfileButtons(flightProfileNames);
+    // Recalculate using the default first flight profile
+    recalculateProfile(selectedModel.getProfileFromName(flightProfileNames[0]));
+}
+
+/**
+ * Used by applyQueryParams and handleChangeEvent to update profile value.
+ * 
+ * @param {string} profileName - Name of the selected flight profile, e.g. "Long Haul (318 seats)"
+ */
+function handleProfileSelection(profileName) {
+    // We have selected a flight profile. Go back and find the model to which it applied.
+    const selectedModel = findSelectedModel(getSelectedButtonValue(MODEL_BUTTON_NAME));
+    // From the currently selected model, load the flight profile matching the target.
+    // We cannot trust indexing from raw data, as the buttons may be filtered.
+    const selectedProfile = selectedModel.getProfileFromName(profileName);
+    recalculateProfile(selectedProfile);
+}
+
+/**
+ * Update URL to include a query parameters
+ * 
+ * @param {string} key - query parameter name, e.g. 's' for sector in kilometres
+ * @param {string} value - value string matching parameter, e.g. '2500'
+ */
+function setQueryParam(key, value) {
+    // Parse the current URL
+    const url = new URL(window.location);
+
+    // Set or update the query parameter
+    url.searchParams.set(key, value);
+
+    // Update the browser URL without reloading
+    window.history.replaceState({}, '', url.toString());
+    // Use pushState if you want to preserve history, or replaceState if you want to replace the current entry
+}
+
+/**
+ * Remove a set of query parameters from the URL. Query parameters are chained and dependent upon the existence
+ * of other query parameters higher up the chain, in order: 'p' (passenger count), 'n' (flight count), 's' (sector km),
+ * and 'm' (model index).
+ * 
+ * @param {number} paramCount - Number of query parameters to remove, e.g. 3 would remove 'm', 's', and 'n' but not 'p'
+ */
+function removeQueryParam(paramCount) {
+    const url = new URL(window.location.href);
+    Object.keys(QUERY_PARAMS).forEach((key, index) => {
+        // Index: 0 (m), 1 (s), 2 (n), 3 (p)
+        if (paramCount > index) {
+            url.searchParams.delete(QUERY_PARAMS[key]);
+        }
+    });
+    window.history.replaceState({}, '', url.toString());
+}
+
+/**
+ * Called once the window is loaded and all document initialization, CSS, etc. has been applied
+ */
+function applyQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    setPassengerCount();
+    // Recalculate to ensure updated values
+    writeData();
+
+    function setPassengerCount() {
+        const passengerCount = getCleanQueryParam(QUERY_PARAMS.PASSENGERS, true);
+        if (passengerCount !== undefined) {
+            const select = document.getElementById('passengerCountSelector');
+            select.value = passengerCount;
+
+            // Only proceed to flight count if passengerCount > 0
+            if (passengerCount > 0) {
+                handlePassengerCountChange(passengerCount);
+                setFlightCount();
+            }
+        }
+    }
+
+    function setFlightCount() {
+        const flightCount = getCleanQueryParam(QUERY_PARAMS.FLIGHTS, true);
+        if (flightCount !== undefined) {
+            const select = document.getElementById('flightCountSelector');
+            select.value = flightCount;
+
+            // Only proceed to sector selection if flightCount > 0
+            if (flightCount > 0) {
+                handleFlightCountChange(flightCount);
+                setSector();
+            }
+        }
+    }
+
+    function setSector() {
+        const sectorKm = getCleanQueryParam(QUERY_PARAMS.SECTORKM, false);
+        // We could just use falsiness here, as sectorKm will be > 0 if it's present at all
+        if (sectorKm) {
+            const sectorRange = document.getElementById('sectorSlider');
+            sectorRange.value = sectorKm;
+            handleSectorChange();
+
+            // Dispatching an input event will display and update the model names.
+            // Given a sector, we don't need to know the names of the aircraft displayed,
+            // only the index number of the checked button.
+            setModel();
+        }
+    }
+
+    function setModel() {
+        const modelIndex = getCleanQueryParam(QUERY_PARAMS.MODEL, true);
+        if (modelIndex !== undefined) {
+            const modelButtonDiv = document.getElementById('modelButtonDiv');
+            const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
+            if (modelIndex < modelButtons.length) {
+                modelButtons[modelIndex].checked = true;
+                handleModelSelection(modelButtons[modelIndex].value);
+
+                setProfile();
+            }
+        }
+    }
+
+    function setProfile() {
+        const profileIndex = getCleanQueryParam(QUERY_PARAMS.PROFILE, true);
+        if (profileIndex !== undefined) {
+            const profileButtonDiv = document.getElementById('flightButtonDiv');
+            const profileButtons = profileButtonDiv.querySelectorAll('input[type="radio"]');
+            if (profileIndex < profileButtons.length) {
+                profileButtons[profileIndex].checked = true;
+                handleProfileSelection(profileButtons[profileIndex].value);
+
+                setDistance();
+            }
+        }
+    }
+
+    function setDistance() {
+        const distanceKm = getCleanQueryParam(QUERY_PARAMS.DISTANCEKM, true);
+        if (distanceKm !== undefined) {
+            const distanceRange = document.getElementById('distanceSlider');
+            distanceRange.value = distanceKm;
+            const distanceDisplay = document.getElementById('distanceDisplay');
+            distanceDisplay.textContent = distanceKm;
+
+            setYears();
+        }
+    }
+
+    function setYears() {
+        const years = getCleanQueryParam(QUERY_PARAMS.YEARS, false);
+        if (years !== undefined) {
+            const yearsRange = document.getElementById('yearsSlider');
+            yearsRange.value = years;
+            const yearsDisplay = document.getElementById('yearsDisplay');
+            yearsDisplay.textContent = years;
+        }
+    }
+
+    // Return a valid integer value from the given query parameter if possible, otherwise undefined
+    function getCleanQueryParam(param, includeZero) {
+        const value = parseInt(params.get(param), 10);
+        if (isNaN(value) || value < (includeZero ? 0 : 1)) {
+            // Remove this and all dependent query parameters
+            const paramValues = Object.values(QUERY_PARAMS);
+            const index = paramValues.indexOf(param);
+            removeQueryParam(index);
+            return undefined;
+        }
+        return value;
+    }
+}
+
+/**
  * For every control, listen for a 'change' event and fire the appropriate function to update values.
  * 
  * @param {object} event - The object describing the changed element on the page
@@ -419,10 +536,7 @@ function handleChangeEvent(event) {
             hideQuestionElements(7);
             hideChartElements(true);
         } else {
-            // Add or update the param in the URL
-            setQueryParam(QUERY_PARAMS.PASSENGERS, event.target.value);
-            // If it isn't already displayed, show the next sector
-            showElement('howManyFlights');
+            handlePassengerCountChange(event.target.value);
             // And just in case we're modifying a flight that's already displayed:
             writeData();
         }
@@ -434,30 +548,18 @@ function handleChangeEvent(event) {
             hideQuestionElements(6);
             hideChartElements(true);
         } else {
-            // Add or update the param in the URL
-            setQueryParam(QUERY_PARAMS.FLIGHTS, event.target.value);
-            // Since the sector has a default value, it too should be added to the query params
-            setQueryParam(QUERY_PARAMS.SECTORKM, getIntegerElementValue('sectorSlider'));
-            // If it isn't already displayed, show the next sector
-            showElement('whatSector');
-            showElement('aircraftMatches');
+            handleFlightCountChange(event.target.value);
             // And just in case we're modifying a flight that's already displayed:
             writeData();
         }
     } else if (event.target.name == FLIGHT_PROFILE_BUTTON_NAME) {
-        // We have selected a flight profile. Go back and find the model to which it applied.
-        const selectedModel = findSelectedModel(getSelectedButtonValue(MODEL_BUTTON_NAME));
-        // From the currently selected model, load the flight profile matching the target.
-        // We cannot trust indexing from raw data, as the buttons may be filtered.
-        const selectedProfile = selectedModel.getProfileFromName(event.target.value);
-
+        handleProfileSelection(event.target.value);
         // Add or update the INDEX of the selected button in the URL
         const flightButtonDiv = document.getElementById('flightButtonDiv');
         const profileButtons = flightButtonDiv.querySelectorAll('input[type="radio"]');
         const selectedProfileIndex = [...profileButtons].findIndex(profile => profile.checked);
         setQueryParam(QUERY_PARAMS.PROFILE, selectedProfileIndex);
-
-        recalculateProfile(selectedProfile);
+        writeData();
     } else if (event.target.id == 'distanceSlider') {
         // Add or update the param in the URL
         setQueryParam(QUERY_PARAMS.DISTANCEKM, event.target.value);
@@ -498,30 +600,9 @@ function handleClickEvent(event) {
         // - user then selects 0 flights, then 1 flight so that aircraftMatches is hidden, then clicks sectorSlider
         // At this point list of aircraft is shown with previously selected aircraft selected. The user should be
         // able to click on the existing selection or change to another one, and get the same functionality.
-
-        // Add or update the INDEX of the selected button in the URL
-        const modelButtonDiv = document.getElementById('modelButtonDiv');
-        const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
-        const selectedModelIndex = [...modelButtons].findIndex(model => model.checked);
-        setQueryParam(QUERY_PARAMS.MODEL, selectedModelIndex);
-        // We have no further dependent query parameters to delete
-
-        const selectedModel = findSelectedModel(event.target.value);
-        const selectedAircraft = document.getElementById('selectedAircraft');
-        selectedAircraft.textContent = `Your selected aircraft: ${selectedModel.name}`;
-        // We may be in the process of selecting a specific model from a sector-filtered list
-        // so we should only get the flight profiles that match current values.
-        const flightProfileNames = selectedModel.getMatchingSectorProfileNames(currentKmTarget);
-        // Once selected, we don't need to see the list again
-        hideElement('aircraftMatches');
-        showElement('selectedAircraft');
-        showElement('flightProfiles');
-        showElement('whatDistance');
-        showElement('howManyYears');
-        replaceProfileButtons(flightProfileNames);
-        // Recalculate using the default first flight profile
+        handleModelSelection(event.target.value);
         setQueryParam(QUERY_PARAMS.PROFILE, 0);
-        recalculateProfile(selectedModel.getProfileFromName(flightProfileNames[0]));
+        writeData();
     }
 }
 
@@ -569,45 +650,6 @@ function handleInputEvent(event) {
     // We don't need to listen for 'input' events from any other controls, so no 'else' is needed here
 }
 
-/**
- * Utility function to get the integer value of a page element using the elementId
- * 
- * @param {string} elementId - Id of the target element
- * @returns {number} integer value of the target element
- */
-function getIntegerElementValue(elementId) {
-    return parseInt(document.getElementById(elementId).value);
-}
-
-function handleSectorChange() {
-    // Generate a filtered subset of models that match the kilometres flown.
-    const targetKilometres = getIntegerElementValue('sectorSlider');
-    const filteredModels = MODELS.filter((model) => model.hasMatchingSector(targetKilometres));
-    const filteredModelNames = filteredModels.map(filteredModel => filteredModel.name);
-    replaceModelButtons(filteredModelNames);
-    showElement('aircraftMatches');
-    hideElement('selectedAircraft');
-
-    if (filteredModelNames.length == 1) {
-        // The model will already be preselected. Populate flight profiles for the one model
-        const selectedModel = findSelectedModel(filteredModelNames[0]);
-        const filteredProfileNames = selectedModel.getMatchingSectorProfileNames(targetKilometres);
-        showElement('flightProfiles');
-        replaceProfileButtons(filteredProfileNames);
-        // Recalculate using the first flight profile
-        setQueryParam(QUERY_PARAMS.PROFILE, 0);
-        recalculateProfile(selectedModel.getProfileFromName(filteredProfileNames[0]));
-    } else {
-        hideQuestionElements(3);
-        replaceProfileButtons([]);
-        hideChartElements(true);
-    }
-
-    const sectorDisplay = document.getElementById('sectorDisplay');
-    sectorDisplay.textContent = getSectorRangeString(targetKilometres);
-    currentKmTarget = targetKilometres;
-}
-
 // Convenience function for recalculateProfile. Used both for models and flight profiles.
 // Returns undefined if no button had been checked, so calling methods can tell when to bail out.
 function getSelectedButtonValue(buttonName) {
@@ -641,8 +683,6 @@ function recalculateProfile(selectedProfile) {
     distanceSlider.value = selectedProfile.kilometres;
     const distanceDisplay = document.getElementById('distanceDisplay');
     distanceDisplay.innerText = selectedProfile.kilometres;
-
-    writeData();
 }
 
 /**
