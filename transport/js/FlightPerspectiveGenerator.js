@@ -20,6 +20,7 @@ const SLIDER_KM_RANGE = 0.30; // Percent higher or lower for kilometre range
 const DEFAULT_SECTOR_KM = 10000;
 const MAXIMUM_FLIGHTS = 20;
 const MAXIMUM_PASSENGERS = 10;
+const MAXIMUM_YEARS = 10000;
 const QUERY_PARAMS = {
     YEARS: 'years',
     DISTANCEKM: 'distance',
@@ -142,8 +143,10 @@ function initialize() {
     document.getElementById('kmRange').textContent = getFormattedNumber(SLIDER_KM_RANGE * 100);
 
     // Initialize static dropdown lists
-    populateDropdown('flightCountSelector', MAXIMUM_FLIGHTS);
     populateDropdown('passengerCountSelector', MAXIMUM_PASSENGERS);
+    populateDropdown('flightCountSelector', MAXIMUM_FLIGHTS);
+    // Initialize static sliders (distanceSlider is dynamic based on model and profile)
+    document.getElementById('yearsSlider').max = MAXIMUM_YEARS;
 
     // Initially disable all controls and charts. They're reenabled as the user progresses through the questions.
     hideQuestionElements(7);
@@ -392,13 +395,13 @@ function setQueryParam(key, value) {
  * of other query parameters higher up the chain, in order: 'p' (passenger count), 'n' (flight count), 's' (sector km),
  * and 'm' (model index).
  * 
- * @param {number} paramCount - Number of query parameters to remove, e.g. 3 would remove 'm', 's', and 'n' but not 'p'
+ * @param {number} paramCount - Number of query parameters to remove, e.g. 2 would remove 'years' and 'distance'
  */
 function removeQueryParam(paramCount) {
     const url = new URL(window.location.href);
     Object.keys(QUERY_PARAMS).forEach((key, index) => {
-        // Index: 0 (m), 1 (s), 2 (n), 3 (p)
-        if (paramCount > index) {
+        // Index: 0 (years), 1 (distance), ... 5 (flights), 6 (people)
+        if (paramCount >= index) {
             url.searchParams.delete(QUERY_PARAMS[key]);
         }
     });
@@ -415,7 +418,7 @@ function applyQueryParams() {
     writeData();
 
     function setPassengerCount() {
-        const passengerCount = getCleanQueryParam(QUERY_PARAMS.PASSENGERS, true);
+        const passengerCount = getCleanQueryParam(QUERY_PARAMS.PASSENGERS, 0, MAXIMUM_PASSENGERS);
         if (passengerCount !== undefined) {
             const select = document.getElementById('passengerCountSelector');
             select.value = passengerCount;
@@ -429,7 +432,7 @@ function applyQueryParams() {
     }
 
     function setFlightCount() {
-        const flightCount = getCleanQueryParam(QUERY_PARAMS.FLIGHTS, true);
+        const flightCount = getCleanQueryParam(QUERY_PARAMS.FLIGHTS, 0, MAXIMUM_FLIGHTS);
         if (flightCount !== undefined) {
             const select = document.getElementById('flightCountSelector');
             select.value = flightCount;
@@ -443,11 +446,12 @@ function applyQueryParams() {
     }
 
     function setSector() {
-        const sectorKm = getCleanQueryParam(QUERY_PARAMS.SECTORKM, false);
+        const sectorSlider = document.getElementById('sectorSlider');
+        // Maximum slider value is calculated in initialization based on the model with the longest sector
+        const sectorKm = getCleanQueryParam(QUERY_PARAMS.SECTORKM, 1, sectorSlider.max);
         // We could just use falsiness here, as sectorKm will be > 0 if it's present at all
         if (sectorKm) {
-            const sectorRange = document.getElementById('sectorSlider');
-            sectorRange.value = sectorKm;
+            sectorSlider.value = sectorKm;
             handleSectorChange();
 
             // Dispatching an input event will display and update the model names.
@@ -458,7 +462,8 @@ function applyQueryParams() {
     }
 
     function setModel() {
-        const modelIndex = getCleanQueryParam(QUERY_PARAMS.MODEL, true);
+         // There are currently 83 models, but only a subset would ever be shown, based on sector
+        const modelIndex = getCleanQueryParam(QUERY_PARAMS.MODEL, 0, 82);
         if (modelIndex !== undefined) {
             const modelButtonDiv = document.getElementById('modelButtonDiv');
             const modelButtons = modelButtonDiv.querySelectorAll('input[type="radio"]');
@@ -472,7 +477,8 @@ function applyQueryParams() {
     }
 
     function setProfile() {
-        const profileIndex = getCleanQueryParam(QUERY_PARAMS.PROFILE, true);
+        // No model has more than four profiles
+        const profileIndex = getCleanQueryParam(QUERY_PARAMS.PROFILE, 0, 3);
         if (profileIndex !== undefined) {
             const profileButtonDiv = document.getElementById('flightButtonDiv');
             const profileButtons = profileButtonDiv.querySelectorAll('input[type="radio"]');
@@ -486,7 +492,9 @@ function applyQueryParams() {
     }
 
     function setDistance() {
-        const distanceKm = getCleanQueryParam(QUERY_PARAMS.DISTANCEKM, true);
+        const sectorSlider = document.getElementById('sectorSlider');
+        // Allow up to SLIDER_KM_RANGE more kilometres for the trip distance
+        const distanceKm = getCleanQueryParam(QUERY_PARAMS.DISTANCEKM, 0, sectorSlider.max * (1 + SLIDER_KM_RANGE));
         if (distanceKm !== undefined) {
             const distanceRange = document.getElementById('distanceSlider');
             distanceRange.value = distanceKm;
@@ -498,7 +506,7 @@ function applyQueryParams() {
     }
 
     function setYears() {
-        const years = getCleanQueryParam(QUERY_PARAMS.YEARS, false);
+        const years = getCleanQueryParam(QUERY_PARAMS.YEARS, 1, MAXIMUM_YEARS);
         if (years !== undefined) {
             const yearsRange = document.getElementById('yearsSlider');
             yearsRange.value = years;
@@ -508,9 +516,9 @@ function applyQueryParams() {
     }
 
     // Return a valid integer value from the given query parameter if possible, otherwise undefined
-    function getCleanQueryParam(param, includeZero) {
+    function getCleanQueryParam(param, minValue, maxValue) {
         const value = parseInt(params.get(param), 10);
-        if (isNaN(value) || value < (includeZero ? 0 : 1)) {
+        if (isNaN(value) || value < minValue || value > maxValue) {
             // Remove this and all dependent query parameters
             const paramValues = Object.values(QUERY_PARAMS);
             const index = paramValues.indexOf(param);
