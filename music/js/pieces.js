@@ -1,12 +1,12 @@
-// Updated 27 September 2026
+// Updated 25 October 2026
 
 /**
  * Pieces may have more than one type
  */
 class PieceType {
     constructor(id, title) {
-      this.id = id;
-      this.title = title;
+        this.id = id;
+        this.title = title;
     }
 }
 
@@ -70,9 +70,9 @@ export const PIECES = [
     new Piece("Algol (a Binary Star)", [EXP], 1984, 260, { soundClick: "12343433" }, "Scored for analog synthesizer and tape loop. The second half of the piece is completely dissimilar to the first half."),
     new Piece("Algol Revisited", [EXP], 1984, 114, { soundClick: "12343435" }, "Scored for DX7 and analog synthesizer. Uses the same analog sequence, but no tape loop, and more DX7."),
     new Piece("An Industrial Process", [PIANO, VOICE], 1984, 92, { pdf: "AnIndustrialProcess.pdf" }, "Scored for alto and piano (words by Krafft A. Ehricke)"),
-    new Piece("Animation", [FILM], 1989, 0, { soundClick: "12343455" }, "Themes and stings composed for a CTSR television documentary about animation."),
+    new Piece("Animation", [FILM], 1989, 117, { soundClick: "12343455" }, "Themes and stings composed for a CTSR television documentary about animation."),
     new Piece("Battle of the Bulge", [INSTR, FILM], 1994, 30, { soundClick: "12343436" }, "Recorded to accompany an animated film of the same name produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
-    new Piece("Blaah!", [INSTR, FILM], 1994, 79, { mp3: "Blaah!.mp3"}, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>. Unfortunately I lost my original project, so this recording is a poor rendition from an old cassette."),
+    new Piece("Blaah!", [INSTR, FILM], 1994, 79, { mp3: "Blaah!.mp3" }, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>. Unfortunately I lost my original project, so this recording is a poor rendition from an old cassette."),
     new Piece("Bobby's Song", [VOICE, PIANO, THEATRE], 2008, 93, { pdf: "BobbysSong.pdf" }, "Music for Kathy Macovichuk's play 'The Littlest Pirate', winner of the 2009 Robert C. Hayes award."),
     new Piece("Bouncing Belly Button", [INSTR, FILM], 1994, 0, {}, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
     new Piece("The Bridge", [PIANO, VOICE], 1988, 0, {}, "Scored for alto, baritone, and piano (lyrics also by me). A love song in the traditional schmaltzy pop style."),
@@ -92,7 +92,7 @@ export const PIECES = [
     new Piece("December 5", [INSTR], 1991, 342, {}, "A piece composed upon the dissolution of the U.S.S.R., with sounds which remind me of a desolate Russian winter."),
     new Piece("Delusions", [PIANO, INSTR], 1985, 61, { pdf: "Delusions.pdf" }, "Scored for flute and piano, the piece is very fast and in constantly changing metre. Inspired by King Crimson's <em>Lark's Tongues in Aspic</em>. Playable with piano duet, if you don't happen to have a flute."),
     new Piece("Door to Door", [PIANO, INSTR, FILM], 1996, 94, {}, "An adult animation class project produced by Kevin Kurytnik at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>. Every short film had to start and end with the same image of a door, and the piece is consequently divided into very different sections, joined by a repeating sting, or brief motif. Scored for piano, organ, bass, percussion, and synthesizer."),
-    new Piece("The Drowned Girl", [PIANO, VOICE, ARR], 2026, 137, { pdf: "The Drowned Girl.pdf"}, "Arrangement of David Bowie's cover of Kurt Weill's music for Bertold Brecht's play 'Baal'"),
+    new Piece("The Drowned Girl", [PIANO, VOICE, ARR], 2026, 137, { pdf: "The Drowned Girl.pdf" }, "Arrangement of David Bowie's cover of Kurt Weill's music for Bertold Brecht's play 'Baal'"),
     new Piece("Drunk Detective Show Theme", [INSTR, EXP], 2014, 61, { soundCloud: "drunk-detective-show-theme" }, "A one-minute jazz-inspired exercise in 15/16 time: each bar has three beats, each beat having five pulses."),
     new Piece("Eastern Desert Stereotype", [INSTR, FILM], 1991, 201, { youtube: "3PKfg-O7N-g" }, "What the title says. Scored for percussion, bass, flute, and saxophone; recorded with synthesizers."),
     new Piece("Elbow Falls Interlude", [FILM, ORCH], 1996, 159, {}, "Composed for the <B>Broadcast Filler Service</B> to accompany a video of this waterfall."),
@@ -155,8 +155,8 @@ export const PIECES = [
     new Piece("O Canada Ragtime", [ORCH], 1990, 76, { youtube: "ZlgNpsD9bpU" }, "A playful rendition of Canada's national anthem. Scored for orchestra and ragtime pick-up band; recorded with synthesizers. The only one of my compositions to make it onto the Low Budget Radio  <a href=http://www.lowbudgetradio.com/ratearecord.html>Listener's Choice ballot</a> for 2005, where it came in 366th, being narrowly beat out by Stompin' Tom Connors The Man In The Moon Is A Newfie in 364th place, but beating out such classics as Pepe The Purple Platypus by Squish and the Pregnant Elephants. Go figure."),
     new Piece("Of Aragorn", [PIANO, VOICE], 1983, 81, { pdf: "OfAragorn.pdf" }, "Scored for soprano and piano, words by J.R.R. Tolkien."),
     new Piece("Oh Lord, It's Hard To Play Country", [VOICE, INSTR], 1984, 64, { pdf: "HardToPlayCountry.pdf" }, "Scored for twangy country voice, guitar, bass, and snare drum."),
-    new Piece("Omsk", [PIANO], 2005, 80, { mp3: "Omsk.mp3", pdf: "Omsk.pdf"}, 'I collaborated with another composer on the Train Variations for two pianos, but one of the variations\' single piano parts was good enough as a standalone piece: a variation on the folk melody "Bells Were Sounding In Novgorod". Listen for the rhythm of the double set of wheels at each end of a train car: "duhduh ... duhduh duhduh ... duhduh". It is scored using <a href=./PlaceNotation.html>dot place notation.<a>'),
-    new Piece("The Old Country Dance", [PIANO], 1969, 0,{ pdf: "OldCountryDance.pdf" }, "The first piece I composed that I actually think is good."),
+    new Piece("Omsk", [PIANO], 2005, 80, { mp3: "Omsk.mp3", pdf: "Omsk.pdf" }, 'I collaborated with another composer on the Train Variations for two pianos, but one of the variations\' single piano parts was good enough as a standalone piece: a variation on the folk melody "Bells Were Sounding In Novgorod". Listen for the rhythm of the double set of wheels at each end of a train car: "duhduh ... duhduh duhduh ... duhduh". It is scored using <a href=./PlaceNotation.html>dot place notation.<a>'),
+    new Piece("The Old Country Dance", [PIANO], 1969, 0, { pdf: "OldCountryDance.pdf" }, "The first piece I composed that I actually think is good."),
     new Piece("Paranoid Androids", [INSTR], 1990, 238, { youtube: "e722yPkISWQ" }, "I used the weird over-compressed end of a normal electric piano sample as a percussion instrument, and added wailing dischords. We danced around listening to it over and over the day I first recorded it."),
     new Piece("Physics and the Art of Meditation", [INSTR], 1990, 3000, {}, "Music by which to meditate, or watch <a href=\"http://flippingartgallery.com\">great art by Erica Neumann</a>!  The title is a joke. Has nothing to do with physics. Whipped up in time to sell cassettes at a science fiction/fantasy convention, and sales were satisfyingly brisk. Side one of the cassette was wet with water sounds, and side two was dry with crickets and percussion."),
     new Piece("Piece for DX7 and Piano", [PIANO, INSTR], 1985, 204, { pdf: "PieceforPianoandDX7.pdf" }, "Performed by Steve Hansen Smythe and George Fenwick, some recital hour at the U of C."),
@@ -190,7 +190,7 @@ export const PIECES = [
     new Piece("Takakkaw Falls", [PIANO], 2019, 250, { pdf: "Takakkaw Falls Piano Duet.pdf" }, "Piano duet (one piano, four hands) arrangement of the orchestral version."),
     new Piece("The Tale of Tinuviel", [VOICE, PIANO, INSTR], 1980, 0, {}, "Scored for tenor and piano or folk instruments (words by J.R.R. Tolkien)"),
     new Piece("Tangle Creek Interlude", [FILM, ORCH], 1996, 261, { soundClick: "12347854" }, "Scored for orchestra and piano. Composed for the <B>Broadcast Filler Service</B> to accompany a video of this creek."),
-    new Piece("Telephone Answering Machine Message", [VOICE], 1980, 0,{ pdf: "TelephoneAnsweringMachineMessage.pdf" }, "Scored for four men's voices."),
+    new Piece("Telephone Answering Machine Message", [VOICE], 1980, 0, { pdf: "TelephoneAnsweringMachineMessage.pdf" }, "Scored for four men's voices."),
     new Piece("Theme and Variations", [PIANO], 1984, 295, { soundClick: "11384708", musicaneo: "sm-85472_theme_and_variations.html" }, "Revised in 1987, intermediate difficulty. Theme and five variations, based on two 12-tone rows generated by a program in Basic running on a Timex Sinclair ZX81 computer. Performed by Gordon Rumson in concert in 1994."),
     new Piece("Theory Student Electro Shock Collar", [VOICE, INSTR], 1993, 45, { soundClick: "12343440" }, "An imaginary radio advertisement for a really useful product - if you're a music theory teacher."),
     new Piece("Thirteen Elephants I & II", [INSTR], 1984, 69, { soundClick: "12343454" }, "Two synthesized versions of the second variation of the Theme and Variations."),

@@ -2,6 +2,7 @@ import { PIECE_TYPES, PIECES, PIANO, INSTR } from './pieces.js';
 
 // Load music table once DOM in music.html is ready
 document.addEventListener("DOMContentLoaded", selectPieces);
+document.getElementById('contents').addEventListener('click', handleClickEvent);
 
 // selectedPieces needs to be global so it can be set by selectPieces
 // but then used separately to sort the selected pieces
@@ -20,7 +21,7 @@ class Sorter {
         this.text = sortText;
         this.direction = initialDirection;
     }
-    
+
     toggleDirection() {
         if (this.direction === 0) {
             // Assume a default ascending direction
@@ -63,6 +64,29 @@ function sortPieces() {
     });
 }
 
+function handleClickEvent(event) {
+    if (event.target.id == 'duration') {
+        // Executed when the user clicks the Duration header in music.html
+        titleSorter.clearDirection();
+        dateSorter.clearDirection();
+        setSort(durSorter);
+        // Note that we do not want or need to pass a new pageTitle - it will already have been set upon initial loading
+        loadTable();
+    } else if (event.target.id == 'title') {
+        // Executed when the user clicks the Title header in music.html
+        dateSorter.clearDirection();
+        durSorter.clearDirection();
+        setSort(titleSorter);
+        loadTable();
+    } else if (event.target.id == 'year') {
+        // Executed when the user clicks the Date header in music.html
+        titleSorter.clearDirection();
+        durSorter.clearDirection();
+        setSort(dateSorter);
+        loadTable();
+    }
+}
+
 /**
  * Toggle the direction on the given sorter, and set it to be the current sorter.
  * Called from durSort, titleSort, or dateSort in music.js when user changes sort criteria.
@@ -75,7 +99,7 @@ function setSort(sorter) {
     durSorter.setHeaderText();
     dateSorter.setHeaderText();
     titleSorter.setHeaderText();
-	sortPieces();
+    sortPieces();
 }
 
 /**
@@ -83,7 +107,7 @@ function setSort(sorter) {
  * @param {string} paramName - Typically either 'type' or 'keyword'
  * @returns {string} containing the parameter value if present, otherwise undefined
  */
- function getParam(paramName) {
+function getParam(paramName) {
     return new URLSearchParams(window.location.search).get(paramName);
 }
 
@@ -176,8 +200,8 @@ function getDateCell(piece) {
 function loadTable(pageTitle) {
     const theTable = document.getElementById("mainTable");
     while (theTable.rows.length > 1) {
-      theTable.deleteRow(1);
-      // Delete the second row of table until only the header is left
+        theTable.deleteRow(1);
+        // Delete the second row of table until only the header is left
     }
     if (pageTitle) {
         theTable.caption.innerHTML = pageTitle;
@@ -190,7 +214,7 @@ function loadTable(pageTitle) {
         newRow.appendChild(getDescriptionCell(piece));
         newRow.appendChild(getDateCell(piece));
         theTable.tBodies[0].appendChild(newRow);
-   });
+    });
 }
 
 /**
@@ -237,29 +261,4 @@ function selectPieces() {
     // Since selectedPieces is global, sortPieces can find and mutate the array.
     sortPieces();
     loadTable(pageTitle);
-}
-
-// Executed when the user clicks the Duration header in music.html
-function durSort() {
-	titleSorter.clearDirection();
-	dateSorter.clearDirection();
-	setSort(durSorter);
-    // Note that we do not want or need to pass a new pageTitle - it will already have been set upon initial loading
-    loadTable();
-}
-
-// Executed when the user clicks the Title header in music.html
-function titleSort() {
-	dateSorter.clearDirection();
-	durSorter.clearDirection();
-	setSort(titleSorter);
-    loadTable();
-}
-
-// Executed when the user clicks the Date header in music.html
-function dateSort() {
-	titleSorter.clearDirection();
-	durSorter.clearDirection();
-	setSort(dateSorter);
-    loadTable();
 }
