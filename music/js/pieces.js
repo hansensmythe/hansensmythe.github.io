@@ -49,8 +49,6 @@ class Piece {
             this.recording = `https://www.youtube.com/watch?v=${media.youtube}`;
         } else if (media.soundClick) {
             this.recording = `https://www.soundclick.com/music/songinfo_standalone/?songID=${media.soundClick}`;
-        } else if (media.soundCloud) {
-            this.recording = `https://soundcloud.com/steve-hansen-smythe/${media.soundCloud}`;
         }
         // We can instead - or also - provide a local MP3 to load into the player
         if (media.mp3) {
