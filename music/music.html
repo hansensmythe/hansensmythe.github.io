@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
+
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="Author" content="Steve Hansen Smythe">
@@ -12,40 +13,58 @@
     <script src="./js/music.js" type="module"></script>
     <script src="../js/init1.js" type="module"></script>
     <div id="header"></div>
-  </head>
-  <body>
-    <div id="contents">
-      <form action="music.html">
-        Search for keyword: <input onchange="this.form.submit()" type="text" id="keyword" name="keyword" size="13" placeholder="Search">
-      </form>
-      <form action="music.html">
-        or select a category:
-        <select onchange="this.form.submit()" id="type" name="type">
-          <option value="piano">Solo Piano</option>
-          <option value="voice">Vocal</option>
-          <option value="instr">Instrumental</option>
-          <option value="theatre">for Theatre</option>
-          <option value="film">for Film/TV</option>
-          <option value="orch">Orchestral</option>
-          <option value="exp">Experimental</option>
-          <option value="arr">Arrangements</option>
-          <option value="all">All pieces</option>
-        </select>
-      </form>
+</head>
 
-      <!-- All the rows in the table except the header row will be replaced -->
-      <table id="mainTable">
-        <caption>
-          This page has been optimized for Javascript-enabled and standards-compliant browsers.
-        </caption>
-        <tr valign="top">
-          <th>Media</th>
-          <th><label id="duration">Duration</label></th>
-          <th><label id="title">Title</label></th>
-          <th><label id="year">Year</label></th>
-        </tr>
-      </table>
-      <a href="https://stevehansensmythe.musicaneo.com/"><img src="https://data.musicaneo.com/promotools/images/buy_my_sheet_music_en.gif" alt="Buy my sheet music at MusicaNeo" title="Buy my sheet music at MusicaNeo" /></a>
+<body>
+    <div id="contents">
+        <div id="controls">
+            <div>
+                <form action="music.html">
+                    Search for keyword: <input onchange="this.form.submit()" type="text" id="keyword" name="keyword"
+                        size="13" placeholder="Search">
+                </form>
+                <form action="music.html">
+                    or select a category:
+                    <select onchange="this.form.submit()" id="type" name="type">
+                        <option value="piano">Solo Piano</option>
+                        <option value="voice">Vocal</option>
+                        <option value="instr">Instrumental</option>
+                        <option value="theatre">for Theatre</option>
+                        <option value="film">for Film/TV</option>
+                        <option value="orch">Orchestral</option>
+                        <option value="exp">Experimental</option>
+                        <option value="arr">Arrangements</option>
+                        <option value="all">All pieces</option>
+                    </select>
+                </form>
+            </div>
+            <div>
+                <audio controls preload="auto" id="player">
+                    <source id="audioMP3" src="" type="audio/mpeg">
+                    Your browser does not support this audio player.
+                </audio>
+            </div>
+            <div>
+                <span id="playerText">Load music into this player by clicking the
+                    <img src="./images/play.png" width="24" height="24"> button next to any piece</span>
+            </div>
+        </div>
+        <!-- All the rows in the table except the header row will be replaced -->
+        <table id="mainTable">
+            <caption>
+                This page has been optimized for Javascript-enabled and standards-compliant browsers.
+            </caption>
+            <tr valign="top">
+                <th>Media</th>
+                <th><label id="duration">Duration</label></th>
+                <th><label id="title">Title</label></th>
+                <th><label id="year">Year</label></th>
+            </tr>
+        </table>
+        <a href="https://stevehansensmythe.musicaneo.com/"><img
+                src="https://data.musicaneo.com/promotools/images/buy_my_sheet_music_en.gif"
+                alt="Buy my sheet music at MusicaNeo" title="Buy my sheet music at MusicaNeo" /></a>
     </div>
-  </body>
+</body>
+
 </HTML>

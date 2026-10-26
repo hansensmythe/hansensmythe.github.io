@@ -1,3 +1,11 @@
+#controls {
+    display: flex;
+    gap: 16px; /* Optional spacing between divs */
+    align-items: center;
+    border-bottom: 2px solid #000;
+    margin-bottom: 20px;
+}
+
 dt
 {
   font-weight: bold;
@@ -13,6 +21,7 @@ input
     border: 1px solid #000;
     background-color: beige;
 }
+
 label {
   cursor: pointer;
   transition: background-color 0.2s;

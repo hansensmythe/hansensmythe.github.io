@@ -27,7 +27,7 @@ class Piece {
      * @param {object[]} types - Array of one or more PIECE_TYPES used for filtering
      * @param {number} year - Year composed
      * @param {number} duration - Number of seconds duration
-     * @param {object} media - Object containing from 0 to 2 media elements that populate the recording and scores fields
+     * @param {object} media - Object containing from 0 to 3 media elements that populate the localMP3, recording, and scores fields
      * @param {string} description
      */
     constructor(title, types, year, duration, media, description) {
@@ -44,17 +44,17 @@ class Piece {
             // No duration. Set default blank string
             this.formattedTime = "";
         }
-        // Choose only one type of recorded medium:
+        // Choose only one type of external recorded medium:
         if (media.youtube) {
             this.recording = `https://www.youtube.com/watch?v=${media.youtube}`;
         } else if (media.soundClick) {
             this.recording = `https://www.soundclick.com/music/songinfo_standalone/?songID=${media.soundClick}`;
         } else if (media.soundCloud) {
             this.recording = `https://soundcloud.com/steve-hansen-smythe/${media.soundCloud}`;
-        } else if (media.mp3) {
-            this.recording = `mp3/${media.mp3}`;
-        } else if (media.proton) {
-            this.recording = `https://drive.proton.me/urls/${media.proton}`;
+        }
+        // We can instead - or also - provide a local MP3 to load into the player
+        if (media.mp3) {
+            this.localMP3 = media.mp3;
         }
         if (media.pdf) {
             this.score = `scores/${media.pdf}`;
@@ -75,7 +75,7 @@ export const PIECES = [
     new Piece("An Industrial Process", [PIANO, VOICE], 1984, 92, { pdf: "AnIndustrialProcess.pdf" }, "Scored for alto and piano (words by Krafft A. Ehricke)"),
     new Piece("Animation", [FILM], 1989, 117, { soundClick: "12343455" }, "Themes and stings composed for a CTSR television documentary about animation."),
     new Piece("Battle of the Bulge", [INSTR, FILM], 1994, 30, { soundClick: "12343436" }, "Recorded to accompany an animated film of the same name produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
-    new Piece("Blaah!", [INSTR, FILM], 1994, 79, { mp3: "Blaah!.mp3" }, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>. Unfortunately I lost my original project, so this recording is a poor rendition from an old cassette."),
+    new Piece("Blaah!", [INSTR, FILM], 1994, 79, { mp3: "Blaah!" }, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>. Unfortunately I lost my original project, so this recording is a poor rendition from an old cassette."),
     new Piece("Bobby's Song", [VOICE, PIANO, THEATRE], 2008, 93, { pdf: "BobbysSong.pdf" }, "Music for Kathy Macovichuk's play 'The Littlest Pirate', winner of the 2009 Robert C. Hayes award."),
     new Piece("Bouncing Belly Button", [INSTR, FILM], 1994, 0, {}, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
     new Piece("The Bridge", [PIANO, VOICE], 1988, 0, {}, "Scored for alto, baritone, and piano (lyrics also by me). A love song in the traditional schmaltzy pop style."),
@@ -101,7 +101,7 @@ export const PIECES = [
     new Piece("Elbow Falls Interlude", [FILM, ORCH], 1996, 159, {}, "Composed for the <B>Broadcast Filler Service</B> to accompany a video of this waterfall."),
     new Piece("Engagement", [INSTR, EXP], 2005, 214, { soundClick: "12343414" }, "Scored for two altos and synthesizer (or bass, guitar, zither, bagpipe, flute, oboe, trumpet, trombone, tuba, marimba, and percussion). A piece exploring alternative rhythms. (The primary time signature is five beats of dash-dotted quarters, and a dotted eighth. See my <a href=placenotation.html>essay on modifications to music notation</a> if you want to know what a dash-dotted quarter is.)"),
     new Piece("Engagement", [INSTR, EXP], 2015, 214, { soundCloud: "engagement" }, "Re-recorded version of Engagement (2005) done on Logic Pro X."),
-    new Piece("Evangeline", [PIANO, VOICE, INSTR], 2012, 285, { mp3: "Evangeline - orchestral accompaniment.mp3", pdf: "Evangeline.pdf" }, "Words by Sappho Hansen Smythe. Recording scored for voice, flute, french horn, trumpet, percussion, acoustic guitar, bass guitar, piano, and strings; manuscript simplified for voice and piano."),
+    new Piece("Evangeline", [PIANO, VOICE, INSTR], 2012, 285, { mp3: "Evangeline - orchestral accompaniment", pdf: "Evangeline.pdf" }, "Words by Sappho Hansen Smythe. Recording scored for voice, flute, french horn, trumpet, percussion, acoustic guitar, bass guitar, piano, and strings; manuscript simplified for voice and piano."),
     new Piece("Evening", [FILM], 1989, 195, { youtube: "TCwBqjwBbIk" }, "Based on a Mozart sonatina; originally composed for the <B>Canadian Cancer Society</B> video <em>BSE For Every Woman</em>."),
     new Piece("Evolution of the Long-Tailed Bird", [INSTR, FILM], 1994, 0, {}, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
     new Piece("Fanfare for Mark", [INSTR], 1983, 4, {}, "Fanfare for three trombones, ending in a chord using deliberately mistuned notes, in honour of the ego and unbridled arrogance of another fellow trombonist, and played upon his arrival."),
@@ -111,10 +111,10 @@ export const PIECES = [
     new Piece("Four-track DX7 improvisation in 11/8", [INSTR], 1984, 178, {}, "I dragged my new DX7 into the electronic music lab at the University of Calgary and spent the holidays playing around. (I had no multitracking capability at home.) Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
     new Piece("Four-track DX7 improvisation in 15/8", [INSTR], 1984, 286, {}, "I dragged my new DX7 into the electronic music lab at the University of Calgary and spent the holidays playing around. (I had no multitracking capability at home.) Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
     new Piece("Four-track DX7 improvisation in 4/4", [INSTR], 1984, 233, {}, "I dragged my new DX7 into the electronic music lab at the University of Calgary and spent the holidays playing around. (I had no multitracking capability at home.) Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
-    new Piece("Four-track Microcomposer Improv", [EXP], 1984, 231, { mp3: "Microcomposer Improv.mp3" }, "Improvisation on four tracks using Roland MC4 Microcomposer, recorded in the electronic music lab at the U of Calgary. Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
+    new Piece("Four-track Microcomposer Improv", [EXP], 1984, 231, { mp3: "Microcomposer Improv" }, "Improvisation on four tracks using Roland MC4 Microcomposer, recorded in the electronic music lab at the U of Calgary. Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
     new Piece("Four-track Soundtrack Improv", [EXP], 1984, 186, { soundClick: "12343540" }, "Moody improvisation on four tracks, recorded in the electronic music lab at the U of Calgary. Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
-    new Piece("Four-track Tinuviel Improv", [EXP], 1984, 271, { mp3: "Tinuviel Improv.mp3" }, "Improvisation on four tracks using Roland MC4 Microcomposer looping the ostinato from Tinuviel, recorded in the electronic music lab at the U of Calgary. Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
-    new Piece("The Front Door", [PIANO], 1990, 222, { mp3: "The Front Door.mp3" }, "Slow, melancholy. Part of an impromptu suite of pieces, preceded by <em>The Kitchen Stirs At Dawn</em> and followed by <em>Glow in the Rear View Mirror</em>. Unfortunately I lost my original project, so this recording is a poor rendition from an old cassette."),
+    new Piece("Four-track Tinuviel Improv", [EXP], 1984, 271, { mp3: "Tinuviel Improv" }, "Improvisation on four tracks using Roland MC4 Microcomposer looping the ostinato from Tinuviel, recorded in the electronic music lab at the U of Calgary. Unfortunately the original reel-to-reel is lost, so this poor recording comes from an old cassette."),
+    new Piece("The Front Door", [PIANO], 1990, 222, { mp3: "The Front Door" }, "Slow, melancholy. Part of an impromptu suite of pieces, preceded by <em>The Kitchen Stirs At Dawn</em> and followed by <em>Glow in the Rear View Mirror</em>. Unfortunately I lost my original project, so this recording is a poor rendition from an old cassette."),
     new Piece("Fugue for Flute, Violin, and Viola", [INSTR], 1993, 82, { pdf: "FugueFluteViolinViola.pdf" }, "A traditional three-voice fugue demonstrating various common fugal devices, but exhibiting too great a range to be playable on a single keyboard by a single player."),
     new Piece("Fugue in d minor", [PIANO], 1992, 36, { pdf: "FugueInDMinor.pdf" }, "A traditional three-voice fugue written as an exercise, and playable on a keyboard."),
     new Piece("Glow in the Rear View Mirror", [PIANO, INSTR], 1990, 253, { youtube: "UiG3wUnb1Mg", pdf: "GlowRearViewMirror.pdf" }, "Scored for two pianos, recorded on synthesizer. Based on <em>Vignettes</em> by Lee Sebel (a demo piece composed for owners of the Roland W30 Synthesizer). The glow in the title is receding city lights. At one point in the piece you hear the rush of a truck in the opposing lane."),
@@ -141,7 +141,7 @@ export const PIECES = [
     new Piece("Les Pingoins Explorent/The Exploring Penguins I", [FILM], 1990, 61, { soundClick: "12343441" }, "Music and sounds for the first of two versions of the animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
     new Piece("Les Pingoins Explorent/The Exploring Penguins II", [FILM], 1991, 121, { soundClick: "12348568" }, "Music and sounds for the second of two versions of the animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_top>Quickdraw Animation Society</a>."),
     new Piece("Level Up (Arrangement)", [ARR, VOICE, PIANO, INSTR], 2014, 229, { pdf: "LevelUp.pdf" }, "Arrangement of Vienna Teng's piece, <a href=\"http://viennateng.bandcamp.com/track/level-up\">Level Up</a>, from her 2013 album <a href=\"http://viennateng.bandcamp.com/album/aims\">Aims</a>. Scored for two altos, grand piano, violin, trombone, and tin whistle."),
-    new Piece("Level Up (Arrangement in A major)", [ARR, VOICE, PIANO, INSTR], 2021, 225, { mp3: "Level Up Video Master.mp3", pdf: "LevelUpA.pdf" }, "Arrangement and transposition of Vienna Teng's piece, <a href=\"http://viennateng.bandcamp.com/track/level-up\">Level Up</a>, from her 2013 album <a href=\"http://viennateng.bandcamp.com/album/aims\">Aims</a>. Scored for tenor, baritone, grand piano, synthesizer, two trombones, and tin whistle."),
+    new Piece("Level Up (Arrangement in A major)", [ARR, VOICE, PIANO, INSTR], 2021, 225, { mp3: "Level Up Video Master", pdf: "LevelUpA.pdf" }, "Arrangement and transposition of Vienna Teng's piece, <a href=\"http://viennateng.bandcamp.com/track/level-up\">Level Up</a>, from her 2013 album <a href=\"http://viennateng.bandcamp.com/album/aims\">Aims</a>. Scored for tenor, baritone, grand piano, synthesizer, two trombones, and tin whistle."),
     new Piece("Library Technology", [FILM], 1988, 77, { soundClick: "12343448" }, "Composed for a <a href=http://sait.ab.ca/ target=_top>SAIT</a> Open House video produced by CTSR students."),
     new Piece("Life Symphony", [ORCH], 1996, 1500, { pdf: "LifeSymphony.pdf" }, "For any number of instrumentalists, the more the merrier. My most philosophically important work. Dedicated to Stephen Jay Gould. Five movements delimited by various biorevolutions (emergence of life, oxygen-releasing photosynthesis, multicellular life, colonization of land), aleatorically tracing the history of life at a ratio of 3 million years per second. Commissioned by the <B>Alberta Heritage Foundation for Medical Research</B>. Reorganized and rescored September 2006."),
     new Piece("Little Mermaid", [INSTR], 1984, 138, { soundClick: "12343449" }, "Scored for synthesizer or guitar, strings, koto, and vibes. The first 27 seconds was composed by Kristal Calvert for a children's opera; I composed the remaining material."),
@@ -158,7 +158,7 @@ export const PIECES = [
     new Piece("O Canada Ragtime", [ORCH], 1990, 76, { youtube: "ZlgNpsD9bpU" }, "A playful rendition of Canada's national anthem. Scored for orchestra and ragtime pick-up band; recorded with synthesizers. The only one of my compositions to make it onto the Low Budget Radio  <a href=http://www.lowbudgetradio.com/ratearecord.html>Listener's Choice ballot</a> for 2005, where it came in 366th, being narrowly beat out by Stompin' Tom Connors The Man In The Moon Is A Newfie in 364th place, but beating out such classics as Pepe The Purple Platypus by Squish and the Pregnant Elephants. Go figure."),
     new Piece("Of Aragorn", [PIANO, VOICE], 1983, 81, { pdf: "OfAragorn.pdf" }, "Scored for soprano and piano, words by J.R.R. Tolkien."),
     new Piece("Oh Lord, It's Hard To Play Country", [VOICE, INSTR], 1984, 64, { pdf: "HardToPlayCountry.pdf" }, "Scored for twangy country voice, guitar, bass, and snare drum."),
-    new Piece("Omsk", [PIANO], 2005, 80, { mp3: "Omsk.mp3", pdf: "Omsk.pdf" }, 'I collaborated with another composer on the Train Variations for two pianos, but one of the variations\' single piano parts was good enough as a standalone piece: a variation on the folk melody "Bells Were Sounding In Novgorod". Listen for the rhythm of the double set of wheels at each end of a train car: "duhduh ... duhduh duhduh ... duhduh". It is scored using <a href=./PlaceNotation.html>dot place notation.<a>'),
+    new Piece("Omsk", [PIANO], 2005, 80, { mp3: "Omsk", pdf: "Omsk.pdf" }, 'I collaborated with another composer on the Train Variations for two pianos, but one of the variations\' single piano parts was good enough as a standalone piece: a variation on the folk melody "Bells Were Sounding In Novgorod". Listen for the rhythm of the double set of wheels at each end of a train car: "duhduh ... duhduh duhduh ... duhduh". It is scored using <a href=./PlaceNotation.html>dot place notation.<a>'),
     new Piece("The Old Country Dance", [PIANO], 1969, 0, { pdf: "OldCountryDance.pdf" }, "The first piece I composed that I actually think is good."),
     new Piece("Paranoid Androids", [INSTR], 1990, 238, { youtube: "e722yPkISWQ" }, "I used the weird over-compressed end of a normal electric piano sample as a percussion instrument, and added wailing dischords. We danced around listening to it over and over the day I first recorded it."),
     new Piece("Physics and the Art of Meditation", [INSTR], 1990, 3000, {}, "Music by which to meditate. The title is a joke. Has nothing to do with physics. Whipped up in time to sell cassettes at a science fiction/fantasy convention, and sales were satisfyingly brisk. Side one of the cassette was wet with water sounds, and side two was dry with crickets and percussion."),

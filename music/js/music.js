@@ -1,7 +1,8 @@
 import { PIECE_TYPES, PIECES, PIANO, INSTR } from './pieces.js';
+const PLAYBUTTON_CLASS = 'playButton';
 
 // Load music table once DOM in music.html is ready
-document.addEventListener("DOMContentLoaded", selectPieces);
+document.addEventListener('DOMContentLoaded', selectPieces);
 document.getElementById('contents').addEventListener('click', handleClickEvent);
 
 // selectedPieces needs to be global so it can be set by selectPieces
@@ -84,6 +85,14 @@ function handleClickEvent(event) {
         durSorter.clearDirection();
         setSort(dateSorter);
         loadTable();
+    } else if (event.target.classList.contains(PLAYBUTTON_CLASS)) {
+        const playerText = document.getElementById('playerText');
+        playerText.textContent = `Playing '${event.target.alt}'`;
+        const audioMP3 = document.getElementById('audioMP3');
+        audioMP3.src = `./mp3/${event.target.alt}.mp3`;
+        const player = document.getElementById('player');
+        player.load();
+        player.play();
     }
 }
 
@@ -112,6 +121,22 @@ function getParam(paramName) {
 }
 
 /**
+ * Create a new square image with fixed width for clickable media links
+ * 
+ * @param {string} imagename - Filename of the image
+ * @param {string} imagealt - Alternative text for non-image-displaying interfaces
+ * @returns img element
+ */
+function getMediaImage(imagename, imagealt) {
+    const mediaImage = document.createElement('img');
+    mediaImage.setAttribute('src', imagename);
+    mediaImage.setAttribute('width', 24);
+    mediaImage.setAttribute('height', 24);
+    mediaImage.setAttribute('alt', imagealt);
+    return mediaImage;
+}
+
+/**
  * Create a new image and media link.
  * @param {string} filepath - Path to the requested media
  * @param {string} imagename - Filename of the image
@@ -119,11 +144,7 @@ function getParam(paramName) {
  * @returns {object} An "a" anchor object containing an "img" image as a link
  */
 function getMediaAnchor(filepath, imagename, imagealt) {
-    const mediaImage = document.createElement("img");
-    mediaImage.src = imagename;
-    mediaImage.width = 24;
-    mediaImage.height = 24;
-    mediaImage.alt = imagealt;
+    const mediaImage = getMediaImage(imagename, imagealt);
 
     const mediaAnchor = document.createElement("a");
     mediaAnchor.href = filepath;
@@ -145,6 +166,12 @@ function getMediaCell(piece) {
     if (piece.recording) {
         const anchor = getMediaAnchor(piece.recording, "./images/mp3.gif", "Recording");
         mediaCell.appendChild(anchor);
+    }
+    if (piece.localMP3) {
+        // Create img containing appropriate play button, and leverage alt to contain the filename
+        const playButton = getMediaImage('./images/play.png', piece.localMP3);
+        playButton.className = PLAYBUTTON_CLASS;
+        mediaCell.appendChild(playButton);
     }
     mediaCell.className = "media";
     return mediaCell;
