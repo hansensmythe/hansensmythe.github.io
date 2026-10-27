@@ -1,5 +1,7 @@
 import { PIECE_TYPES, PIECES, PIANO, INSTR } from './pieces.js';
 const PLAYBUTTON_CLASS = 'playButton';
+const ALBUM_DIMENSION = 48;
+const MEDIA_DIMENSION = 24;
 
 // Load music table once DOM in music.html is ready
 document.addEventListener('DOMContentLoaded', selectPieces);
@@ -43,9 +45,9 @@ class Sorter {
     }
 }
 
-const durSorter = new Sorter("duration", "Duration", 0);
-const titleSorter = new Sorter("title", "Title", 0);
-const dateSorter = new Sorter("year", "Year", -1);
+const durSorter = new Sorter('duration', 'Duration', 0);
+const titleSorter = new Sorter('title', 'Title', 0);
+const dateSorter = new Sorter('year', 'Year', -1);
 // Use dateSorter as a default
 let currentSorter = dateSorter;
 
@@ -121,19 +123,30 @@ function getParam(paramName) {
 }
 
 /**
- * Create a new square image with fixed width for clickable media links
+ * Create a new square image with fixed width for clickable media links or album covers
  * 
  * @param {string} imagename - Filename of the image
  * @param {string} imagealt - Alternative text for non-image-displaying interfaces
+ * @param {number} dimension - number of pixels wide and high, assuming image is square
  * @returns img element
  */
-function getMediaImage(imagename, imagealt) {
+function getImage(imagename, imagealt, dimension) {
     const mediaImage = document.createElement('img');
     mediaImage.setAttribute('src', imagename);
-    mediaImage.setAttribute('width', 24);
-    mediaImage.setAttribute('height', 24);
+    mediaImage.setAttribute('width', dimension);
+    mediaImage.setAttribute('height', dimension);
     mediaImage.setAttribute('alt', imagealt);
     return mediaImage;
+}
+
+function getAlbumImgCell(piece) {
+    const albumCell = document.createElement('td');
+    if (piece.img) {
+        const albumImage = getImage(`./albumImages/${piece.img}`, piece.title, ALBUM_DIMENSION);
+        albumCell.appendChild(albumImage);
+    }
+    albumCell.className = 'album';
+    return albumCell;
 }
 
 /**
@@ -144,9 +157,9 @@ function getMediaImage(imagename, imagealt) {
  * @returns {object} An "a" anchor object containing an "img" image as a link
  */
 function getMediaAnchor(filepath, imagename, imagealt) {
-    const mediaImage = getMediaImage(imagename, imagealt);
+    const mediaImage = getImage(imagename, imagealt, MEDIA_DIMENSION);
 
-    const mediaAnchor = document.createElement("a");
+    const mediaAnchor = document.createElement('a');
     mediaAnchor.href = filepath;
     mediaAnchor.appendChild(mediaImage);
     return mediaAnchor;
@@ -158,22 +171,22 @@ function getMediaAnchor(filepath, imagename, imagealt) {
  * @returns {object} a new Table Data cell containing links to score and recording, if they exist.
  */
 function getMediaCell(piece) {
-    const mediaCell = document.createElement("td");
+    const mediaCell = document.createElement('td');
     if (piece.score) {
         const anchor = getMediaAnchor(piece.score, './images/score.gif', 'Score');
         mediaCell.appendChild(anchor);
     }
     if (piece.recording) {
-        const anchor = getMediaAnchor(piece.recording, "./images/mp3.gif", "Recording");
+        const anchor = getMediaAnchor(piece.recording, './images/mp3.gif', 'Recording');
         mediaCell.appendChild(anchor);
     }
     if (piece.localMP3) {
         // Create img containing appropriate play button, and leverage alt to contain the filename
-        const playButton = getMediaImage('./images/play.png', piece.localMP3);
+        const playButton = getImage('./images/play.png', piece.localMP3, MEDIA_DIMENSION);
         playButton.className = PLAYBUTTON_CLASS;
         mediaCell.appendChild(playButton);
     }
-    mediaCell.className = "media";
+    mediaCell.className = 'media';
     return mediaCell;
 }
 
@@ -183,9 +196,9 @@ function getMediaCell(piece) {
  * @returns {object} a new Table Data cell containing a string in mm:ss format
  */
 function getDurationCell(piece) {
-    const durationCell = document.createElement("td");
+    const durationCell = document.createElement('td');
     durationCell.innerHTML = piece.formattedTime;
-    durationCell.className = "duration";
+    durationCell.className = 'duration';
     return durationCell;
 }
 
@@ -195,12 +208,12 @@ function getDurationCell(piece) {
  * @returns {object} a new Table Data cell containing a Definition List with title and description of the piece
  */
 function getDescriptionCell(piece) {
-    const descriptionCell = document.createElement("td");
-    descriptionCell.className = "description";
-    const descList = document.createElement("dl");
-    const descTerm = document.createElement("dt");
+    const descriptionCell = document.createElement('td');
+    descriptionCell.className = 'description';
+    const descList = document.createElement('dl');
+    const descTerm = document.createElement('dt');
     descTerm.innerHTML = piece.title;
-    const descDef = document.createElement("dd");
+    const descDef = document.createElement('dd');
     descDef.innerHTML = piece.description;
     descList.appendChild(descTerm);
     descList.appendChild(descDef);
@@ -214,8 +227,8 @@ function getDescriptionCell(piece) {
  * @returns {object} a new Table Data cell containing the year the piece was composed
  */
 function getDateCell(piece) {
-    const dateCell = document.createElement("td");
-    dateCell.className = "date";
+    const dateCell = document.createElement('td');
+    dateCell.className = 'date';
     dateCell.innerHTML = piece.year;
     return dateCell;
 }
@@ -225,7 +238,7 @@ function getDateCell(piece) {
  * @param {string} pageTitle - Optional title to be displayed at the top of the page. Set on initial page load
  */
 function loadTable(pageTitle) {
-    const theTable = document.getElementById("mainTable");
+    const theTable = document.getElementById('mainTable');
     while (theTable.rows.length > 1) {
         theTable.deleteRow(1);
         // Delete the second row of table until only the header is left
@@ -235,7 +248,8 @@ function loadTable(pageTitle) {
     }
 
     selectedPieces.forEach((piece) => {
-        const newRow = document.createElement("tr");
+        const newRow = document.createElement('tr');
+        newRow.appendChild(getAlbumImgCell(piece));
         newRow.appendChild(getMediaCell(piece));
         newRow.appendChild(getDurationCell(piece));
         newRow.appendChild(getDescriptionCell(piece));

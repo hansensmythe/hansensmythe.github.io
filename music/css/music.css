@@ -53,6 +53,13 @@ td
   border-top-color: #AAAA66;
 }
 
+td.album
+{
+  border-top-style: none;
+  text-align: center;
+  vertical-align: middle;
+}
+
 td.media
 {
   text-align: center;
