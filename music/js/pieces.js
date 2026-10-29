@@ -207,5 +207,5 @@ export const PIECES = [
     new Piece("Wendy", [PIANO, VOICE], 1979, 90, { pdf: "Wendy.pdf" }, "Scored for piano and cracking testosterone-laden baritone, or flute (words, embarrassingly, by me)"),
     new Piece("While Walking", [PIANO], 1985, 262, { soundClick: "11353195", musicaneo: "sm-85627_while_walking" }, "An easy piece so long as you have big hands, having an improvisatory feel. Reading the score is difficult not because the notes are hard to play, but that standard notation does not deal well with chords built up a note at a time."),
     new Piece("Willowind", [PIANO], 1974, 88, { pdf: "Willowind.pdf" }, "Easy juvenilia, using Beethoven's F&uuml;r Elise for thematic inspiration. Shared first place at Calgary Kiwanis music festival."),
-    new Piece("Zig Zag", [PIANO], 2011, 103, { pdf: "ZigZag.pdf" }, "This piece requires a lot of movement of the left hand, and consecutive fifths in the right. The modal sound is achieved mainly by using the subtonic (the note a whole tone below the tonic) rather than the leading note.")
+    new Piece("Zig Zag", [PIANO], 2011, 103, { mp3: "Zig Zag", pdf: "Zig Zag.pdf" }, "This piece requires a lot of movement of the left hand, and consecutive fifths in the right. The modal sound is achieved mainly by using the subtonic (the note a whole tone below the tonic) rather than the leading note.")
 ];
