@@ -128,7 +128,7 @@ export function init(level) {
         { href: 'games/qwirkle/setup.html', text: 'Qwirkle Connect setup tool' }
     ]));
     menuUL.appendChild(createListItemWithChildren(prefix, 'Music', [
-        { href: 'music/music.html', text: 'Scores and Recordings' },
+        { href: 'music/index.html', text: 'Scores and Recordings' },
         { href: 'music/PlaceNotation.html', text: 'Introduction to Dot Place Notation' }
     ]));
     menuUL.appendChild(createListItemWithChildren(prefix, 'Philosophy', [

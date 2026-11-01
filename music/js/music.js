@@ -89,12 +89,23 @@ function handleClickEvent(event) {
         loadTable();
     } else if (event.target.classList.contains(PLAYBUTTON_CLASS)) {
         const playerText = document.getElementById('playerText');
-        playerText.textContent = `Playing '${event.target.alt}'`;
-        const audioMP3 = document.getElementById('audioMP3');
-        audioMP3.src = `./mp3/${event.target.alt}.mp3`;
         const player = document.getElementById('player');
-        player.load();
-        player.play();
+        const isPlaying = !player.paused;
+        const newLabel = `Playing '${event.target.alt}'`;
+        if (playerText.textContent == newLabel) {
+            // This one is already loaded, so pause if playing and play if paused
+            if (isPlaying) {
+                player.pause();
+            } else {
+                player.play();
+            }
+        } else {
+            playerText.textContent = newLabel;
+            const audioMP3 = document.getElementById('audioMP3');
+            audioMP3.src = `./mp3/${event.target.alt}.mp3`;
+            player.load();
+            player.play();
+        }
     }
 }
 
