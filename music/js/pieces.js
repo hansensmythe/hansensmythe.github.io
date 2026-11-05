@@ -82,7 +82,7 @@ export const PIECES = [
     new Piece("Canon at the Octave", [PIANO], 1992, 35, { score: "CanonOctave.pdf" }, "Composed as an exercise in part writing."),
     new Piece("Carol of the Bells", [VOICE, INSTR], 1990, 274, { img: "Mostly Harmless.png", youtube: "OM-wJ52JM7I" }, "Traditional, recorded using sampled voice and synthesized instruments."),
     new Piece("Champagne", [INSTR, FILM], 1994, 0, { img: "Quickdraw.png" }, "Recorded to accompany an animated film of the same name, produced at <a href=https://quickdrawanimation.ca/ target=_blank>Quickdraw Animation Society</a>."),
-    new Piece("Cold Thoughts", [PIANO], 1978, 98, { score: "ColdThoughts.pdf" }, "What's teenhood without a little angst?"),
+    new Piece("Cold Thoughts", [PIANO], 1978, 98, { mp3: "Cold Thoughts", score: "Cold Thoughts.pdf" }, "Varying meter, mostly alternating between 7/8 and 5/4 with the occasional 4/4."),
     new Piece("Communications", [INSTR, FILM], 1988, 95, { img: "SAIT Catalyst.png", mp3: "Communications" }, "Composed for a <a href=https://sait.ab.ca/ target=_blank>SAIT</a> Open House video produced by CTSR students."),
     new Piece("Concert Overture", [ORCH], 1986, 248, {}, "Scored for wind ensemble."),
     new Piece("CTSR March", [INSTR, FILM], 1988, 171, { img: "SAIT Catalyst.png", mp3: "CTSR March" }, "Composed for a <a href=https://sait.ab.ca/ target=_blank>SAIT</a> Open House video produced by CTSR students."),
