@@ -1,9 +1,28 @@
 #controls {
     display: flex;
+    flex-wrap: wrap;
     gap: 16px; /* Optional spacing between divs */
-    align-items: center;
+    align-items: start;
     border-bottom: 2px solid #000;
     margin-bottom: 20px;
+}
+
+#filterControl {
+    text-align: right;
+}
+
+#instrControl {
+    text-align: left;
+    margin-top: auto; /* Pushes this element to the bottom */
+    margin-bottom: 10px;
+}
+
+#playerControl {
+    text-align: center;
+}
+
+.controlItem {
+    flex: 1 1 150px;
 }
 
 #playerText {

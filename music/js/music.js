@@ -1,11 +1,23 @@
-import { PIECE_TYPES, PIECES, PIANO, INSTR } from './pieces.js';
+import { PIECES, GENRES, INSTRUMENTS } from './pieces.js';
 const PLAYBUTTON_CLASS = 'playButton';
 const ALBUM_DIMENSION = 48;
 const MEDIA_DIMENSION = 24;
+const GENRE_PARAM = 'genre';
+const INSTR_PARAM = 'instr';
+const SEARCH_PARAM = 'search';
+const GENRE_SELECT = 'genreSelect';
+const INSTR_SELECT = 'instrSelect';
+const SEARCH_INPUT = 'searchInput';
 
-// Load music table once DOM in music.html is ready
-document.addEventListener('DOMContentLoaded', selectPieces);
+// Initialize once DOM in index.html is ready, then show default or param-filtered pieces
+document.addEventListener('DOMContentLoaded', initialize);
 document.getElementById('contents').addEventListener('click', handleClickEvent);
+
+// By adding a second click event listener for INSTR_SELECT, we will cause two events to fire when the
+// INSTR_SELECT button is clicked. However, handleClickEvent fires on the ENCLOSING DIV rather than on the
+// select element itself, so it's easier to maintain if we ignore it there, and just add this second listener.
+document.getElementById(INSTR_SELECT).addEventListener('click', handleInstrEvent);
+document.getElementById(SEARCH_INPUT).addEventListener('input', handleSearchInputEvent);
 
 // selectedPieces needs to be global so it can be set by selectPieces
 // but then used separately to sort the selected pieces
@@ -52,6 +64,117 @@ const dateSorter = new Sorter('year', 'Year', -1);
 let currentSorter = dateSorter;
 
 /**
+ * Update URL to include a query parameter
+ * 
+ * @param {string} key - query parameter key, i.e. GENRE_PARAM, INSTR_PARAM, or SEARCH_PARAM
+ * @param {string} value - value string matching parameter, e.g. 'trombone'
+ */
+function setQueryParam(key, value) {
+    // Parse the current URL
+    const url = new URL(window.location);
+
+    // Set or update the query parameter
+    url.searchParams.set(key, value);
+
+    // Update the browser URL without reloading
+    window.history.replaceState({}, '', url.toString());
+    // Use pushState if you want to preserve history, or replaceState if you want to replace the current entry
+}
+
+/**
+ * Extract the value of a specific query parameter from the URL
+ * 
+ * @param {string} key - query parameter key, i.e. GENRE_PARAM, INSTR_PARAM, or SEARCH_PARAM
+ * @returns {string} containing the parameter value if present, otherwise undefined
+ */
+function getQueryParam(key) {
+    return new URLSearchParams(window.location.search).get(key);
+}
+
+/**
+ * Remove a single query parameter from the URL
+ * 
+ * @param {string} key - The string used to identify the parameter in the URL query, e.g. 'search'
+ */
+function removeQueryParam(key) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(key);
+    window.history.replaceState({}, '', url.toString());
+}
+
+function clearGenre() {
+    removeQueryParam(GENRE_PARAM);
+    document.getElementById(GENRE_SELECT).value = '';
+}
+
+function clearInstr() {
+    removeQueryParam(INSTR_PARAM);
+    document.getElementById(INSTR_SELECT).selectedIndex = -1;
+}
+
+function clearSearch() {
+    removeQueryParam(SEARCH_PARAM);
+    document.getElementById(SEARCH_INPUT).value = '';
+}
+
+/**
+ * Dynamically populate an empty dropdown list identified by id
+ * 
+ * @param {string} elementId 
+ * @param {Filter} filterArray 
+ */
+function populateDropdown(elementId, filterArray) {
+    const element = document.getElementById(elementId);
+    const emptyOption = document.createElement('option');
+    emptyOption.value = '';
+    emptyOption.text = '';
+    element.append(emptyOption);
+    filterArray.forEach((filter) => {
+        const option = document.createElement('option');
+        option.value = filter.id;
+        option.text = filter.title;
+        element.append(option);
+    });
+}
+
+function initialize() {
+    // Populate dynamic filters
+    populateDropdown(GENRE_SELECT, GENRES);
+    populateDropdown(INSTR_SELECT, INSTRUMENTS);
+
+    // Apply query parameters to the filter elements if required
+    const searchParam = getQueryParam(SEARCH_PARAM);
+    if (searchParam) {
+        // Put query parameter into search input box
+        document.getElementById(SEARCH_INPUT).value = searchParam;
+    } else {
+        // Only apply genre and instrument filters if no searchParam is found
+        const genreParam = getQueryParam(GENRE_PARAM);
+        // Guard against bogus genre values
+        const targetGenre = GENRES.find((genre) => genre.id === genreParam);
+        if (targetGenre) {
+            document.getElementById(GENRE_SELECT).value = targetGenre.id;
+        }
+
+        const instrParam = getQueryParam(INSTR_PARAM);
+        if (instrParam) {
+            // Turn the comma-separated values in query into an array
+            const instrQueryArray = instrParam.split(',');
+            // Guard against bogus instrument values by including only values matching our INSTRUMENTS array
+            const targetInstrumentIds = INSTRUMENTS
+                .filter((instrument) => instrQueryArray.includes(instrument.id))
+                .map(instrument => instrument.id);
+            const instrSelect = document.getElementById(INSTR_SELECT);
+            Array.from(instrSelect.options).forEach((option) => {
+                option.selected = targetInstrumentIds.includes(option.value);
+            });
+        }
+    }
+
+    selectPieces();
+}
+
+/**
  * The selectedPieces array should already have been populated by music.selectPieces. This function mutates the selectedPieces array.
  * Apply a sorting algorithm on the appropriate field in the pieces, using the current sort direction to determine polarity.
  * Called from setSort when user wants to change sort criteria, but also from selectPieces in music.js upon first loading page
@@ -65,6 +188,28 @@ function sortPieces() {
         }
         return 0;
     });
+}
+
+/**
+ * Update the search URL parameter, clear the other parameters, and refilter the pieces
+ * 
+ * @param {object} event - containing target.id and target.value
+ */
+function handleSearchInputEvent(event) {
+    setQueryParam(SEARCH_PARAM, event.target.value);
+    clearGenre();
+    clearInstr();
+    selectPieces();
+}
+
+function handleInstrEvent() {
+    // Clear keyword and genre so they don't override this filter, but update the instr query
+    clearSearch();
+    clearGenre();
+    const instrSelect = document.getElementById(INSTR_SELECT);
+    const selectedInstruments = Array.from(instrSelect.selectedOptions).map(option => option.value);
+    setQueryParam(INSTR_PARAM, selectedInstruments);
+    selectPieces();
 }
 
 function handleClickEvent(event) {
@@ -87,6 +232,13 @@ function handleClickEvent(event) {
         durSorter.clearDirection();
         setSort(dateSorter);
         loadTable();
+    } else if (event.target.id == GENRE_SELECT) {
+        // Clear the search and instr filters
+        clearSearch();
+        clearInstr();
+        // Add the genre query param
+        setQueryParam(GENRE_PARAM, event.target.value);
+        selectPieces();
     } else if (event.target.classList.contains(PLAYBUTTON_CLASS)) {
         const playerText = document.getElementById('playerText');
         const player = document.getElementById('player');
@@ -122,15 +274,6 @@ function setSort(sorter) {
     dateSorter.setHeaderText();
     titleSorter.setHeaderText();
     sortPieces();
-}
-
-/**
- * Refer to the form element of music.html.
- * @param {string} paramName - Typically either 'type' or 'keyword'
- * @returns {string} containing the parameter value if present, otherwise undefined
- */
-function getParam(paramName) {
-    return new URLSearchParams(window.location.search).get(paramName);
 }
 
 /**
@@ -270,45 +413,34 @@ function loadTable(pageTitle) {
 }
 
 /**
- * This is the function called at the bottom of music.html upon first loading the page. It determines what, if any,
- * query parameters might exist from a previous page load or from an external bookmark, sets the current document to
- * match those parameters, and filters the pieces array to match the params. It then sorts the pieces based on the
+ * This is the function called upon first loading the page and subsequently when filter values change.
+ * It filters pieces to match current filter parameters, then sorts the pieces based on the
  * current sorting criteria, and loads the table with the selectedPieces.
  */
 function selectPieces() {
-    // Ensure that values defined in the URL are reflected in the current search and type dropdown
-    const keywordElement = document.getElementById('keyword');
-    const typeElement = document.getElementById('type');
-    const keyword = getParam('keyword');
-    const type = getParam('type');
-    if (keyword) {
-        keywordElement.value = keyword;
-        typeElement.value = 'all';
-    } else if (type) {
-        typeElement.value = type;
-    }
-    // If no type was found in the URL the default type should be the first one on the list - 'piano'
-    const pieceType = PIECE_TYPES.find((pieceType) => pieceType.id === typeElement.value);
+    const searchInput = document.getElementById(SEARCH_INPUT);
+    const genreSelect = document.getElementById(GENRE_SELECT);
+    const instrSelect = document.getElementById(INSTR_SELECT);
+    const selectedInstruments = Array.from(instrSelect.selectedOptions).map(option => option.value);
+
     let pageTitle;
-    if (pieceType) {
-        pageTitle = pieceType.title;
-        selectedPieces = PIECES.filter((piece) => {
-            if (pieceType === PIANO || pieceType === INSTR) {
-                // Use the filter exclusively - return pieces that specify only this type
-                return piece.types.every((type) => type === pieceType);
-            } else {
-                // Use the filter inclusively - return pieces that include this type
-                return piece.types.includes(pieceType);
-            }
-        });
-    } else if (keywordElement.value) {
-        const keywordRegex = new RegExp(keywordElement.value, 'i');
-        pageTitle = `Pieces matching "${keywordElement.value}"`;
+    if (searchInput.value) {
+        const keywordRegex = new RegExp(searchInput.value, 'i');
+        pageTitle = `Pieces matching "${searchInput.value}"`;
         selectedPieces = PIECES.filter((piece) => piece.title.match(keywordRegex) || piece.description.match(keywordRegex));
+    } else if (genreSelect.value) {    
+        pageTitle = genreSelect.options[genreSelect.selectedIndex].text;
+        selectedPieces = PIECES.filter((piece) => piece.genre == genreSelect.value);
+    } else if (selectedInstruments.length) {
+        pageTitle = `Pieces for ${selectedInstruments}`;
+        selectedPieces = PIECES.filter(
+            (piece) => piece.instruments.some(
+                (instrument) => selectedInstruments.includes(instrument.id)));
     } else {
         pageTitle = 'All pieces';
         selectedPieces = PIECES;
     }
+
 
     // Since selectedPieces is global, sortPieces can find and mutate the array.
     sortPieces();

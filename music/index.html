@@ -18,27 +18,11 @@
 <body>
     <div id="contents">
         <div id="controls">
-            <div>
-                <form action="index.html">
-                    Search for keyword: <input onchange="this.form.submit()" type="text" id="keyword" name="keyword"
-                        size="13" placeholder="Search">
-                </form>
-                <form action="index.html">
-                    or select a category:
-                    <select onchange="this.form.submit()" id="type" name="type">
-                        <option value="piano">Solo Piano</option>
-                        <option value="voice">Vocal</option>
-                        <option value="instr">Instrumental</option>
-                        <option value="theatre">for Theatre</option>
-                        <option value="film">for Film/TV</option>
-                        <option value="orch">Orchestral</option>
-                        <option value="exp">Experimental</option>
-                        <option value="arr">Arrangements</option>
-                        <option value="all">All pieces</option>
-                    </select>
-                </form>
-            </div>
-            <div>
+            <div class="controlItem" id="filterControl">Search for keyword: <input id="searchInput" type="text" size="20"><br>
+            or filter by genre: <select id="genreSelect" name="genre"></select><br>
+            or select one or more instrument types:</div>
+            <div class="controlItem" id="instrControl"><select multiple id="instrSelect" name="instr"></select></div>
+            <div class="controlItem" id="playerControl">
                 <audio controls preload="auto" id="player">
                     <source id="audioMP3" src="" type="audio/mpeg">
                     Your browser does not support this audio player.
