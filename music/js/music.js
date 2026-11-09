@@ -1,4 +1,4 @@
-import { PIECES, GENRES, INSTRUMENTS } from './pieces.js';
+import { PIECES, GENRES, INSTRUMENTS, FAVOURITES } from './pieces.js';
 const PLAYBUTTON_CLASS = 'playButton';
 const ALBUM_DIMENSION = 48;
 const MEDIA_DIMENSION = 24;
@@ -122,16 +122,9 @@ function clearSearch() {
  * 
  * @param {string} elementId - id of dropdown
  * @param {Filter} filterArray - objects containing option values and text
- * @param {boolean} includBlank - if true, include a leading empty option
  */
-function populateDropdown(elementId, filterArray, includeBlank) {
+function populateDropdown(elementId, filterArray) {
     const element = document.getElementById(elementId);
-    if (includeBlank) {
-        const emptyOption = document.createElement('option');
-        emptyOption.value = '';
-        emptyOption.text = '';
-        element.append(emptyOption);
-    }
     filterArray.forEach((filter) => {
         const option = document.createElement('option');
         option.value = filter.id;
@@ -142,8 +135,8 @@ function populateDropdown(elementId, filterArray, includeBlank) {
 
 function initialize() {
     // Populate dynamic filters
-    populateDropdown(GENRE_SELECT, GENRES, true);
-    populateDropdown(INSTR_SELECT, INSTRUMENTS, false);
+    populateDropdown(GENRE_SELECT, GENRES);
+    populateDropdown(INSTR_SELECT, INSTRUMENTS);
 
     // Apply query parameters to the filter elements if required
     const searchParam = getQueryParam(SEARCH_PARAM);
@@ -178,7 +171,7 @@ function initialize() {
 }
 
 /**
- * The selectedPieces array should already have been populated by music.selectPieces. This function mutates the selectedPieces array.
+ * The selectedPieces array should already have been populated by selectPieces. This function mutates the selectedPieces array.
  * Apply a sorting algorithm on the appropriate field in the pieces, using the current sort direction to determine polarity.
  * Called from setSort when user wants to change sort criteria, but also from selectPieces in music.js upon first loading page
  */
@@ -429,13 +422,29 @@ function selectPieces() {
     const selectedInstruments = Array.from(instrSelect.selectedOptions).map(option => option.value);
 
     let pageTitle;
+    let isSorted = false;
     if (searchInput.value) {
         const keywordRegex = new RegExp(searchInput.value, 'i');
         pageTitle = `Pieces matching "${searchInput.value}"`;
         selectedPieces = PIECES.filter((piece) => piece.title.match(keywordRegex) || piece.description.match(keywordRegex));
     } else if (genreSelect.value) {
         pageTitle = genreSelect.options[genreSelect.selectedIndex].text;
-        selectedPieces = PIECES.filter((piece) => piece.genre == genreSelect.value);
+        if (genreSelect.value == FAVOURITES.id) {
+            selectedPieces = PIECES.filter((piece) => piece.priority > 0);
+            // Override initial sorting to apply priority sort. We should only do this upon initially
+            // selecting the genre, however, so that users can later re-sort pieces by header criteria
+            selectedPieces.sort((thisPiece, otherPiece) => {
+                if (thisPiece.priority < otherPiece.priority) {
+                    return -1;
+                } else if (thisPiece.priority > otherPiece.priority) {
+                    return 1;
+                }
+                return 0;
+            });
+            isSorted = true;
+        } else {
+            selectedPieces = PIECES.filter((piece) => piece.genre == genreSelect.value);
+        }
     } else if (selectedInstruments.length) {
         pageTitle = `Pieces for ${selectedInstruments.join(" & ")}`;
         selectedPieces = PIECES.filter((piece) => {
@@ -449,6 +458,8 @@ function selectPieces() {
 
 
     // Since selectedPieces is global, sortPieces can find and mutate the array.
-    sortPieces();
+    if (!isSorted) {
+        sortPieces();
+    }
     loadTable(pageTitle);
 }

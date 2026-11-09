@@ -4,7 +4,7 @@
     gap: 16px; /* Optional spacing between divs */
     align-items: start;
     border-bottom: 2px solid #000;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 #filterControl {
@@ -45,14 +45,14 @@ input
     background-color: beige;
 }
 
-label {
+.headerLabel {
   cursor: pointer;
   transition: background-color 0.2s;
   color: blue;
   text-decoration: underline blue;
 }
 
-label:hover {
+.headerLabel:hover {
   background-color: #e0e0e0;
 }
 
