@@ -120,15 +120,18 @@ function clearSearch() {
 /**
  * Dynamically populate an empty dropdown list identified by id
  * 
- * @param {string} elementId 
- * @param {Filter} filterArray 
+ * @param {string} elementId - id of dropdown
+ * @param {Filter} filterArray - objects containing option values and text
+ * @param {boolean} includBlank - if true, include a leading empty option
  */
-function populateDropdown(elementId, filterArray) {
+function populateDropdown(elementId, filterArray, includeBlank) {
     const element = document.getElementById(elementId);
-    const emptyOption = document.createElement('option');
-    emptyOption.value = '';
-    emptyOption.text = '';
-    element.append(emptyOption);
+    if (includeBlank) {
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.text = '';
+        element.append(emptyOption);
+    }
     filterArray.forEach((filter) => {
         const option = document.createElement('option');
         option.value = filter.id;
@@ -139,8 +142,8 @@ function populateDropdown(elementId, filterArray) {
 
 function initialize() {
     // Populate dynamic filters
-    populateDropdown(GENRE_SELECT, GENRES);
-    populateDropdown(INSTR_SELECT, INSTRUMENTS);
+    populateDropdown(GENRE_SELECT, GENRES, true);
+    populateDropdown(INSTR_SELECT, INSTRUMENTS, false);
 
     // Apply query parameters to the filter elements if required
     const searchParam = getQueryParam(SEARCH_PARAM);
@@ -430,7 +433,7 @@ function selectPieces() {
         const keywordRegex = new RegExp(searchInput.value, 'i');
         pageTitle = `Pieces matching "${searchInput.value}"`;
         selectedPieces = PIECES.filter((piece) => piece.title.match(keywordRegex) || piece.description.match(keywordRegex));
-    } else if (genreSelect.value) {    
+    } else if (genreSelect.value) {
         pageTitle = genreSelect.options[genreSelect.selectedIndex].text;
         selectedPieces = PIECES.filter((piece) => piece.genre == genreSelect.value);
     } else if (selectedInstruments.length) {
