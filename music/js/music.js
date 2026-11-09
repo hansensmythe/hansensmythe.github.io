@@ -11,13 +11,13 @@ const SEARCH_INPUT = 'searchInput';
 
 // Initialize once DOM in index.html is ready, then show default or param-filtered pieces
 document.addEventListener('DOMContentLoaded', initialize);
-document.getElementById('contents').addEventListener('click', handleClickEvent);
-
-// By adding a second click event listener for INSTR_SELECT, we will cause two events to fire when the
-// INSTR_SELECT button is clicked. However, handleClickEvent fires on the ENCLOSING DIV rather than on the
-// select element itself, so it's easier to maintain if we ignore it there, and just add this second listener.
-document.getElementById(INSTR_SELECT).addEventListener('click', handleInstrEvent);
+// Change events for genre changes
+document.getElementById(GENRE_SELECT).addEventListener('change', handleGenreEvent);
+document.getElementById(INSTR_SELECT).addEventListener('change', handleInstrEvent);
 document.getElementById(SEARCH_INPUT).addEventListener('input', handleSearchInputEvent);
+
+// Clicks for page control such as sorting or player control
+document.getElementById('contents').addEventListener('click', handleClickEvent);
 
 // selectedPieces needs to be global so it can be set by selectPieces
 // but then used separately to sort the selected pieces
@@ -202,6 +202,15 @@ function handleSearchInputEvent(event) {
     selectPieces();
 }
 
+function handleGenreEvent(event) {
+    // Clear the search and instr filters
+    clearSearch();
+    clearInstr();
+    // Add the genre query param
+    setQueryParam(GENRE_PARAM, event.target.value);
+    selectPieces();
+}
+
 function handleInstrEvent() {
     // Clear keyword and genre so they don't override this filter, but update the instr query
     clearSearch();
@@ -232,13 +241,6 @@ function handleClickEvent(event) {
         durSorter.clearDirection();
         setSort(dateSorter);
         loadTable();
-    } else if (event.target.id == GENRE_SELECT) {
-        // Clear the search and instr filters
-        clearSearch();
-        clearInstr();
-        // Add the genre query param
-        setQueryParam(GENRE_PARAM, event.target.value);
-        selectPieces();
     } else if (event.target.classList.contains(PLAYBUTTON_CLASS)) {
         const playerText = document.getElementById('playerText');
         const player = document.getElementById('player');
@@ -432,10 +434,11 @@ function selectPieces() {
         pageTitle = genreSelect.options[genreSelect.selectedIndex].text;
         selectedPieces = PIECES.filter((piece) => piece.genre == genreSelect.value);
     } else if (selectedInstruments.length) {
-        pageTitle = `Pieces for ${selectedInstruments}`;
-        selectedPieces = PIECES.filter(
-            (piece) => piece.instruments.some(
-                (instrument) => selectedInstruments.includes(instrument.id)));
+        pageTitle = `Pieces for ${selectedInstruments.join(" & ")}`;
+        selectedPieces = PIECES.filter((piece) => {
+            const instrumentsInPiece = piece.instruments.map((instrument => instrument.id));
+            return selectedInstruments.every(selectedInstrument => instrumentsInPiece.includes(selectedInstrument));
+        });
     } else {
         pageTitle = 'All pieces';
         selectedPieces = PIECES;
