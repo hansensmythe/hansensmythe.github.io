@@ -1,7 +1,9 @@
 import { PIECES, GENRES, INSTRUMENTS, FAVOURITES } from './pieces.js';
+const PAUSEBUTTON_CLASS = 'pauseButton';
 const PLAYBUTTON_CLASS = 'playButton';
+const PLAYERBUTTON_CLASS = 'playerButton';
 const ALBUM_DIMENSION = 48;
-const MEDIA_DIMENSION = 24;
+const MEDIA_DIMENSION = 36;
 const GENRE_PARAM = 'genre';
 const INSTR_PARAM = 'instr';
 const SEARCH_PARAM = 'search';
@@ -22,6 +24,7 @@ document.getElementById('contents').addEventListener('click', handleClickEvent);
 // selectedPieces needs to be global so it can be set by selectPieces
 // but then used separately to sort the selected pieces
 let selectedPieces = [];
+let loadedPieceIndex = -1;
 
 class Sorter {
     /**
@@ -237,24 +240,37 @@ function handleClickEvent(event) {
         durSorter.clearDirection();
         setSort(dateSorter);
         loadTable();
-    } else if (event.target.classList.contains(PLAYBUTTON_CLASS)) {
+    } else if (event.target.classList.contains(PLAYERBUTTON_CLASS)) {
         const playerText = document.getElementById('playerText');
         const player = document.getElementById('player');
         const isPlaying = !player.paused;
-        const newLabel = `Playing '${event.target.alt}'`;
-        if (playerText.textContent == newLabel) {
-            // This one is already loaded, so pause if playing and play if paused
+        const clickedButton = document.getElementById(event.target.id);
+        if (event.target.id == loadedPieceIndex) {
+            // This one is already loaded, so pause if playing and play if paused,
+            // and set the button to what its NEXT action will be.
             if (isPlaying) {
                 player.pause();
+                // Change button to "play" class
+                clickedButton.classList.replace(PAUSEBUTTON_CLASS, PLAYBUTTON_CLASS);
             } else {
                 player.play();
+                // Change button to "pause" class
+                clickedButton.classList.replace(PLAYBUTTON_CLASS, PAUSEBUTTON_CLASS);
             }
         } else {
-            playerText.textContent = newLabel;
+            const selectedPiece = PIECES[parseInt(event.target.id)];
+            const previousButton = document.getElementById(loadedPieceIndex);
+            if (previousButton) {
+                previousButton.classList.replace(PAUSEBUTTON_CLASS, PLAYBUTTON_CLASS);
+            }
+
             const audioMP3 = document.getElementById('audioMP3');
-            audioMP3.src = `./mp3/${event.target.alt}.mp3`;
+            audioMP3.src = selectedPiece.localMP3;
             player.load();
             player.play();
+            clickedButton.classList.replace(PLAYBUTTON_CLASS, PAUSEBUTTON_CLASS);
+            playerText.textContent = `Playing '${selectedPiece.title}'`;
+            loadedPieceIndex = event.target.id;
         }
     }
 }
@@ -334,9 +350,9 @@ function getMediaCell(piece) {
         mediaCell.appendChild(anchor);
     }
     if (piece.localMP3) {
-        // Create img containing appropriate play button, and leverage alt to contain the filename
-        const playButton = getImage('./images/play.png', piece.localMP3, MEDIA_DIMENSION);
-        playButton.className = PLAYBUTTON_CLASS;
+        const playButton = document.createElement('button');
+        playButton.id = `${piece.id}`; // Backticks turn number into a string, which is safe for id
+        playButton.classList.add(PLAYERBUTTON_CLASS, PLAYBUTTON_CLASS);
         mediaCell.appendChild(playButton);
     }
     mediaCell.className = 'media';

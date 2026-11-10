@@ -27,6 +27,9 @@ export const GENRES = [FAVOURITES, CLASSICAL, MEDIA, THEATRE, EXPERIMENTAL, COVE
 export const INSTRUMENTS = [PIANO, VOICE, SYNTH, ORCH];
 
 class Piece {
+    // Static property shared across all instances
+    static idCounter = -1;
+
     /**
      * @param {string} title
      * @param {Filter} genre - One genre from GENRES used for filtering
@@ -38,6 +41,7 @@ class Piece {
      * @param {number} priority - Optional integer indicating presence and order in favourites list. 0 or undefined indicates not on list, >0 is priority
      */
     constructor(title, genre, instruments, year, duration, media, description, priority) {
+        this.id = ++Piece.idCounter;
         this.title = title;
         this.genre = genre.id;
         this.instruments = instruments;
@@ -60,10 +64,10 @@ class Piece {
         }
         // We can instead - or also - provide a local MP3 to load into the player
         if (media.mp3) {
-            this.localMP3 = media.mp3;
+            this.localMP3 = `./mp3/${media.mp3}.mp3`;
         }
         if (media.score) {
-            this.score = `scores/${media.score}`;
+            this.score = `./scores/${media.score}`;
         } else if (media.musicaneo) {
             this.score = `https://www.musicaneo.com/sheetmusic/${media.musicaneo}.html`;
         }

@@ -56,6 +56,20 @@ input
   background-color: #e0e0e0;
 }
 
+.playerButton {
+    border: none;
+    width: 36px;
+    height: 36px;
+}
+
+.pauseButton {
+    background-image: url('../images/pause.png');
+}
+
+.playButton {
+    background-image: url('../images/play.png');
+}
+
 th
 {
   white-space: nowrap;
