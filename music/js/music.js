@@ -448,10 +448,9 @@ function selectPieces() {
     } else if (selectedInstruments.length) {
         pageTitle = `Pieces for ${selectedInstruments.join(" & ")}`;
         selectedPieces = PIECES.filter((piece) => {
-            const instrumentsInPiece = piece.instruments.map((instrument => instrument.id));
             // Ensure that the two arrays are equivalent, e.g. each includes only piano, or piano and voice
-            if (instrumentsInPiece.length !== selectedInstruments.length) return false;
-            return instrumentsInPiece.every(instrumentInPiece => selectedInstruments.includes(instrumentInPiece));
+            if (piece.instruments.length !== selectedInstruments.length) return false;
+            return piece.instruments.every(instrumentInPiece => selectedInstruments.includes(instrumentInPiece.id));
         });
     } else {
         pageTitle = 'All pieces';
