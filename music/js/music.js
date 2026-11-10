@@ -320,7 +320,7 @@ function getMediaAnchor(filepath, imagename, imagealt) {
 /**
  * Create a cell for links to media: recordings and/or scores
  * @param {object} piece - The piece that may contain media
- * @returns {object} a new Table Data cell containing links to score and recording, if they exist.
+ * @returns {object} a new Table Data cell containing links to score and recordings, if they exist.
  */
 function getMediaCell(piece) {
     const mediaCell = document.createElement('td');
@@ -328,8 +328,8 @@ function getMediaCell(piece) {
         const anchor = getMediaAnchor(piece.score, './images/score.gif', 'Score');
         mediaCell.appendChild(anchor);
     }
-    if (piece.recording) {
-        const anchor = getMediaAnchor(piece.recording, './images/mp3.gif', 'Recording');
+    if (piece.youtube) {
+        const anchor = getMediaAnchor(piece.youtube, './images/youtube.png', 'Youtube');
         mediaCell.appendChild(anchor);
     }
     if (piece.localMP3) {
