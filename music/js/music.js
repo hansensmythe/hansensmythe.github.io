@@ -287,6 +287,7 @@ function getImage(imagename, imagealt, dimension) {
     mediaImage.setAttribute('src', imagename);
     mediaImage.setAttribute('width', dimension);
     mediaImage.setAttribute('height', dimension);
+    mediaImage.setAttribute('title', imagealt);
     mediaImage.setAttribute('alt', imagealt);
     return mediaImage;
 }
