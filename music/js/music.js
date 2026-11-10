@@ -449,7 +449,9 @@ function selectPieces() {
         pageTitle = `Pieces for ${selectedInstruments.join(" & ")}`;
         selectedPieces = PIECES.filter((piece) => {
             const instrumentsInPiece = piece.instruments.map((instrument => instrument.id));
-            return selectedInstruments.every(selectedInstrument => instrumentsInPiece.includes(selectedInstrument));
+            // Ensure that the two arrays are equivalent, e.g. each includes only piano, or piano and voice
+            if (instrumentsInPiece.length !== selectedInstruments.length) return false;
+            return instrumentsInPiece.every(instrumentInPiece => selectedInstruments.includes(instrumentInPiece));
         });
     } else {
         pageTitle = 'All pieces';
