@@ -11,6 +11,9 @@ const GENRE_SELECT = 'genreSelect';
 const INSTR_SELECT = 'instrSelect';
 const SEARCH_INPUT = 'searchInput';
 
+// Required to display titles such as Khazad-Dum correctly in the player
+const parseEntities = txt => new DOMParser().parseFromString(txt, 'text/html').body.innerText;
+
 // Initialize once DOM in index.html is ready, then show default or param-filtered pieces
 document.addEventListener('DOMContentLoaded', initialize);
 // Change events for genre changes
@@ -269,7 +272,7 @@ function handleClickEvent(event) {
             player.load();
             player.play();
             clickedButton.classList.replace(PLAYBUTTON_CLASS, PAUSEBUTTON_CLASS);
-            playerText.textContent = `Playing '${selectedPiece.title}'`;
+            playerText.textContent = `Playing '${parseEntities(selectedPiece.title)}'`;
             loadedPieceIndex = event.target.id;
         }
     }
