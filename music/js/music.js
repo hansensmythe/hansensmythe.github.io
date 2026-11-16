@@ -439,7 +439,9 @@ function selectPieces() {
     const searchInput = document.getElementById(SEARCH_INPUT);
     const genreSelect = document.getElementById(GENRE_SELECT);
     const instrSelect = document.getElementById(INSTR_SELECT);
-    const selectedInstruments = Array.from(instrSelect.selectedOptions).map(option => option.value);
+    // Turn the selected instruments into an array of Filter-like objects with id and title
+    const selectedInstruments = Array.from(instrSelect.selectedOptions)
+        .map(option => ({ id: option.value, title: option.text }));
 
     let pageTitle;
     let isSorted = false;
@@ -466,11 +468,13 @@ function selectPieces() {
             selectedPieces = PIECES.filter((piece) => piece.genre == genreSelect.value);
         }
     } else if (selectedInstruments.length) {
-        pageTitle = `Pieces for ${selectedInstruments.join(" & ")}`;
+        pageTitle = `Pieces for ${selectedInstruments.map(selectedInstrument => selectedInstrument.title).join(" & ")}`;
         selectedPieces = PIECES.filter((piece) => {
             // Ensure that the two arrays are equivalent, e.g. each includes only piano, or piano and voice
-            if (piece.instruments.length !== selectedInstruments.length) return false;
-            return piece.instruments.every(instrumentInPiece => selectedInstruments.includes(instrumentInPiece.id));
+            return piece.instruments.length == selectedInstruments.length && piece.instruments
+                .every(instrumentInPiece => selectedInstruments
+                .map(selectedInstrument => selectedInstrument.id)
+                .includes(instrumentInPiece.id));
         });
     } else {
         pageTitle = 'All pieces';
